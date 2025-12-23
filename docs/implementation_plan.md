@@ -26,6 +26,117 @@ Sistem ini menggunakan **3 Frontend terpisah** yang berbagi **1 Backend API**.
 
 ---
 
+## 2.1 Frontend Architecture (Feature-Based)
+
+Menggunakan arsitektur **feature-based** yang memisahkan `features/` (logic & components) dan `pages/` (route entry points).
+
+### Struktur Folder per Frontend
+
+```
+public-web/               # atau portal/, admin/
+├── src/
+│   ├── features/         # Domain logic per fitur
+│   │   ├── auth/
+│   │   │   ├── api/               # API calls (login, register)
+│   │   │   │   └── authApi.ts
+│   │   │   ├── components/        # UI components khusus auth
+│   │   │   │   ├── LoginForm.tsx
+│   │   │   │   └── RegisterForm.tsx
+│   │   │   ├── hooks/             # Custom hooks
+│   │   │   │   └── useAuth.ts
+│   │   │   ├── types/             # TypeScript types
+│   │   │   │   └── index.ts
+│   │   │   └── index.ts           # Public exports
+│   │   │
+│   │   ├── silsilah/              # (Portal only)
+│   │   │   ├── api/
+│   │   │   │   ├── personApi.ts
+│   │   │   │   ├── marriageApi.ts
+│   │   │   │   └── relationshipApi.ts
+│   │   │   ├── components/
+│   │   │   │   ├── FamilyTree.tsx
+│   │   │   │   ├── PersonCard.tsx
+│   │   │   │   ├── GhostNodeBadge.tsx
+│   │   │   │   └── RelationshipBadge.tsx
+│   │   │   ├── hooks/
+│   │   │   │   ├── usePersons.ts
+│   │   │   │   └── useRelationship.ts
+│   │   │   └── types/
+│   │   │
+│   │   ├── events/
+│   │   │   ├── api/
+│   │   │   ├── components/
+│   │   │   └── hooks/
+│   │   │
+│   │   └── gallery/
+│   │
+│   ├── pages/            # Route entry points (minimal logic)
+│   │   ├── HomePage.tsx
+│   │   ├── AboutPage.tsx
+│   │   ├── LoginPage.tsx
+│   │   ├── silsilah/
+│   │   │   ├── SilsilahPage.tsx
+│   │   │   └── PersonDetailPage.tsx
+│   │   └── events/
+│   │       ├── EventListPage.tsx
+│   │       └── EventDetailPage.tsx
+│   │
+│   ├── components/       # Shared/global components
+│   │   ├── ui/           # Basic UI (Button, Input, Modal)
+│   │   └── layout/       # Layout components
+│   │       ├── Layout.tsx
+│   │       ├── Header.tsx
+│   │       └── Footer.tsx
+│   │
+│   ├── lib/              # Utilities & configs
+│   │   ├── api.ts        # Axios instance
+│   │   └── utils.ts
+│   │
+│   ├── hooks/            # Global hooks
+│   │   └── useAuth.ts
+│   │
+│   ├── App.tsx           # Router setup
+│   ├── main.tsx          # Entry point
+│   └── index.css         # Tailwind imports
+│
+├── public/
+├── vite.config.ts
+├── tsconfig.app.json     # Path alias: @/* → src/*
+└── package.json
+```
+
+### Prinsip Feature-Based Architecture
+
+| Prinsip | Penjelasan |
+|---------|------------|
+| **Colocation** | Semua file terkait 1 fitur ada di 1 folder (`features/silsilah/`) |
+| **Pages = Entry Only** | File di `pages/` hanya import dari `features/` dan render layout |
+| **Feature Isolation** | Fitur tidak saling import langsung, gunakan `shared/` jika perlu |
+| **Barrel Exports** | Setiap feature punya `index.ts` untuk public exports |
+
+### Contoh Page vs Feature
+
+```tsx
+// pages/silsilah/SilsilahPage.tsx (MINIMAL)
+import { FamilyTree, usePersons } from '@/features/silsilah'
+
+export default function SilsilahPage() {
+  const { data: persons } = usePersons()
+  return <FamilyTree data={persons} />
+}
+```
+
+```tsx
+// features/silsilah/index.ts (BARREL EXPORT)
+export { FamilyTree } from './components/FamilyTree'
+export { PersonCard } from './components/PersonCard'
+export { usePersons } from './hooks/usePersons'
+export { useRelationship } from './hooks/useRelationship'
+```
+
+---
+
+
 ## 3. Rangkuman Detail Fitur (Master Feature List)
 
 ### A. Modul Silsilah (Genealogy) 🌳
