@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Genealogy Global View - Bani Abdul Manan</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec1325",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221012",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "sans": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for sidebar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+        }
+        
+        /* Dot pattern background */
+        .bg-dot-pattern {
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .dark .bg-dot-pattern {
+            background-image: radial-gradient(#374151 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#181112] dark:text-gray-100 font-display h-screen flex flex-col overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="flex shrink-0 items-center justify-between whitespace-nowrap border-b border-solid border-[#e5e7eb] dark:border-gray-800 bg-white dark:bg-[#1a1a1a] px-6 py-3 z-20">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="size-8 flex items-center justify-center bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined text-2xl">account_tree</span>
+</div>
+<h2 class="text-[#181112] dark:text-white text-lg font-bold leading-tight tracking-tight">Bani Abdul Manan Portal</h2>
+</div>
+<!-- Search Bar -->
+<label class="hidden md:flex flex-col min-w-40 w-80 h-10">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full relative group">
+<div class="text-[#896165] dark:text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full flex-1 resize-none overflow-hidden rounded-lg text-[#181112] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border-none bg-[#f4f0f0] dark:bg-gray-800 placeholder:text-[#896165] dark:placeholder:text-gray-500 pl-10 pr-4 py-2 text-sm font-normal leading-normal transition-all" placeholder="Search for family member..." value=""/>
+</div>
+</label>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-2">
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-lg bg-[#f4f0f0] dark:bg-gray-800 text-[#181112] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-lg bg-[#f4f0f0] dark:bg-gray-800 text-[#181112] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-primary rounded-full ring-2 ring-white dark:ring-[#1a1a1a]"></span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-white dark:border-gray-700 shadow-sm cursor-pointer" data-alt="User profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCIHl-WdOyj1OP8w8o9pv3oeQhD1VYI8bevaTBU-90anY_RKIMEJkxqExIWGD88zMm_dFW3wZbtVlmNAUbiipARw6452LjDKByTxD_rhOKWkqsBzkCvmDKiZJwLGqzFDqxn28d5aeCt9-PrEb5R4HcyURGFLVcqUQ0_96E4FEZRUb_my2lY11MEiDg8T3wHYiTjrVYcf653BEDN63UkbG26DIo8Cm5JDfrpMeLg8nMOv50kzXripd7LYp84JSTgd96yuL-1d3BqibvC");'></div>
+</div>
+</header>
+<!-- Sub-header: Controls & Filters -->
+<div class="flex shrink-0 flex-col sm:flex-row items-start sm:items-center justify-between border-b border-[#e5e7eb] dark:border-gray-800 bg-white dark:bg-[#1a1a1a] px-6 py-2 z-10 gap-4">
+<div class="flex items-center gap-4 overflow-x-auto w-full no-scrollbar">
+<!-- Segmented Buttons -->
+<div class="flex h-9 items-center justify-center rounded-lg bg-[#f4f0f0] dark:bg-gray-800 p-1 shrink-0">
+<label class="flex cursor-pointer h-full items-center justify-center rounded-md px-3 bg-white dark:bg-gray-700 shadow-sm text-primary dark:text-primary text-sm font-medium leading-normal transition-all">
+<span class="material-symbols-outlined text-[18px] mr-2">account_tree</span>
+<span class="truncate">Tree View</span>
+<input checked="" class="invisible w-0 absolute" name="view-toggle" type="radio" value="Tree View"/>
+</label>
+<label class="flex cursor-pointer h-full items-center justify-center rounded-md px-3 text-[#896165] dark:text-gray-400 hover:text-[#181112] dark:hover:text-gray-200 text-sm font-medium leading-normal transition-all">
+<span class="material-symbols-outlined text-[18px] mr-2">list</span>
+<span class="truncate">List View</span>
+<input class="invisible w-0 absolute" name="view-toggle" type="radio" value="List View"/>
+</label>
+</div>
+<div class="w-px h-6 bg-gray-200 dark:bg-gray-700 shrink-0"></div>
+<!-- Chips / Filters -->
+<div class="flex gap-2">
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-transparent pl-3 pr-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<span class="text-[#181112] dark:text-gray-200 text-xs font-medium">Show Living Only</span>
+<span class="material-symbols-outlined text-gray-400 text-[18px]">keyboard_arrow_down</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-transparent pl-3 pr-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<span class="text-[#181112] dark:text-gray-200 text-xs font-medium">Generation: All</span>
+<span class="material-symbols-outlined text-gray-400 text-[18px]">keyboard_arrow_down</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-primary/30 bg-primary/5 pl-3 pr-2 text-primary">
+<span class="text-xs font-medium">Highlight Direct Line</span>
+<span class="material-symbols-outlined text-[18px]">check</span>
+</button>
+</div>
+</div>
+<div class="hidden sm:flex text-xs text-gray-500 font-medium items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span> 11 Branches
+             <span class="w-2 h-2 rounded-full bg-gray-400 ml-2"></span> 1,240 Members
+        </div>
+</div>
+<!-- Main Content Area -->
+<main class="flex flex-1 overflow-hidden relative">
+<!-- Canvas Area (Tree Visualization) -->
+<div class="flex-1 relative bg-background-light dark:bg-background-dark bg-dot-pattern overflow-hidden cursor-grab active:cursor-grabbing group/canvas">
+<!-- Mini Map (Top Left Overlay) -->
+<div class="absolute top-4 left-4 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 p-2 rounded-lg shadow-lg z-10 hidden lg:block opacity-80 hover:opacity-100 transition-opacity">
+<div class="w-24 h-16 bg-gray-100 dark:bg-gray-800 rounded relative overflow-hidden">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-1 h-1 bg-gray-400 rounded-full"></div>
+</div>
+<!-- Viewport rect -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-8 border-2 border-primary rounded-sm bg-primary/10"></div>
+</div>
+</div>
+<!-- Visual Connections (SVG Lines) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0" xmlns="http://www.w3.org/2000/svg">
+<!-- Root to Branch 1 -->
+<line class="dark:stroke-gray-700" stroke="#e5e7eb" stroke-width="2" x1="50%" x2="50%" y1="50%" y2="20%"></line>
+<!-- Root to Branch 2 (Top Right) -->
+<line class="dark:stroke-gray-700" stroke="#e5e7eb" stroke-width="2" x1="50%" x2="75%" y1="50%" y2="28%"></line>
+<!-- Root to Branch 3 (Right) -->
+<line class="dark:stroke-gray-700" stroke="#e5e7eb" stroke-width="2" x1="50%" x2="85%" y1="50%" y2="50%"></line>
+<!-- Root to Branch 4 (Bottom Right) -->
+<line class="opacity-40" stroke="#ec1325" stroke-dasharray="5,5" stroke-width="3" x1="50%" x2="75%" y1="50%" y2="72%"></line> <!-- Highlight path style -->
+<!-- Root to Branch 5 (Bottom) -->
+<line class="dark:stroke-gray-700" stroke="#e5e7eb" stroke-width="2" x1="50%" x2="50%" y1="50%" y2="80%"></line>
+<!-- Root to Branch 6 (Bottom Left) -->
+<line class="dark:stroke-gray-700" stroke="#e5e7eb" stroke-width="2" x1="50%" x2="25%" y1="50%" y2="72%"></line>
+<!-- Root to Branch 7 (Left) -->
+<line class="dark:stroke-gray-700" stroke="#e5e7eb" stroke-width="2" x1="50%" x2="15%" y1="50%" y2="50%"></line>
+<!-- Root to Branch 8 (Top Left) -->
+<line class="dark:stroke-gray-700" stroke="#e5e7eb" stroke-width="2" x1="50%" x2="25%" y1="50%" y2="28%"></line>
+<!-- Sub-branch connections (Example on Branch 4) -->
+<line class="opacity-60" stroke="#ec1325" stroke-width="2" x1="75%" x2="82%" y1="72%" y2="85%"></line>
+</svg>
+<!-- Nodes Container -->
+<div class="absolute inset-0 z-10">
+<!-- Center Node (Root) -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
+<div class="relative size-24 rounded-full border-4 border-primary bg-white dark:bg-[#1a1a1a] shadow-xl flex items-center justify-center z-10 hover:scale-105 transition-transform cursor-pointer">
+<div class="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-[#1a1a1a]">ROOT</div>
+<img alt="" class="w-full h-full rounded-full object-cover p-1" data-alt="Portrait of Abdul Manan" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAdhB39cGw2hf8f_D2LGqf0L9XSlYcnmbtEJ3svzWUvdS7ltVoXe1PJ6yd8HM9p-fzYR5zrO5ll41sq1vG1DHxPDuC4GIEhn4jYrmalf8HcKDWv0ha-fqzsQ4q-0O2j58f87HzcifPj_FVHWOCVor9fm3ZKFgWYkVXBmUM-HS7y3kIYlMkcspYDuu8h3V72tC7TgEjgDIHgcTeMRIO-_qZr6xTOu7b_iWFJR4gkJb8NsUIzgVIPTCpJ0qvU8jocy0-6bye5DrcqCst"/>
+</div>
+<div class="text-center bg-white/80 dark:bg-black/60 backdrop-blur-sm rounded px-2 py-1">
+<h3 class="text-lg font-bold text-[#181112] dark:text-white leading-tight">Abdul Manan</h3>
+<p class="text-xs text-gray-500 font-medium">1880 - 1965</p>
+</div>
+</div>
+<!-- Branch 1 (Top) -->
+<div class="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 group">
+<div class="size-16 rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-[#1a1a1a] shadow-md flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+<span class="text-xl font-bold text-gray-400 group-hover:text-primary">01</span>
+</div>
+<span class="text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white/60 dark:bg-black/40 px-2 rounded">Hj. Ibrahim</span>
+</div>
+<!-- Branch 2 (Top Right) -->
+<div class="absolute top-[28%] left-[75%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 group">
+<div class="size-16 rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-[#1a1a1a] shadow-md flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+<span class="text-xl font-bold text-gray-400 group-hover:text-primary">02</span>
+</div>
+<span class="text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white/60 dark:bg-black/40 px-2 rounded">Hj. Aminah</span>
+</div>
+<!-- Branch 4 (Selected/Active Path) -->
+<div class="absolute top-[72%] left-[75%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
+<div class="size-20 rounded-full border-4 border-primary/40 bg-white dark:bg-[#1a1a1a] shadow-lg flex items-center justify-center cursor-pointer ring-4 ring-primary/10">
+<img alt="" class="w-full h-full rounded-full object-cover p-1" data-alt="Portrait of Ahmad" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATAvcjaH6nw5lLf-JRy-Kk1I2s5AZITZIAStWFR57ii2Heaz4ATHzjVOmOSjTC3Mn9jIMcF_SABFETdPQ_tSrQPENEFC8jZjTNq04T4MgxLRMl2-DMIGxiqu0PrJ4yfy891OzGGZdT4lTZZJzGpAj7ZknuF8b65yUqXk97W6sX9wTAh5zQkvS0tallJRXlQEH3Nj8Eh6RQrIqr22Wg4dQMRhJc1H22AUG4JQirf9u4E7NbGCoq81aR-FFhSH9e3_neDeFueZry_-Ri"/>
+</div>
+<div class="text-center bg-white/80 dark:bg-black/60 backdrop-blur-sm rounded px-2 py-1 border border-primary/20">
+<h3 class="text-sm font-bold text-[#181112] dark:text-white">Ahmad</h3>
+<p class="text-[10px] text-primary font-medium">Branch 04 Head</p>
+</div>
+</div>
+<!-- Grandchild Node (Connected to Branch 4) -->
+<div class="absolute top-[85%] left-[82%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 opacity-90 hover:opacity-100">
+<div class="size-12 rounded-full border-2 border-primary bg-primary text-white shadow-md flex items-center justify-center cursor-pointer">
+<img alt="" class="w-full h-full rounded-full object-cover p-0.5" data-alt="Portrait of Salim" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHUP1SRQ3lBr9uBMSHYh43esIFdqfpNcMt6rO4Rwab6C5tVY9G-bNOhSxPhKpLUQ8YfUdgouxFfv5CMET_V_t7LfFg6vXGZeJWS52bmc146D_z5CNRIaHf3llXepcw_xrlRqraBz9gTnaMP-bcvy-8mn5XV3tiZsVsdHzpKvVXaxKG-eT-P-wuXntYH1_xt1qjv1jC9Evcdri8308XcvcPEbxeRKnUtL0_MdkI8zAE8Vda8m8g3oRExytF5wO9CvdyX_KLsaQUeDeE"/>
+</div>
+<span class="text-xs font-medium text-[#181112] dark:text-white bg-white/60 dark:bg-black/40 px-1 rounded">Salim</span>
+</div>
+<!-- Branch 6 (Bottom Left) -->
+<div class="absolute top-[72%] left-[25%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 group">
+<div class="size-16 rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-[#1a1a1a] shadow-md flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+<span class="text-xl font-bold text-gray-400 group-hover:text-primary">06</span>
+</div>
+<span class="text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white/60 dark:bg-black/40 px-2 rounded">Hj. Yusuf</span>
+</div>
+<!-- Branch 8 (Top Left) -->
+<div class="absolute top-[28%] left-[25%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 group">
+<div class="size-16 rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-[#1a1a1a] shadow-md flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+<span class="text-xl font-bold text-gray-400 group-hover:text-primary">08</span>
+</div>
+<span class="text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white/60 dark:bg-black/40 px-2 rounded">Hj. Khadijah</span>
+</div>
+</div>
+<!-- Floating Controls (Bottom Right) -->
+<div class="absolute bottom-6 right-6 flex flex-col gap-2 z-20">
+<div class="flex flex-col rounded-lg bg-white dark:bg-[#1a1a1a] shadow-[0_2px_8px_rgba(0,0,0,0.15)] overflow-hidden border border-gray-100 dark:border-gray-700">
+<button class="flex size-10 items-center justify-center text-[#181112] dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 transition-colors border-b border-gray-100 dark:border-gray-700">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="flex size-10 items-center justify-center text-[#181112] dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+<button class="flex size-10 items-center justify-center rounded-lg bg-white dark:bg-[#1a1a1a] text-[#181112] dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 shadow-[0_2px_8px_rgba(0,0,0,0.15)] border border-gray-100 dark:border-gray-700" title="Fit to Screen">
+<span class="material-symbols-outlined">center_focus_strong</span>
+</button>
+</div>
+</div>
+<!-- Detail Sidebar (Right) -->
+<aside class="w-96 bg-white dark:bg-[#1a1a1a] border-l border-[#e5e7eb] dark:border-gray-800 flex flex-col shadow-xl z-30 transition-all duration-300 absolute md:relative right-0 h-full md:translate-x-0 translate-x-full">
+<!-- Sidebar Header / Close on mobile -->
+<div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800">
+<h3 class="text-base font-bold text-gray-900 dark:text-white">Member Details</h3>
+<button class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6">
+<!-- Profile Card Header -->
+<div class="flex flex-col items-center">
+<div class="relative mb-4">
+<div class="size-28 rounded-full border-4 border-white dark:border-gray-800 shadow-lg overflow-hidden bg-gray-100">
+<img class="w-full h-full object-cover" data-alt="Profile picture of Salim bin Ahmad" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSWSZXEbpncYbJcv5cKFVOZ-HThs-yk0m3Z9hFMAO5fnDi3hts1vUL8xp3t6Sq6S89masNQE4V1O6uFoDE2RQF4hP-j7LYPRCdjv7OxWup3otdrEfTaFBmZ4ZWtI6aQeniTnMgG59w8VVg_l-fV4rX8Dicy8ywPePRR9cOmt_AjJ4fCuAe9lgu3PtITs51i1qH-TASjh9Tj6W1aE_757v-h-NAp_6aTp0UdCvRRvRInjSZtTFmgJIz_9TxuCRBNYy_gyLmSNNDURa5"/>
+</div>
+<div class="absolute bottom-1 right-1 size-6 bg-green-500 rounded-full border-2 border-white dark:border-gray-800" title="Living"></div>
+</div>
+<h2 class="text-xl font-bold text-center text-[#181112] dark:text-white mb-1">Salim bin Ahmad</h2>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Generation 3 • Bani Abdul Manan</p>
+<div class="flex gap-2 mb-6 w-full">
+<button class="flex-1 bg-primary hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg text-sm transition-colors shadow-sm shadow-red-200 dark:shadow-none">
+                            View Profile
+                        </button>
+<button class="bg-[#f4f0f0] dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-[#181112] dark:text-white p-2 rounded-lg transition-colors border border-transparent dark:border-gray-700">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+</div>
+</div>
+<!-- Info Blocks -->
+<div class="space-y-6">
+<!-- Personal Info -->
+<div>
+<h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Vital Information</h4>
+<div class="bg-[#f8f6f6] dark:bg-gray-800/50 rounded-xl p-4 space-y-3">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-gray-400 text-[20px] mt-0.5">cake</span>
+<div>
+<p class="text-xs text-gray-500">Date of Birth</p>
+<p class="text-sm font-medium text-gray-900 dark:text-gray-200">12 August 1985 (39 years)</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-gray-400 text-[20px] mt-0.5">location_on</span>
+<div>
+<p class="text-xs text-gray-500">Residence</p>
+<p class="text-sm font-medium text-gray-900 dark:text-gray-200">Jakarta Selatan, Indonesia</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-gray-400 text-[20px] mt-0.5">diversity_2</span>
+<div>
+<p class="text-xs text-gray-500">Branch</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="size-2 rounded-full bg-primary"></span>
+<p class="text-sm font-medium text-gray-900 dark:text-gray-200">Branch 04 (Ahmad)</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Immediate Family -->
+<div>
+<h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Immediate Connections</h4>
+<div class="space-y-2">
+<!-- Father -->
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer group transition-colors">
+<div class="size-10 rounded-full bg-gray-200 overflow-hidden">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="Father portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA92CZxT_KO3UFyJCpeYMS5AKsGyLCrY8kvulWo8nSnDmoI6221s2sb5Vm3T2sItlQOq1qF40ZHVmwZomU4tza5kSHGb9857aKxJHlEpx1BQekspnK74kRXrPgeo3rLUl3-9lvSUUiisYjsdGNi07TiVeHG5Gm_pxyadTFVWU0fDJHEctEtOxySqUMs2TXem3IAlGVkCgaYQuBC1oz7kUMdAidinexAm4v5UY2XFNn_GBT621IxAzzipYpJ1k0TqNHf8ITQYeaYatSk"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium text-gray-900 dark:text-gray-200 truncate">Ahmad bin Abdul Manan</p>
+<p class="text-xs text-gray-500">Father • Deceased</p>
+</div>
+<span class="material-symbols-outlined text-gray-300 text-[18px]">arrow_forward</span>
+</div>
+<!-- Spouse -->
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer group transition-colors">
+<div class="size-10 rounded-full bg-gray-200 overflow-hidden">
+<div class="w-full h-full bg-pink-100 dark:bg-pink-900 flex items-center justify-center text-pink-500 dark:text-pink-300 font-bold text-xs">NF</div>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium text-gray-900 dark:text-gray-200 truncate">Nurul Fitri</p>
+<p class="text-xs text-gray-500">Spouse</p>
+</div>
+<span class="material-symbols-outlined text-gray-300 text-[18px]">arrow_forward</span>
+</div>
+<!-- Child 1 -->
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer group transition-colors ml-4 border-l-2 border-gray-100 dark:border-gray-800 pl-4">
+<div class="size-8 rounded-full bg-gray-200 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Child portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB85s4ZBv3atSs2vaAoGCK3dbGyTXwfTtF_-0_gEPDxxNC5WAdLCbzRNmF1Uuc4P4Bf_T2qpkslDiv78IJ_2Yumol1ZOunuq21Xdz-oMeBA8RDqmZfAz8KXiPdDbmvfV0GqHUZxq_w8hqGV2cDfDHq52O6MhuEfvSlPL88QOzVKs4ZSeRQeKIsZ3OVVoVhuEk_ZyyimKi0cBmd7jnN61FECd1Hzw7--aCxZiIUJih-BqbFRTaRDi9z1vfj0M4SpY7aXiB6OMYcc0mjY"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium text-gray-900 dark:text-gray-200 truncate">Siti Aisyah</p>
+<p class="text-xs text-gray-500">Daughter</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Mini Bio -->
+<div>
+<h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Biography</h4>
+<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                             Active member of the family committee since 2015. Currently serving as the secretary for Branch 04. Organized the 2022 Grand Reunion in Bandung.
+                         </p>
+</div>
+</div>
+</div>
+<!-- Sidebar Footer Actions -->
+<div class="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#1a1a1a]/50">
+<button class="w-full flex items-center justify-center gap-2 text-primary hover:text-red-700 text-sm font-medium transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+                    Edit Member Details
+                </button>
+</div>
+</aside>
+</main>
+</body></html>

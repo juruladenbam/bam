@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Festival BAM Timeline</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec1325",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221012",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#181112] dark:text-gray-100 overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 w-full bg-white dark:bg-[#1a0f10] border-b border-[#f4f0f0] dark:border-[#3a2f30]">
+<div class="max-w-[1280px] mx-auto px-4 sm:px-10 py-3 flex items-center justify-between whitespace-nowrap">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined !text-[32px]">diversity_3</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] hidden sm:block">Bani Abdul Manan Portal</h2>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] sm:hidden">BAM Portal</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Home</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Genealogy</a>
+<a class="text-sm font-medium text-primary leading-normal" href="#">Events</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Archives</a>
+</div>
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-red-700 transition-colors">
+<span class="truncate">Login</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Layout -->
+<main class="flex flex-col items-center justify-center w-full">
+<div class="w-full max-w-[960px] flex flex-col gap-10 pb-20 px-4 sm:px-0">
+<!-- Hero Section -->
+<div class="mt-8 rounded-xl overflow-hidden shadow-lg relative">
+<div class="flex min-h-[400px] flex-col gap-6 bg-cover bg-center bg-no-repeat items-center justify-center p-8 text-center" data-alt="Large crowd of happy family members at a festival outdoors with banners" style='background-image: linear-gradient(rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.7) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCAKLCrEL9XSrurugKC5CzI42rbMlhWYoOP2oTbKQE_zMnAcQqeqcJ1deCWGLBtbbbDv9xQ783RihYrsAOML42DtjCUsoH0BfyCnvBZgW27PhwdrVYe1hs3GZI93UPoI-2NzeFHDOYjuJIeckCkTsvsaGzTtIVT5AE9Sw-glYyjm7KIyCVcg6kFUPm4EuPlscElDQtfoydeugUH8VxznDTjhMed7fyCwqSnRUjBE5O2UiiyIsuPXZCDmdmG7dUTsoCW69skjDYuRqyL");'>
+<div class="flex flex-col gap-3">
+<div class="inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 self-center">
+<span class="material-symbols-outlined text-white text-[18px]">calendar_month</span>
+<span class="text-white text-xs font-bold uppercase tracking-wider">October 20-22, 2024</span>
+</div>
+<h1 class="text-white text-4xl sm:text-5xl md:text-6xl font-black leading-tight tracking-[-0.033em]">
+                            Festival BAM 2024
+                        </h1>
+<h2 class="text-white/90 text-base sm:text-lg font-medium max-w-xl mx-auto">
+                            Connecting Generations across time and place. Join us for a weekend of remembrance, celebration, and family bonding.
+                        </h2>
+</div>
+<div class="flex flex-col sm:flex-row gap-4 mt-4">
+<button class="flex h-12 items-center justify-center rounded-lg px-8 bg-primary text-white text-base font-bold hover:bg-red-700 transition-all shadow-lg hover:shadow-red-500/30">
+                            Register Now
+                        </button>
+<button class="flex h-12 items-center justify-center rounded-lg px-8 bg-white text-primary text-base font-bold hover:bg-gray-100 transition-colors">
+                            View Guide
+                        </button>
+</div>
+</div>
+</div>
+<!-- Event Schedule (Timeline) -->
+<section>
+<div class="flex items-center gap-4 px-4 pb-6 pt-2">
+<div class="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg text-primary">
+<span class="material-symbols-outlined text-[28px]">schedule</span>
+</div>
+<div>
+<h2 class="text-2xl font-bold leading-tight">Event Schedule</h2>
+<p class="text-sm text-gray-500 dark:text-gray-400">A 3-day journey of reconnection</p>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1e1415] rounded-xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="grid grid-cols-[40px_1fr] gap-x-4 sm:gap-x-6">
+<!-- Day 1 -->
+<div class="flex flex-col items-center gap-1 pt-1">
+<div class="flex items-center justify-center size-10 rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">restaurant</span>
+</div>
+<div class="w-[2px] bg-gray-200 dark:bg-gray-700 h-full grow my-2"></div>
+</div>
+<div class="flex flex-col pb-8 pt-1">
+<span class="text-primary text-sm font-bold tracking-wider uppercase mb-1">Day 1 • Oct 20</span>
+<h3 class="text-lg font-bold leading-tight mb-2">Arrival &amp; Welcome Dinner</h3>
+<p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-3">
+                                Check-in at the main hall followed by a grand dinner featuring traditional family recipes. Introduction of new family members.
+                            </p>
+<div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>Main Hall, City Center</span>
+<span class="mx-1">•</span>
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>6:00 PM - 9:00 PM</span>
+</div>
+</div>
+<!-- Day 2 -->
+<div class="flex flex-col items-center gap-1">
+<div class="w-[2px] bg-gray-200 dark:bg-gray-700 h-2"></div>
+<div class="flex items-center justify-center size-10 rounded-full bg-primary text-white shadow-md shadow-red-500/20 z-10">
+<span class="material-symbols-outlined text-[20px]">explore</span>
+</div>
+<div class="w-[2px] bg-gray-200 dark:bg-gray-700 h-full grow my-2"></div>
+</div>
+<div class="flex flex-col pb-8 pt-1">
+<span class="text-primary text-sm font-bold tracking-wider uppercase mb-1">Day 2 • Oct 21</span>
+<h3 class="text-lg font-bold leading-tight mb-2">The Grand Pilgrimage &amp; Main Gala</h3>
+<p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-3">
+                                Visiting the 4 ancestral sites (Jejak Leluhur). Buses depart promptly at 8 AM. Evening gala includes performances by BAM Cilik.
+                            </p>
+<div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+<span class="material-symbols-outlined text-[16px]">directions_bus</span>
+<span>Starting Point A</span>
+<span class="mx-1">•</span>
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>8:00 AM - 10:00 PM</span>
+</div>
+</div>
+<!-- Day 3 -->
+<div class="flex flex-col items-center gap-1">
+<div class="w-[2px] bg-gray-200 dark:bg-gray-700 h-2"></div>
+<div class="flex items-center justify-center size-10 rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">handshake</span>
+</div>
+</div>
+<div class="flex flex-col pt-1">
+<span class="text-primary text-sm font-bold tracking-wider uppercase mb-1">Day 3 • Oct 22</span>
+<h3 class="text-lg font-bold leading-tight mb-2">Breakfast &amp; Farewell</h3>
+<p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-3">
+                                A casual breakfast gathering in the garden area before departure. Souvenir distribution and closing prayer.
+                            </p>
+<div class="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+<span class="material-symbols-outlined text-[16px]">park</span>
+<span>Garden Area</span>
+<span class="mx-1">•</span>
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span>9:00 AM - 11:30 AM</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Pilgrimage Map Section -->
+<section>
+<div class="flex items-center justify-between px-4 pb-6 pt-4 border-t border-gray-200 dark:border-gray-800 mt-6">
+<div>
+<h2 class="text-2xl font-bold leading-tight">Jejak Leluhur</h2>
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Ancestral Footsteps Pilgrimage Map</p>
+</div>
+<button class="hidden sm:flex items-center gap-2 text-primary font-bold text-sm hover:underline">
+<span>Open in Google Maps</span>
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Location List -->
+<div class="flex flex-col gap-4 order-2 lg:order-1">
+<!-- Location 1 -->
+<div class="group bg-white dark:bg-[#1e1415] p-4 rounded-lg border border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:shadow-md transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<div class="size-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">1</div>
+<h4 class="font-bold text-base">Makam Kyai Abdul Manan</h4>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 pl-8">Complex A, Old Town District</p>
+</div>
+<button class="p-2 text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">directions</span>
+</button>
+</div>
+</div>
+<!-- Location 2 -->
+<div class="group bg-white dark:bg-[#1e1415] p-4 rounded-lg border border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:shadow-md transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<div class="size-6 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center justify-center text-xs font-bold group-hover:bg-primary group-hover:text-white transition-colors">2</div>
+<h4 class="font-bold text-base">Rumah Gadang BAM</h4>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 pl-8">Heritage Village, West Sector</p>
+</div>
+<button class="p-2 text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">directions</span>
+</button>
+</div>
+</div>
+<!-- Location 3 -->
+<div class="group bg-white dark:bg-[#1e1415] p-4 rounded-lg border border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:shadow-md transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<div class="size-6 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center justify-center text-xs font-bold group-hover:bg-primary group-hover:text-white transition-colors">3</div>
+<h4 class="font-bold text-base">Masjid Al-Manan</h4>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 pl-8">Jl. Kyai Mojo No. 45</p>
+</div>
+<button class="p-2 text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">directions</span>
+</button>
+</div>
+</div>
+<!-- Location 4 -->
+<div class="group bg-white dark:bg-[#1e1415] p-4 rounded-lg border border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:shadow-md transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<div class="size-6 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center justify-center text-xs font-bold group-hover:bg-primary group-hover:text-white transition-colors">4</div>
+<h4 class="font-bold text-base">Taman Keluarga (Old Site)</h4>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 pl-8">Riverbank Area, East Sector</p>
+</div>
+<button class="p-2 text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">directions</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Map Visualization -->
+<div class="lg:col-span-2 order-1 lg:order-2 h-[300px] lg:h-auto rounded-xl overflow-hidden relative shadow-md bg-gray-100">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Map view showing streets and location pins" data-location="Jakarta, Indonesia" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBrQ6V0GP2Maso_rL5vsDmcs4VNsQ-g_1qI-pkoJwdvQNkM5YjZ7lMfyHCiT5H15y4yb9nZQTauv8nLfmY_hriiROMlYP8wOblxL3voKguEgi1IYdecoekb7XMQe_ZzmS9p4GQOsnjdwhQeGtc1FBmB15W2IaCwh8LuYKtTEoTFk6i3-uxsENn8cRva2tJdLVoM56bjW2DczxSu7V6APNOpiaIhatQyGMBCxsTdHQz7h7mO4nz0nPxo0n3rG8L5r-ls2bYkfomphbzO");'>
+</div>
+<!-- Overlay Pins (Simulated) -->
+<div class="absolute top-1/3 left-1/4 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<span class="material-symbols-outlined text-primary text-[48px] drop-shadow-md group-hover:-translate-y-2 transition-transform">location_on</span>
+</div>
+<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<span class="material-symbols-outlined text-gray-700 text-[32px] drop-shadow-md hover:text-primary transition-colors">location_on</span>
+</div>
+<div class="absolute bottom-1/3 right-1/4 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<span class="material-symbols-outlined text-gray-700 text-[32px] drop-shadow-md hover:text-primary transition-colors">location_on</span>
+</div>
+<div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-xs text-gray-600 font-medium shadow-sm">
+                            Use Ctrl + Scroll to zoom
+                        </div>
+</div>
+</div>
+</section>
+<!-- BAM Cilik Section -->
+<section class="mt-8">
+<div class="flex flex-col items-center justify-center text-center pb-8 pt-4 border-t border-gray-200 dark:border-gray-800">
+<span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold uppercase tracking-widest mb-3">For the Kids</span>
+<h2 class="text-3xl font-bold leading-tight">Serunya BAM Cilik</h2>
+<p class="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-lg">
+                        Activities, games, and memories for the next generation of the Bani Abdul Manan family.
+                    </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6">
+<!-- Gallery Grid -->
+<div class="grid grid-cols-2 gap-3 h-full">
+<div class="rounded-lg overflow-hidden h-48 md:h-full relative group">
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors z-10"></div>
+<img alt="Kids playing" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="Children running in a grassy field holding balloons" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGJK7oD4OM8H82OhOyl1_RdJQDY4620cJ6jywHP1xl7lH-OyzwKzCVnsw9vu7hsOJpKhm_imH9LXX1iC9Ou8eA6YBoj_0sbMbhcIWAHkphCmHeaw1dlLARMf7cre71awFOVOD98-35dlB75QYail30ufnqtRo_KcqfGPaSdEJnsB7WT5M2bF_v8JwLebWEXoNIvgEpgRqF-A-TKumNk3PqWEcyMv83u_Gd6Ey6KTIFQns-YJiTA3mBc2of1rdh4FCnldOBmu3Isg8v"/>
+</div>
+<div class="flex flex-col gap-3 h-full">
+<div class="rounded-lg overflow-hidden h-1/2 relative group">
+<img alt="Drawing activity" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="Child drawing with colorful crayons" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABlA-NnsKq0pc-ZToYlocD9Z6vv_7_gw9nR8wPUCpvfbEn_IB7wMUy-VEMfRr-fclXzC9eZIy05DvyF2YiuSZ7geUS7fdOwLliQNx3G9vX90UL6XPoEHAVDl1DPBQs-8zm5ifTbdL-vWd-y9Dl_lnlEI1gRLPBQMRrFyruWXY0pCRa9eEZJatitzqNlwzOFIq0TZHKnn4U64ZCZlzqkixw4ElrB5221WrLdAG3ABl1pjLEG6oji13uAGtzm7wXYtBdXvnV-hKKQ2PJ"/>
+</div>
+<div class="rounded-lg overflow-hidden h-1/2 relative group">
+<img alt="Group photo" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="Group of kids laughing together at a party" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBY6crek_myQmRhFf8qzbDIj0Kk5LJrtIBUCxmk3A9Xr6IabfnSjrjMsUKuOc_aTaD9OR9Y6xqQxIaLaSV-vpBQPBaVfWN6tl8YTXxOgNNBG9ZnekOOO9NqwohbFfeqCPE6m1FWULzsab72Fq4wIdpP3-hMsCqxo0M8dVDZRwX4xi4Z-0QpllFOf5pX__NxywRfxUcl4IdTQg7uHYHwEjOAF3Le39c2Ia_tF5gZDEZ_mPKLL4UWtEY91Xjw9Gwl0QUbbSzsRAyVwhy"/>
+</div>
+</div>
+</div>
+<!-- Downloads & Resources -->
+<div class="flex flex-col gap-4">
+<div class="bg-primary/5 dark:bg-primary/10 rounded-xl p-6 border border-primary/10 flex flex-col justify-between h-full">
+<div>
+<div class="size-12 rounded-full bg-white dark:bg-white/10 flex items-center justify-center text-primary mb-4 shadow-sm">
+<span class="material-symbols-outlined text-[28px]">palette</span>
+</div>
+<h3 class="text-xl font-bold mb-2">BAM Coloring Book</h3>
+<p class="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                                    Download the official festival coloring book featuring characters from our family history.
+                                </p>
+</div>
+<button class="w-full py-3 rounded-lg bg-primary text-white font-bold text-sm hover:bg-red-700 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                                Download PDF
+                            </button>
+</div>
+<div class="bg-white dark:bg-[#1e1415] rounded-xl p-6 border border-gray-100 dark:border-gray-800 flex flex-col justify-between h-full shadow-sm">
+<div>
+<h3 class="text-lg font-bold mb-1">Parents Guide</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400">
+                                    Safety tips &amp; schedule for kids.
+                                </p>
+</div>
+<a class="mt-4 text-primary text-sm font-bold flex items-center gap-1 hover:gap-2 transition-all" href="#">
+                                Read Guide <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Simple Footer -->
+<footer class="w-full bg-white dark:bg-[#1a0f10] border-t border-[#f4f0f0] dark:border-[#3a2f30] py-8">
+<div class="max-w-[960px] mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="text-sm text-gray-500 dark:text-gray-400">
+                © 2024 Bani Abdul Manan Family Portal. All rights reserved.
+            </div>
+<div class="flex gap-6">
+<a class="text-gray-400 hover:text-primary transition-colors" href="#">
+<span class="sr-only">Facebook</span>
+<svg class="h-5 w-5" fill="currentColor" viewbox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"></path></svg>
+</a>
+<a class="text-gray-400 hover:text-primary transition-colors" href="#">
+<span class="sr-only">Instagram</span>
+<svg class="h-5 w-5" fill="currentColor" viewbox="0 0 24 24"><path clip-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.468 2.53c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" fill-rule="evenodd"></path></svg>
+</a>
+</div>
+</div>
+</footer>
+</body></html>

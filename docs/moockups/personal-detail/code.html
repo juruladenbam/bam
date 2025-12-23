@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Person Detail View - BAM Portal</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec1325",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221012",
+                        "card-light": "#ffffff",
+                        "card-dark": "#2d1b1e",
+                        "text-main": "#181112",
+                        "text-sub": "#896165",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.375rem", // rounded-md (~6px)
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e6dbdc; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d1c4c5; 
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-gray-100 font-display transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f4f0f0] dark:border-b-[#3a2a2c] bg-card-light dark:bg-card-dark px-4 md:px-10 py-3 shadow-sm">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8 flex items-center justify-center bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary">account_tree</span>
+</div>
+<h2 class="text-text-main dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">BAM Portal</h2>
+</div>
+<div class="hidden md:flex items-center gap-9">
+<a class="text-text-main dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Home</a>
+<a class="text-primary text-sm font-bold leading-normal" href="#">Genealogy Tree</a>
+<a class="text-text-main dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Events</a>
+<a class="text-text-main dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Archives</a>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-4 md:gap-8 items-center">
+<label class="hidden sm:flex flex-col min-w-40 !h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-[#f4f0f0] dark:bg-[#3a2a2c]">
+<div class="text-text-sub flex border-none items-center justify-center pl-4 rounded-l-lg border-r-0">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-main dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent focus:border-none h-full placeholder:text-text-sub px-4 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal" placeholder="Find family member..." value=""/>
+</div>
+</label>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20 cursor-pointer" data-alt="User avatar profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDShWUAMTeCWtDyRj0DWid4RTL-vdfQyiYuSISK5n1ReiGOzJZ2opHqZdOpNySez4rZ3--6BWaLEFSvsmPf1T5zNrKpyAVUU_c4ZoTj5ySEQk86H6ok6bljMrVpKzn1vJtKqYaQUMUBl4iNBBt9N_7MvrCQrslIur7ucLYdU_Tp2mHKwDUIuqqHGNiZiMC-ohzEqrB1qRa43yJLYbuAcVeM7jSw6Z-ytW4-GuPovMxVdEgw3WKUXLmKJlYAfA3ZWxLCpeOuI7UfhIVl");'></div>
+</div>
+</header>
+<div class="layout-container flex h-full grow flex-col">
+<!-- Breadcrumbs -->
+<div class="w-full bg-card-light dark:bg-card-dark border-b border-[#f4f0f0] dark:border-[#3a2a2c]">
+<div class="max-w-[1280px] mx-auto px-4 md:px-10 py-3">
+<div class="flex flex-wrap gap-2 items-center text-sm">
+<a class="text-text-sub hover:text-primary transition-colors font-medium" href="#">Home</a>
+<span class="text-text-sub font-medium">/</span>
+<a class="text-text-sub hover:text-primary transition-colors font-medium" href="#">Tree</a>
+<span class="text-text-sub font-medium">/</span>
+<span class="text-text-main dark:text-white font-medium">Raden Saleh Sjarif Boestaman</span>
+</div>
+</div>
+</div>
+<main class="flex-1 flex justify-center py-6 md:py-10 px-4 md:px-10">
+<div class="flex flex-col max-w-[1280px] w-full gap-6">
+<!-- Profile Header (Hero) -->
+<div class="rounded-xl bg-card-light dark:bg-card-dark shadow-sm border border-[#e6dbdc] dark:border-[#3a2a2c] overflow-hidden">
+<!-- Cover Image Placeholder (Optional visual flair) -->
+<div class="h-32 bg-gradient-to-r from-[#221012] to-[#552b30] relative">
+<div class="absolute inset-0 bg-black/20"></div>
+</div>
+<div class="px-6 pb-6">
+<div class="flex flex-col md:flex-row gap-6 items-start md:items-end -mt-12 relative">
+<!-- Avatar -->
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-32 w-32 md:h-40 md:w-40 border-4 border-white dark:border-[#2d1b1e] shadow-md bg-white" data-alt="Portrait of Raden Saleh in traditional attire" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBJij4MJU3gITFOIUV3gV8pfiWpYDEMAtQctGmau8ha8rj5QbqFS1Cdhglnyf_BSyI7bl4r4HWYx2-eE6zEna3I7SsneR826Iju1nB6PX7zzY_h2kEbmPdA78XdXrbvzOEvu0kcECkAOWYROlOsdT0QPptZbkDHjQYtLz3sw83q7jN4H6Q4hSzIe7DDcEzyw6H67BXqTIv-qVURaH56OyOo8Mx_PaQfQnnVPtHNV0b-7W2pEUfPfN24JSqrKbaUSZePd29b_e5IeedN");'></div>
+<div class="absolute bottom-2 right-2 bg-gray-500 text-white text-xs font-bold px-2 py-1 rounded-full border-2 border-white dark:border-[#2d1b1e]">
+                                        Deceased
+                                    </div>
+</div>
+<!-- Name & Basic Info -->
+<div class="flex-1 min-w-0 pt-2 md:pt-0">
+<div class="flex flex-wrap items-center gap-2 mb-1">
+<span class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Generation 4</span>
+<span class="bg-[#f4f0f0] dark:bg-[#3a2a2c] text-text-sub text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Trah Boestaman</span>
+</div>
+<h1 class="text-text-main dark:text-white text-2xl md:text-3xl font-bold leading-tight mb-1">
+                                        Raden Saleh Sjarif Boestaman <span class="text-lg font-normal text-text-sub block sm:inline sm:ml-2">(Mbah Saleh)</span>
+</h1>
+<p class="text-text-sub text-base flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+                                        Born in Semarang, Dutch East Indies
+                                    </p>
+</div>
+<!-- Actions -->
+<div class="flex w-full md:w-auto gap-3 mt-4 md:mt-0">
+<button class="flex-1 md:flex-initial h-10 px-5 rounded-lg border border-[#e6dbdc] dark:border-[#4a3b3d] bg-transparent hover:bg-[#f8f6f6] dark:hover:bg-[#3a2a2c] text-text-main dark:text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+<span>Tree</span>
+</button>
+<button class="flex-1 md:flex-initial h-10 px-5 rounded-lg bg-primary hover:bg-red-700 text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+<span>Edit Profile</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Column: Details & Family (8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<!-- Personal Data & Biography Tabs/Cards -->
+<div class="bg-card-light dark:bg-card-dark rounded-xl p-6 shadow-sm border border-[#f4f0f0] dark:border-[#3a2a2c]">
+<div class="flex items-center gap-3 mb-6 border-b border-[#f4f0f0] dark:border-[#3a2a2c] pb-4">
+<h3 class="text-lg font-bold text-text-main dark:text-white">Personal Information</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8">
+<div class="flex gap-3">
+<div class="size-10 rounded-full bg-[#f4f0f0] dark:bg-[#3a2a2c] flex items-center justify-center text-text-sub">
+<span class="material-symbols-outlined">cake</span>
+</div>
+<div>
+<p class="text-sm text-text-sub font-medium">Date of Birth</p>
+<p class="text-base text-text-main dark:text-gray-200 font-medium">May 24, 1811</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="size-10 rounded-full bg-[#f4f0f0] dark:bg-[#3a2a2c] flex items-center justify-center text-text-sub">
+<span class="material-symbols-outlined">church</span>
+</div>
+<div>
+<p class="text-sm text-text-sub font-medium">Date of Death</p>
+<p class="text-base text-text-main dark:text-gray-200 font-medium">April 23, 1880 (Aged 68)</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="size-10 rounded-full bg-[#f4f0f0] dark:bg-[#3a2a2c] flex items-center justify-center text-text-sub">
+<span class="material-symbols-outlined">work</span>
+</div>
+<div>
+<p class="text-sm text-text-sub font-medium">Occupation</p>
+<p class="text-base text-text-main dark:text-gray-200 font-medium">Painter, Artist</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="size-10 rounded-full bg-[#f4f0f0] dark:bg-[#3a2a2c] flex items-center justify-center text-text-sub">
+<span class="material-symbols-outlined">home</span>
+</div>
+<div>
+<p class="text-sm text-text-sub font-medium">Last Residence</p>
+<p class="text-base text-text-main dark:text-gray-200 font-medium">Buitenzorg (Bogor)</p>
+</div>
+</div>
+</div>
+<div class="mt-8">
+<h4 class="text-sm text-text-sub font-bold uppercase tracking-wider mb-3">Biography</h4>
+<div class="prose prose-sm max-w-none text-text-main dark:text-gray-300 leading-relaxed">
+<p>
+                                            Raden Saleh Sjarif Boestaman was a pioneering Indonesian Romantic painter of Arab-Javanese ethnicity. He was considered to be the first "modern" artist from Indonesia (then the Dutch East Indies), and his paintings corresponded with nineteenth-century romanticism which was popular in Europe at the time. He also expressed his cultural roots and grievances against Dutch colonial rule in his work.
+                                        </p>
+<p class="mt-2">
+                                            Saleh was born into a noble regent family in Semarang. His extraordinary talent was recognized early, leading to his education in Europe where he spent over 20 years. Upon his return, he served as a conservator for the colonial government's collection of art.
+                                        </p>
+</div>
+</div>
+</div>
+<!-- Immediate Family -->
+<div class="bg-card-light dark:bg-card-dark rounded-xl p-6 shadow-sm border border-[#f4f0f0] dark:border-[#3a2a2c]">
+<div class="flex justify-between items-center mb-6 border-b border-[#f4f0f0] dark:border-[#3a2a2c] pb-4">
+<h3 class="text-lg font-bold text-text-main dark:text-white">Immediate Family</h3>
+<button class="text-primary text-sm font-bold hover:underline">View All</button>
+</div>
+<div class="space-y-6">
+<!-- Parents -->
+<div>
+<p class="text-xs font-bold text-text-sub uppercase mb-3">Parents</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex items-center gap-3 p-3 rounded-lg hover:bg-[#f8f6f6] dark:hover:bg-[#3a2a2c] transition-colors cursor-pointer border border-transparent hover:border-[#e6dbdc] dark:hover:border-[#4a3b3d]">
+<div class="size-12 rounded-full bg-cover bg-center" data-alt="Father portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDMUu4DC2AWpS5hRYwa73MljVqpc4ZSeZvvB7pMuSfcOkoxcUyUR1eCGs9EoepW4OJwwkjRtt3OFJx3P9DYfCQTxFDTPvs2qZg_W57KkqMNBRHhjvvvUkwethgLn6aPM6kEOsXAeJ_j3vk4j12cepoOOB4eYZfgKixGSh0CA_BkAiIzrg8TbAxPkQ98BN3nMElOZ7azNc5s4d5jumoxSiCpS6nkTU2Jkd3TZq3ujIPgT_maHP1WtYKdpNve0zCwfmaxdHg3-1bg2Dpw");'></div>
+<div>
+<p class="text-sm font-bold text-text-main dark:text-white">Sayyid Husen bin Alwi bin Awal</p>
+<p class="text-xs text-text-sub">Father</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg hover:bg-[#f8f6f6] dark:hover:bg-[#3a2a2c] transition-colors cursor-pointer border border-transparent hover:border-[#e6dbdc] dark:hover:border-[#4a3b3d]">
+<div class="size-12 rounded-full bg-cover bg-center" data-alt="Mother portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAXgEeNqqOoD2Y3EQARMRp-oqGqhjVix_XXlTYSL7fvDdwgd8qRlx7tKox6tFfJb5JBnqqDExOT_AY8GAxW4A4BgXDBxUaGHOwOrxWYkgc-0Ng-xdNQbO0n7dBIqteBVsvU0Xle4pJRK6uIDF-E3AL_1NDTKjyQ0w4rH4QA2zJTj8h-AGQpR-HBgTSmPHvlujXypj66MHqDz88fbb0rY3aB5pJwcPHkkOG0uihRlZGbughadBG3GVJyA27udE8CBu0TPXEUoVA0Qh4z");'></div>
+<div>
+<p class="text-sm font-bold text-text-main dark:text-white">Mas Adjeng Zarip Husein</p>
+<p class="text-xs text-text-sub">Mother</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Spouse -->
+<div>
+<p class="text-xs font-bold text-text-sub uppercase mb-3">Spouse</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex items-center gap-3 p-3 rounded-lg hover:bg-[#f8f6f6] dark:hover:bg-[#3a2a2c] transition-colors cursor-pointer border border-transparent hover:border-[#e6dbdc] dark:hover:border-[#4a3b3d]">
+<div class="size-12 rounded-full bg-cover bg-center" data-alt="Spouse portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBNj2g_idw8SZAOHB3O-Bdhn2UCNG-8zNFR8OBiPeXIbrSb78k7bkKh3OoXIKvA1Kh2l0N8DW6nC1908TRbDHM3h3DMPz-095Fp8w9cgPqSXAunyA2zbNBc2lNIuwKERtvOxyD1DJcQ605DtMuIjBjaS6CX3Kq5KcNm_JBdmOVyEesv_WuBKx4S2hsgkRlawzFpcboGww9yaSAHJJe16P330K70eU4t1AGXNqNV3Fb0Qy4H-DFCymXaEKH3cqB0ueoNQXRPfha3DsXK");'></div>
+<div>
+<p class="text-sm font-bold text-text-main dark:text-white">Raden Ayu Danudirdjo</p>
+<p class="text-xs text-text-sub">Wife (m. 1867)</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Relationship & Gallery (4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Relationship Connection -->
+<div class="bg-card-light dark:bg-card-dark rounded-xl p-6 shadow-sm border border-[#f4f0f0] dark:border-[#3a2a2c]">
+<h3 class="text-lg font-bold text-text-main dark:text-white mb-1">Relationship Path</h3>
+<p class="text-sm text-text-sub mb-6">How you are connected</p>
+<div class="bg-primary/5 rounded-lg p-4 mb-6 border border-primary/10">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">hub</span>
+<div>
+<p class="text-sm font-bold text-text-main dark:text-white">3rd Cousin, 4x Removed</p>
+<p class="text-xs text-text-sub mt-1">Calculated via common ancestor <span class="font-medium text-primary">Abdul Manan</span>.</p>
+</div>
+</div>
+</div>
+<!-- Timeline -->
+<div class="grid grid-cols-[32px_1fr] gap-x-3">
+<!-- You -->
+<div class="flex flex-col items-center gap-1 pt-1">
+<div class="size-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-text-main dark:text-white">
+<span class="material-symbols-outlined text-[16px]">person</span>
+</div>
+<div class="w-[2px] bg-[#e6dbdc] h-full min-h-[24px]"></div>
+</div>
+<div class="flex flex-col pb-6 pt-1.5">
+<p class="text-text-main dark:text-white text-sm font-bold leading-none">You</p>
+<p class="text-text-sub text-xs mt-1">Self</p>
+</div>
+<!-- Dots for path -->
+<div class="flex flex-col items-center gap-1">
+<div class="w-[2px] bg-[#e6dbdc] h-full"></div>
+</div>
+<div class="flex flex-col pb-6">
+<div class="flex items-center gap-2 text-text-sub text-xs bg-[#f8f6f6] dark:bg-[#3a2a2c] py-1 px-2 rounded w-fit">
+<span class="material-symbols-outlined text-[14px]">more_vert</span>
+<span>3 generations</span>
+</div>
+</div>
+<!-- LCA (Highlighted) -->
+<div class="flex flex-col items-center gap-1">
+<div class="w-[2px] bg-[#e6dbdc] h-2"></div>
+<div class="size-8 rounded-full bg-primary text-white flex items-center justify-center ring-4 ring-primary/20">
+<span class="material-symbols-outlined text-[16px] icon-filled">diversity_2</span>
+</div>
+<div class="w-[2px] bg-[#e6dbdc] h-full min-h-[24px] grow"></div>
+</div>
+<div class="flex flex-col pb-6 pt-1">
+<div class="flex items-center gap-2">
+<p class="text-primary text-sm font-bold leading-none">Abdul Manan (LCA)</p>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">Common</span>
+</div>
+<p class="text-text-sub text-xs mt-1">Great-Great Grandfather</p>
+</div>
+<!-- Dots for path down -->
+<div class="flex flex-col items-center gap-1">
+<div class="w-[2px] bg-[#e6dbdc] h-full"></div>
+</div>
+<div class="flex flex-col pb-6">
+<div class="flex items-center gap-2 text-text-sub text-xs bg-[#f8f6f6] dark:bg-[#3a2a2c] py-1 px-2 rounded w-fit">
+<span class="material-symbols-outlined text-[14px]">more_vert</span>
+<span>2 generations</span>
+</div>
+</div>
+<!-- Target -->
+<div class="flex flex-col items-center gap-1">
+<div class="w-[2px] bg-[#e6dbdc] h-2"></div>
+<div class="size-8 rounded-full bg-white border-2 border-primary flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+</div>
+</div>
+<div class="flex flex-col pt-1.5">
+<p class="text-text-main dark:text-white text-sm font-bold leading-none">Raden Saleh</p>
+<p class="text-text-sub text-xs mt-1">Target Person</p>
+</div>
+</div>
+</div>
+<!-- Gallery Preview -->
+<div class="bg-card-light dark:bg-card-dark rounded-xl p-6 shadow-sm border border-[#f4f0f0] dark:border-[#3a2a2c]">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-lg font-bold text-text-main dark:text-white">Gallery</h3>
+<button class="text-primary text-sm font-bold hover:underline">See All</button>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="aspect-square rounded-lg bg-cover bg-center cursor-pointer hover:opacity-90 transition-opacity" data-alt="Historical painting of a hunt" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCETgAOWbVxTyYkPlGahDhaEAeB4LNhhGZxIRYG9YqBGCzUWTC7AxnkIteXkiwoFJSldp-UE00l3cQy9TPCFgtzaroGbiSj2iqgVwM4RkscqLoHMv76czSUOxQqLoGS8haleicz8iHv-8G6DydKyiIdOdsZHJdt6vT6T1WA-_z2agOBanFMW4Dd-Q0pLp9I0YiHTD0ZzG0ux0s_DAP4sZDYsdauuwdkY3NswlkzMGOjaK0xH--klAAE2b2ojAf_jwM1VKPG2Puk3Chg");'></div>
+<div class="aspect-square rounded-lg bg-cover bg-center cursor-pointer hover:opacity-90 transition-opacity" data-alt="Old photograph of family gathering" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCp8O7WY60G61u-BBW7DWslEcdXhSpJ27clyWwHFMWY6UldQtF6ALMHf6rqt5LSSNJMny5VNZur5AIag7NeS-6wBgHdZ8559iZX8l_yFHi4B8ls9kY_f7HRatZHn2Wc7A8bFOgE7-HUTFSzweQ2icXiG3_3uAGKfVwR7dZo6z9HVuu8bMtZOH6TmEVGcpyublSTCp-8yB8hpJVbcjOchThluRD2UrrXHItfTsDMJRUPvPQlE-An_cE_oFfSj2HT6ysE-3bKViTWVP0e");'></div>
+<div class="aspect-square rounded-lg bg-cover bg-center cursor-pointer hover:opacity-90 transition-opacity" data-alt="Sketch of landscape" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAjQvdywmoxCN0lpnXr72yz4ma5UVysqjciKPuOG0ig3k9EgXXjF8QH5k33Mgwsysvtn95GVoQYTuhyipNIYP151hPBGbs4pXw9KaJzazB5zwM5Zs9dEqP75KjFq-bRnQzv2l6AxaGhzPUy0z_6esbsP47xBj2lB9sv_ldFQfbqyb8gi3tK8tGunKTUT32wEcKq6dGctIob5O4rdKEBmLiNG0G1fiw9ASpx5zN9UxkdlitLJCrcqgsgiaypQAOykAQL3EvHfba3NCe8");'></div>
+<div class="aspect-square rounded-lg bg-cover bg-center cursor-pointer hover:opacity-90 transition-opacity" data-alt="Portrait detail" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCfoSYcuqNif-pM-x2_mQElGSRhzhX1LLuvKlfDnsONIoYANHcrPVewb4uulwiLwNZYQWK-u20FhMx8VdPXm_H1fJJ9ezt8YWrSiwM14MZtcmsx6D2MnmQN8j9aERaqTD10BumqZqxnJhHJUXcKO1l3TGc5hZjz6y2DI6gZKN4WXJk74_NMgxD2DG65jrxYKNkD2ryKhcrzh0PgpcAOmZdmDpLNYNGDu7ukwWztUGD8Tgg3gbICF9mOa6GLO2pT-LyxeneK-68oUXdb");'></div>
+<div class="aspect-square rounded-lg bg-[#f4f0f0] dark:bg-[#3a2a2c] flex items-center justify-center cursor-pointer hover:bg-[#e6dbdc] transition-colors text-text-sub">
+<span class="text-xs font-bold">+12</span>
+</div>
+</div>
+</div>
+<!-- Javanese Title Explanation (Cultural Context) -->
+<div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#2d1b1e] dark:to-[#221012] rounded-xl p-6 shadow-sm border border-dashed border-[#e6dbdc] dark:border-[#3a2a2c]">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-text-sub">local_library</span>
+<h4 class="text-sm font-bold text-text-main dark:text-white">Cultural Note</h4>
+</div>
+<p class="text-xs text-text-sub leading-relaxed">
+                                    The title <span class="font-bold italic">Raden</span> indicates nobility in Javanese culture, typically descendants of kings or regents. <span class="font-bold italic">Mbah</span> is an honorific for an elder or ancestor, showing deep respect.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

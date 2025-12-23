@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bani Abdul Manan Landing Page</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec1325",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221012",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-background-dark dark:text-background-light antialiased overflow-x-hidden">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root">
+<!-- Navbar -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e6dbdc] dark:border-[#3a2022] bg-white/90 dark:bg-background-dark/90 backdrop-blur-md px-4 sm:px-10 py-3">
+<div class="flex items-center gap-4 text-background-dark dark:text-white">
+<div class="size-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">diversity_2</span>
+</div>
+<h2 class="text-background-dark dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Bani Abdul Manan</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-6">
+<a class="text-background-dark dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">About</a>
+<a class="text-background-dark dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">History</a>
+<a class="text-background-dark dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Events</a>
+<a class="text-background-dark dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Contact</a>
+</div>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-red-700 transition-colors">
+<span class="truncate">Login</span>
+</button>
+</div>
+<!-- Mobile Menu Icon -->
+<button class="md:hidden flex items-center justify-center text-background-dark dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<!-- Main Content -->
+<div class="layout-container flex h-full grow flex-col">
+<!-- Hero Section -->
+<div class="flex flex-1 justify-center py-5 px-4 sm:px-40">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1">
+<div class="@container">
+<div class="flex flex-col gap-6 py-10 @[480px]:gap-8 @[864px]:flex-row items-center">
+<!-- Hero Text & Login -->
+<div class="flex flex-col gap-6 @[480px]:min-w-[400px] @[480px]:gap-8 @[864px]:justify-center flex-1">
+<div class="flex flex-col gap-4 text-left">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary w-fit">
+<span class="material-symbols-outlined text-sm">auto_awesome</span>
+<span class="text-xs font-bold uppercase tracking-wider">Official Family Portal</span>
+</div>
+<h1 class="text-background-dark dark:text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl lg:text-6xl">
+                                        Welcome to the Bani Abdul Manan Digital Family
+                                    </h1>
+<h2 class="text-[#896165] dark:text-[#d0b0b3] text-lg font-normal leading-relaxed max-w-lg">
+                                        Connecting generations, preserving our history, and celebrating our future together. Access your heritage today.
+                                    </h2>
+</div>
+<div class="p-6 bg-white dark:bg-[#2a1416] border border-[#e6dbdc] dark:border-[#4a2427] rounded-xl shadow-sm max-w-[480px]">
+<h3 class="text-base font-bold text-background-dark dark:text-white mb-4">Member Quick Access</h3>
+<label class="flex flex-col w-full">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-12">
+<div class="text-[#896165] flex border border-r-0 border-[#e6dbdc] dark:border-[#4a2427] bg-[#f8f6f6] dark:bg-[#3a1d1f] items-center justify-center pl-4 rounded-l-lg">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 resize-none overflow-hidden text-background-dark dark:text-white focus:outline-0 focus:ring-0 bg-[#f8f6f6] dark:bg-[#3a1d1f] border border-l-0 border-r-0 border-[#e6dbdc] dark:border-[#4a2427] placeholder:text-[#896165] px-3 text-sm font-normal leading-normal" placeholder="Enter your Family ID / Phone" value=""/>
+<div class="flex items-center justify-center rounded-r-lg border border-l-0 border-[#e6dbdc] dark:border-[#4a2427] bg-[#f8f6f6] dark:bg-[#3a1d1f] pr-1">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-md h-9 px-4 bg-primary text-white text-sm font-bold shadow-md hover:bg-red-700 transition-all mr-1">
+<span class="truncate">Enter</span>
+</button>
+</div>
+</div>
+</label>
+<div class="mt-3 flex justify-between text-xs">
+<a class="text-[#896165] hover:text-primary transition-colors" href="#">Forgot ID?</a>
+<a class="text-primary font-medium hover:underline" href="#">Request New Access</a>
+</div>
+</div>
+</div>
+<!-- Hero Image -->
+<div class="w-full flex-1 aspect-[4/3] rounded-2xl overflow-hidden shadow-xl relative group">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+<div class="w-full h-full bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-105" data-alt="Warm sepia-toned image of a large extended Indonesian family gathering in traditional attire" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAvMeNDah6OpDnMmCy7j0brsi3bXDo91XajK0jw4M50LB4nbwQBTierd8v6B3orswJo2TzyeZLabtHl8JWEJwkdPUJPHwZZEqnhFHam_qiFUN5bHsY9s11221BubeO0yaWyu3sK06xtoIJsctdsEWz23Mg7wV6RlawCN_Yg5Xvmb6tbknjP05L7f9nu9nC_bJyAjCYxmy5vC72-1Fd70dS3EZfHT6ECb2QuYv_e8zjJU0rTyDto_lrKah3SWs7pkIjxW51HGDDiI8fn");'>
+</div>
+<div class="absolute bottom-6 left-6 z-20 text-white">
+<p class="text-sm font-medium opacity-90 uppercase tracking-widest mb-1">Since 1945</p>
+<p class="text-2xl font-bold">The Great Gathering</p>
+<div class="flex items-center gap-1 text-xs opacity-80 mt-1">
+<span class="material-symbols-outlined text-sm" data-location="Yogyakarta, Indonesia">location_on</span>
+<span>Yogyakarta, Indonesia</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Features Section -->
+<div class="flex flex-1 justify-center py-10 bg-white dark:bg-[#1a0c0e]">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1 px-4 sm:px-10">
+<div class="flex flex-col gap-10 py-10 @container">
+<div class="flex flex-col gap-4 text-center items-center">
+<h2 class="text-primary font-bold tracking-widest uppercase text-sm">Key Features</h2>
+<h1 class="text-background-dark dark:text-white text-3xl font-bold leading-tight md:text-4xl max-w-[720px]">
+                                Why Join the Portal?
+                            </h1>
+<p class="text-[#896165] text-base font-normal leading-normal max-w-[600px]">
+                                Our digital home allows every family member to stay connected, informed, and involved in the preservation of our lineage.
+                            </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-0">
+<!-- Feature 1 -->
+<div class="flex flex-1 gap-4 rounded-xl border border-[#e6dbdc] dark:border-[#3a2022] bg-background-light dark:bg-[#221012] p-8 flex-col hover:border-primary/30 transition-colors group cursor-pointer">
+<div class="size-12 rounded-full bg-white dark:bg-[#2a1416] flex items-center justify-center shadow-sm text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[28px]">account_tree</span>
+</div>
+<div class="flex flex-col gap-2">
+<h2 class="text-background-dark dark:text-white text-xl font-bold leading-tight">Interactive Family Tree</h2>
+<p class="text-[#896165] text-sm font-normal leading-relaxed">Explore the complete Bani Abdul Manan lineage, trace your ancestors, and find your connection to the roots.</p>
+</div>
+</div>
+<!-- Feature 2 -->
+<div class="flex flex-1 gap-4 rounded-xl border border-[#e6dbdc] dark:border-[#3a2022] bg-background-light dark:bg-[#221012] p-8 flex-col hover:border-primary/30 transition-colors group cursor-pointer">
+<div class="size-12 rounded-full bg-white dark:bg-[#2a1416] flex items-center justify-center shadow-sm text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[28px]">calendar_month</span>
+</div>
+<div class="flex flex-col gap-2">
+<h2 class="text-background-dark dark:text-white text-xl font-bold leading-tight">Event Calendar</h2>
+<p class="text-[#896165] text-sm font-normal leading-relaxed">Stay updated on upcoming family gatherings, reunions, halal bi halal, and important religious events.</p>
+</div>
+</div>
+<!-- Feature 3 -->
+<div class="flex flex-1 gap-4 rounded-xl border border-[#e6dbdc] dark:border-[#3a2022] bg-background-light dark:bg-[#221012] p-8 flex-col hover:border-primary/30 transition-colors group cursor-pointer">
+<div class="size-12 rounded-full bg-white dark:bg-[#2a1416] flex items-center justify-center shadow-sm text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[28px]">history_edu</span>
+</div>
+<div class="flex flex-col gap-2">
+<h2 class="text-background-dark dark:text-white text-xl font-bold leading-tight">Digital Archive</h2>
+<p class="text-[#896165] text-sm font-normal leading-relaxed">Access a shared repository of historical photos, scanned documents, and cherished memories from the past.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Legacy Section -->
+<div class="flex flex-1 justify-center py-12 md:py-20 px-4 sm:px-10">
+<div class="layout-content-container flex flex-col max-w-[1000px] flex-1">
+<div class="flex flex-col md:flex-row gap-12 items-center">
+<div class="flex-1 flex flex-col gap-6">
+<h2 class="text-primary font-bold tracking-widest uppercase text-sm">Our Heritage</h2>
+<h3 class="text-background-dark dark:text-white text-3xl font-bold leading-tight">The Legacy of Abdul Manan</h3>
+<p class="text-[#896165] text-lg leading-relaxed">
+                                Our story begins with the values instilled by our patriarch, Abdul Manan. A vision of unity, faith, and progress that has guided our family through decades.
+                            </p>
+<p class="text-[#896165] text-base leading-relaxed">
+                                From humble beginnings to a widespread network of professionals, scholars, and community leaders, the Bani Abdul Manan family continues to honor the past while embracing the future. This portal serves as a testament to that enduring bond.
+                            </p>
+<button class="w-fit mt-2 text-background-dark dark:text-white font-bold underline decoration-primary decoration-2 underline-offset-4 hover:text-primary transition-colors">
+                                Read Full History
+                            </button>
+</div>
+<div class="flex-1 w-full">
+<div class="relative w-full aspect-[4/5] md:aspect-square rounded-2xl overflow-hidden bg-[#e6dbdc]">
+<img alt="Legacy Photo" class="w-full h-full object-cover sepia-[.3] hover:sepia-0 transition-all duration-500" data-alt="Vintage textured photo of an elderly man reading a book representing the family patriarch" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCGxhY5fI4xqzTXsA5O0KanNwso63zExY62g2jeCpWEvO9Z8ttW5UHmQvID9XkULvkxowv2L43aSf8zV6q2TPodlCr4yK4N56M_0xrRoDVwDMOmKqfw8CeoRphgiqcssmJrpgwsc_toPsR33ZRfEK8mQHlh7g7EU7MScvUPmwlswWux4MH8AD7R9CyEhuvkT0SF2cYJZ-HWw9In94wtC38ZsqsBg_y2-v3eRv6TgDItNbqm8qeC6xl6YjqAdgvWQteUmywAOa2uym3"/>
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white">
+<blockquote class="italic font-light">"Family is the compass that guides us."</blockquote>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-white dark:bg-[#150a0b] border-t border-[#e6dbdc] dark:border-[#3a2022] py-12 px-4 sm:px-10">
+<div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between gap-10">
+<div class="flex flex-col gap-4 max-w-sm">
+<div class="flex items-center gap-2 text-background-dark dark:text-white">
+<span class="material-symbols-outlined text-primary">diversity_2</span>
+<span class="font-bold text-lg">Bani Abdul Manan</span>
+</div>
+<p class="text-[#896165] text-sm">
+                            The official digital portal for the extended family of Bani Abdul Manan. Keeping ties strong across distance and time.
+                        </p>
+</div>
+<div class="flex flex-wrap gap-12">
+<div class="flex flex-col gap-3">
+<h4 class="text-background-dark dark:text-white font-bold text-sm">Portal</h4>
+<a class="text-[#896165] text-sm hover:text-primary" href="#">Login</a>
+<a class="text-[#896165] text-sm hover:text-primary" href="#">Register</a>
+<a class="text-[#896165] text-sm hover:text-primary" href="#">Help Center</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="text-background-dark dark:text-white font-bold text-sm">Family</h4>
+<a class="text-[#896165] text-sm hover:text-primary" href="#">Tree</a>
+<a class="text-[#896165] text-sm hover:text-primary" href="#">Events</a>
+<a class="text-[#896165] text-sm hover:text-primary" href="#">Gallery</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="text-background-dark dark:text-white font-bold text-sm">Connect</h4>
+<div class="flex gap-3">
+<a class="size-8 rounded-full bg-[#f4f0f0] dark:bg-[#2a1416] flex items-center justify-center text-[#181112] dark:text-white hover:bg-primary hover:text-white transition-colors" href="#">
+<svg class="size-4" fill="currentColor" viewbox="0 0 24 24">
+<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.791-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path>
+</svg>
+</a>
+<a class="size-8 rounded-full bg-[#f4f0f0] dark:bg-[#2a1416] flex items-center justify-center text-[#181112] dark:text-white hover:bg-primary hover:text-white transition-colors" href="#">
+<svg class="size-4" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12.017 2c5.514 0 9.983 4.469 9.983 9.983 0 5.514-4.469 9.983-9.983 9.983-5.514 0-9.983-4.469-9.983-9.983C2.034 6.469 6.503 2 12.017 2zm0 1.362c-4.76 0-8.621 3.861-8.621 8.621 0 4.76 3.861 8.621 8.621 8.621 4.76 0 8.621-3.861 8.621-8.621 0-4.76-3.861-8.621-8.621-8.621zm3.844 5.368L17.202 10l-4.576 4.673-2.618-2.665-1.353 1.341 3.971 4.004z"></path>
+</svg>
+</a>
+</div>
+</div>
+</div>
+</div>
+<div class="max-w-[1200px] mx-auto mt-12 pt-6 border-t border-[#e6dbdc] dark:border-[#2a1416] flex flex-col sm:flex-row justify-between items-center text-xs text-[#896165]">
+<p>© 2023 Bani Abdul Manan. All rights reserved.</p>
+<div class="flex gap-4 mt-2 sm:mt-0">
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

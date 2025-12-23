@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Events List - Portal BAM</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec1325",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221012",
+                        "text-main": "#181112",
+                        "text-sub": "#896165"
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f4f0f0] dark:border-gray-800 bg-white dark:bg-[#1a0f10] px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-text-main dark:text-white">
+<div class="size-8 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">diversity_3</span>
+</div>
+<h2 class="text-text-main dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Portal BAM</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8 hidden md:flex">
+<div class="flex items-center gap-9">
+<a class="text-text-main dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Genealogy</a>
+<a class="text-primary text-sm font-bold leading-normal" href="#">Events</a>
+<a class="text-text-main dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Archives</a>
+<a class="text-text-main dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Profile</a>
+</div>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-red-700 transition-colors">
+<span class="truncate">Log Out</span>
+</button>
+</div>
+<div class="md:hidden text-text-main dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</div>
+</header>
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-4 md:px-10 lg:px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1 gap-8">
+<!-- Hero / Featured Event -->
+<div class="@container">
+<div class="@[480px]:p-0">
+<div class="flex min-h-[400px] flex-col gap-6 bg-cover bg-center bg-no-repeat rounded-xl items-center justify-center p-8 relative overflow-hidden group shadow-lg" data-alt="Large gathering of family members at a festival stage" style='background-image: linear-gradient(rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.6) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDWk3MKlKYznkxVRwfp-J2S8qN0eBYoXlN08avHuSOOSDplGmzBLGnRskKzpEnC2vhuELFJ8WEF6wdMOskbbcuKOSPqmIcKj9tt4ROEP9xOvxOf6BTLMWJJ3VZNSZFZi0pTjobZBZhF86uZDnTx72Kxsh5OBfHpNe5ipMim-gZTm1CsaNegMS7fYg-hSMn7G0oqK61xZ39MdvNME51gMpi8E0T86UVWKJnEJkS3DibEyb5eDrngo9mD1r_Ba2Pgwk5Zjt9WjMqF2HOR");'>
+<div class="absolute top-4 right-4 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Featured</div>
+<div class="flex flex-col gap-2 text-center max-w-2xl z-10">
+<h1 class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em] drop-shadow-md">
+                                        Festival BAM 2024
+                                    </h1>
+<h2 class="text-gray-100 text-base font-normal leading-normal @[480px]:text-lg @[480px]:font-normal @[480px]:leading-normal drop-shadow-sm">
+                                        Coming Soon: Save the Date for our biggest annual gathering! Join us for a celebration of culture, arts, and family heritage.
+                                    </h2>
+</div>
+<div class="flex gap-4 mt-2 z-10">
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-red-700 transition-transform hover:scale-105 shadow-md">
+<span class="truncate">Register Now</span>
+</button>
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-white/20 backdrop-blur-sm text-white border border-white/40 text-base font-bold leading-normal tracking-[0.015em] hover:bg-white/30 transition-colors">
+<span class="truncate">Learn More</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Page Heading -->
+<div class="flex flex-col gap-2 pt-4">
+<div class="flex flex-wrap items-end justify-between gap-4">
+<div class="flex flex-col gap-2">
+<h2 class="text-text-main dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Agenda Keluarga</h2>
+<p class="text-text-sub dark:text-gray-400 text-lg font-normal leading-normal max-w-xl">Explore our annual family gatherings, social services, and cultural events.</p>
+</div>
+</div>
+</div>
+<!-- Search and Filters -->
+<div class="flex flex-col md:flex-row gap-4 bg-white dark:bg-[#1a0f10] p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
+<!-- Search Bar -->
+<div class="flex-1">
+<label class="flex flex-col h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full border border-gray-200 dark:border-gray-700 focus-within:border-primary transition-colors overflow-hidden">
+<div class="text-text-sub dark:text-gray-400 flex border-none bg-background-light dark:bg-gray-800 items-center justify-center pl-4 pr-2">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-text-main dark:text-white focus:outline-0 focus:ring-0 border-none bg-background-light dark:bg-gray-800 focus:border-none h-full placeholder:text-text-sub dark:placeholder:text-gray-500 px-2 text-base font-normal leading-normal" placeholder="Search events by name..." value=""/>
+</div>
+</label>
+</div>
+<!-- Filters -->
+<div class="flex gap-4">
+<div class="min-w-[140px]">
+<select class="form-select flex w-full cursor-pointer rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-text-main dark:text-white h-12 px-4 pr-10 focus:border-primary focus:ring-0 text-base">
+<option disabled="" selected="" value="">Year</option>
+<option value="2024">2024</option>
+<option value="2023">2023</option>
+<option value="2022">2022</option>
+</select>
+</div>
+<div class="min-w-[160px]">
+<select class="form-select flex w-full cursor-pointer rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-text-main dark:text-white h-12 px-4 pr-10 focus:border-primary focus:ring-0 text-base">
+<option disabled="" selected="" value="">Event Type</option>
+<option value="annual">Annual Gathering</option>
+<option value="religious">Religious</option>
+<option value="charity">Social &amp; Charity</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Events Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-10">
+<!-- Card 1 -->
+<div class="flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#1a0f10] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all group h-full">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Festival BAM" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Crowd at an outdoor festival during the day" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClee4wrG7ibHh2ZaCpYJY-uJeonTCG7CWEAebcl4eW4S1Pafo-OqrE-7TOgKIm70R7ad_3Q2MmdcXyuHRbmPcn61cs3KTiYaBk7XiZVvIuX_JBXdk2DearXZXnhC-7Pf1WXZbsZJdPm2MXYMtPmpN6qLRSzp3lbxoiRKI0vjzAs7fVqJRTEv9MutSCd8wjEfbzLgnbEWzEGmZ1o8YJ4nhb-px4v33Wpnsw_sqGVxLsVRC78glO9NDyFL7bIJ4YO1qED8VROJDPP1bI"/>
+<div class="absolute top-3 left-3 flex flex-col items-center bg-white/95 dark:bg-gray-900/95 backdrop-blur rounded-lg p-2 min-w-[60px] shadow-sm text-center">
+<span class="text-xs font-bold text-text-sub dark:text-gray-400 uppercase">AUG</span>
+<span class="text-xl font-black text-primary">17</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col p-5 gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 w-fit px-2 py-1 rounded">
+                                        Annual Gathering
+                                    </div>
+<h3 class="text-xl font-bold text-text-main dark:text-white leading-tight">Festival BAM 2024</h3>
+<p class="text-text-sub dark:text-gray-400 text-sm line-clamp-2">
+                                        The biggest annual gathering of arts, culture, and family heritage. Join us for performances, food, and reconnection.
+                                    </p>
+</div>
+<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400 mt-auto pt-2 border-t border-gray-100 dark:border-gray-800">
+<span class="material-symbols-outlined text-lg">location_on</span>
+<span>Bandung Convention Center</span>
+</div>
+<button class="mt-2 w-full rounded-lg bg-background-light dark:bg-gray-800 hover:bg-primary hover:text-white text-text-main dark:text-white py-2.5 text-sm font-bold transition-colors border border-transparent hover:border-primary">
+                                    View Details
+                                </button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#1a0f10] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all group h-full">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Halal Bihalal" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Traditional meal gathering with many dishes on table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh0wF1T1r4Y4bAfvuUvtfVeh_MxWHhgDavz-JWUm-E9wg5TytTYxw5DL2eXhtnaVEB6m15yISpvwurBdzAyvywPOLqkqbh_qa1yexGHW36vYt_XcMCXYsfSahRYbgMa_E9cEFJuV8a3T8QVdqyx7Aod8sKePlmXdRhJNAu3M3avkYDwPm1TiIbRJTZkO5YxU67_kej23O-f93ENwrBizH8ASl06AlWrd8Fika2amZmq73Pfl1LeDbpEpVdhgwR3ZAQfLlJCnxcOXpf"/>
+<div class="absolute top-3 left-3 flex flex-col items-center bg-white/95 dark:bg-gray-900/95 backdrop-blur rounded-lg p-2 min-w-[60px] shadow-sm text-center">
+<span class="text-xs font-bold text-text-sub dark:text-gray-400 uppercase">APR</span>
+<span class="text-xl font-black text-primary">24</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col p-5 gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 w-fit px-2 py-1 rounded">
+                                        Religious
+                                    </div>
+<h3 class="text-xl font-bold text-text-main dark:text-white leading-tight">Halal Bihalal 1445H</h3>
+<p class="text-text-sub dark:text-gray-400 text-sm line-clamp-2">
+                                        A heartwarming post-Eid gathering to strengthen bonds and exchange forgiveness among extended family members.
+                                    </p>
+</div>
+<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400 mt-auto pt-2 border-t border-gray-100 dark:border-gray-800">
+<span class="material-symbols-outlined text-lg">location_on</span>
+<span>Masjid Agung Tasikmalaya</span>
+</div>
+<button class="mt-2 w-full rounded-lg bg-background-light dark:bg-gray-800 hover:bg-primary hover:text-white text-text-main dark:text-white py-2.5 text-sm font-bold transition-colors border border-transparent hover:border-primary">
+                                    View Details
+                                </button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#1a0f10] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all group h-full">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Merajut Cinta" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Volunteers handing out supplies in a community service event" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVAMLt9Xvzn0sEQFPdC6HGjO2xAJLyZAN4Fjif7i_Z3LhDzIStHTZ1x-Qjmm_ZBoQQ1TqNaI5rd0W9rI0yaGYH803UCwJUvMpHl3dZdsxHH6Kqw3NAnoudZMxdWZ6bEH4lxucDwXPLoeFCjLrzsOflBFEBxJ-GHi9rZVGD8DwqtInUQKsZxjOhaXCPibW0SvfkKigrglld7TpdkAy-DFDyXJGKDXrn_E8MqMY6jiOh8LpBJIG-qPReiTGElP-811PZWYdgYr8Xwz5K"/>
+<div class="absolute top-3 left-3 flex flex-col items-center bg-white/95 dark:bg-gray-900/95 backdrop-blur rounded-lg p-2 min-w-[60px] shadow-sm text-center">
+<span class="text-xs font-bold text-text-sub dark:text-gray-400 uppercase">FEB</span>
+<span class="text-xl font-black text-primary">12</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col p-5 gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 w-fit px-2 py-1 rounded">
+                                        Social Service
+                                    </div>
+<h3 class="text-xl font-bold text-text-main dark:text-white leading-tight">Merajut Cinta 2024</h3>
+<p class="text-text-sub dark:text-gray-400 text-sm line-clamp-2">
+                                        Annual charity event focusing on giving back to the community, orphanages, and supporting local education initiatives.
+                                    </p>
+</div>
+<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400 mt-auto pt-2 border-t border-gray-100 dark:border-gray-800">
+<span class="material-symbols-outlined text-lg">location_on</span>
+<span>Panti Asuhan Al-Hikmah</span>
+</div>
+<button class="mt-2 w-full rounded-lg bg-background-light dark:bg-gray-800 hover:bg-primary hover:text-white text-text-main dark:text-white py-2.5 text-sm font-bold transition-colors border border-transparent hover:border-primary">
+                                    View Details
+                                </button>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#1a0f10] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all group h-full">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Youth Workshop" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="People sitting in a circle discussing in a workshop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVpDuQ5_jaTRxIUJvBP0Zq1BjX6XEp-89tRP0oGPyjh42_ho632PQltu_uf3ZLRsWGg-hRjJrrMfwqV86f3lm2Ii9sUhPGrKa93qFqX5cSzT-tDb_09yzEVMpSckQEi_vq5fHW-gfjPnYyq4Nx1v-qEYLOwMQp25blxGQwnp9wucEYIK9-i-xXFCrKX4YzeRuWDoJ2Onea5-WAL1YcdNx5LysW0gJLnFHICMOeHudvgRjbVqqWNKrBLRmZJgHqqYUbzi5UExaYk43L"/>
+<div class="absolute top-3 left-3 flex flex-col items-center bg-white/95 dark:bg-gray-900/95 backdrop-blur rounded-lg p-2 min-w-[60px] shadow-sm text-center">
+<span class="text-xs font-bold text-text-sub dark:text-gray-400 uppercase">NOV</span>
+<span class="text-xl font-black text-primary">05</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col p-5 gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 w-fit px-2 py-1 rounded">
+                                        Education
+                                    </div>
+<h3 class="text-xl font-bold text-text-main dark:text-white leading-tight">BAM Youth Workshop</h3>
+<p class="text-text-sub dark:text-gray-400 text-sm line-clamp-2">
+                                        Leadership and entrepreneurship workshop designed specifically for the younger generation of the BAM family.
+                                    </p>
+</div>
+<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400 mt-auto pt-2 border-t border-gray-100 dark:border-gray-800">
+<span class="material-symbols-outlined text-lg">location_on</span>
+<span>Jakarta Digital Hub</span>
+</div>
+<button class="mt-2 w-full rounded-lg bg-background-light dark:bg-gray-800 hover:bg-primary hover:text-white text-text-main dark:text-white py-2.5 text-sm font-bold transition-colors border border-transparent hover:border-primary">
+                                    View Details
+                                </button>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#1a0f10] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all group h-full">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="Family Sports Day" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Happy family playing outdoors in a park" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjA7-0kfFdDzBDKcPz5MtYapwgqPCQ7x86c9pqhJ9AqqlQnqHdZaGpip7sN5NHD_STLO6qlKNEFZjjJyjSsTYgtMZ9ND8H_K_wj9VANF6clBdtJVrmPePkp8MpiBLTgLQDaXZa9JGz3ZtTmeVFIIMi6UcXVvyo-Axaw_ZSEMTKWjymqDrlbYujDPea5yBa1iHOIlpjJa7ENdIZv0sR7ABEwa7ZvcXJcRyEy0NDNue3fRAtEL8-euX0dL2JhvmELifvM-KBkfTuduTw"/>
+<div class="absolute top-3 left-3 flex flex-col items-center bg-white/95 dark:bg-gray-900/95 backdrop-blur rounded-lg p-2 min-w-[60px] shadow-sm text-center">
+<span class="text-xs font-bold text-text-sub dark:text-gray-400 uppercase">SEP</span>
+<span class="text-xl font-black text-primary">09</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col p-5 gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 w-fit px-2 py-1 rounded">
+                                        Recreation
+                                    </div>
+<h3 class="text-xl font-bold text-text-main dark:text-white leading-tight">Family Sports Day</h3>
+<p class="text-text-sub dark:text-gray-400 text-sm line-clamp-2">
+                                        A fun-filled day of sports competitions, traditional games, and healthy activities for all ages.
+                                    </p>
+</div>
+<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400 mt-auto pt-2 border-t border-gray-100 dark:border-gray-800">
+<span class="material-symbols-outlined text-lg">location_on</span>
+<span>Gelora Bung Karno Complex</span>
+</div>
+<button class="mt-2 w-full rounded-lg bg-background-light dark:bg-gray-800 hover:bg-primary hover:text-white text-text-main dark:text-white py-2.5 text-sm font-bold transition-colors border border-transparent hover:border-primary">
+                                    View Details
+                                </button>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#1a0f10] border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all group h-full">
+<div class="relative h-48 w-full overflow-hidden">
+<img alt="BAM Bazaar" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Rows of empty chairs and a market stall" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTY7os2_cCqMw6uk2Ks5TsISG0L1Tb0v4vxSAB3QUCHxsQKu_tmRz4U9XLNuSyEA84WS2Rgsq3KHAbyrhUgs15wmBpJyUoifYoQBi8dhchHhcX7pkO1wf-gJquwOW4MuucqYd1RhtFf87Tm0F8kn38pnISMS90ICTIAMnDH0FcNEwqSL9l4LUIiyQrZDaPkCkNgePffYr1Uvqnznd0Q6hdKGUKtluiqB8gLZVO3EyoagmHy9ZdBhmRnl1Mj2iAA-VN8u_JkkIXjLC8"/>
+<div class="absolute top-3 left-3 flex flex-col items-center bg-white/95 dark:bg-gray-900/95 backdrop-blur rounded-lg p-2 min-w-[60px] shadow-sm text-center">
+<span class="text-xs font-bold text-text-sub dark:text-gray-400 uppercase">JUL</span>
+<span class="text-xl font-black text-primary">22</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col p-5 gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 w-fit px-2 py-1 rounded">
+                                        Market
+                                    </div>
+<h3 class="text-xl font-bold text-text-main dark:text-white leading-tight">BAM MSME Bazaar</h3>
+<p class="text-text-sub dark:text-gray-400 text-sm line-clamp-2">
+                                        Supporting family businesses! Come shop for culinary delights, crafts, and products made by our own family members.
+                                    </p>
+</div>
+<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400 mt-auto pt-2 border-t border-gray-100 dark:border-gray-800">
+<span class="material-symbols-outlined text-lg">location_on</span>
+<span>Alun-Alun Garut</span>
+</div>
+<button class="mt-2 w-full rounded-lg bg-background-light dark:bg-gray-800 hover:bg-primary hover:text-white text-text-main dark:text-white py-2.5 text-sm font-bold transition-colors border border-transparent hover:border-primary">
+                                    View Details
+                                </button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="flex justify-center pb-12">
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-white dark:bg-[#1a0f10] border border-gray-200 dark:border-gray-700 text-text-main dark:text-white text-sm font-medium leading-normal hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            Load More Events
+                        </button>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-white dark:bg-[#1a0f10] border-t border-gray-200 dark:border-gray-800 py-8 px-10">
+<div class="flex flex-col md:flex-row justify-between items-center max-w-[1200px] mx-auto gap-4">
+<div class="text-sm text-text-sub dark:text-gray-400 text-center md:text-left">
+<p>© 2024 Portal Keluarga Bani Abdul Manan. All rights reserved.</p>
+<p class="mt-1">Connecting generations, preserving history.</p>
+</div>
+<div class="flex gap-4">
+<a class="text-text-sub dark:text-gray-400 hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-text-sub dark:text-gray-400 hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-text-sub dark:text-gray-400 hover:text-primary transition-colors" href="#">Contact Support</a>
+</div>
+<div class="flex gap-4 text-text-sub dark:text-gray-400">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">social_leaderboard</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">group</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">photo_camera</span>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>
