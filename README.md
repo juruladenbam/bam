@@ -58,4 +58,4 @@ Graph-based genealogy structure untuk menangani pernikahan sepupu (endogamy):
 
 ## 📖 Dokumentasi
 
-Lihat [implementation_plan.md](/.gemini/antigravity/brain/6ea6b344-3f8e-4b23-986d-ae61e6598a0b/implementation_plan.md) untuk detail lengkap.
+Lihat [implementation_plan.md](./docs/implementation_plan.md) untuk detail lengkap arsitektur dan fitur.
