@@ -21,8 +21,8 @@ export default function LoginPage() {
                 credentials: 'include',
             })
 
-            // Login
-            const response = await fetch(`${API_URL}/login`, {
+            // Login - using new guest endpoint
+            const response = await fetch(`${API_URL}/guest/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -26,6 +26,592 @@ Sistem ini menggunakan **3 Frontend terpisah** yang berbagi **1 Backend API**.
 
 ---
 
+## 2.0 Backend Architecture (Service-Repository Pattern)
+
+Menggunakan arsitektur **layered** yang memisahkan concerns:
+
+```
+Request → Controller → Service → Repository → Model → Database
+                ↓
+           Response (via ApiResponse trait)
+```
+
+### Struktur Folder Backend (Multi-Frontend)
+
+Karena ada 3 frontend (public-web, portal, admin), backend diorganisir dengan:
+- **Route prefix**: `/api/guest/*`, `/api/portal/*`, `/api/admin/*`
+- **Controller namespace**: `Api\Guest\*`, `Api\Portal\*`, `Api\Admin\*`
+- **Shared Services & Repositories**: Reusable across all controllers
+
+```
+backend/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── Api/
+│   │   │       ├── Guest/                  # 🌐 Public Web (No Auth)
+│   │   │       │   ├── HomeController.php
+│   │   │       │   ├── EventController.php
+│   │   │       │   └── NewsController.php
+│   │   │       │
+│   │   │       ├── Portal/                 # 👨‍👩‍👧‍👦 Member (Auth Required)
+│   │   │       │   ├── AuthController.php
+│   │   │       │   ├── ProfileController.php
+│   │   │       │   ├── PersonController.php
+│   │   │       │   ├── SilsilahController.php
+│   │   │       │   ├── EventController.php
+│   │   │       │   └── SubmissionController.php
+│   │   │       │
+│   │   │       └── Admin/                  # 🔧 Admin (Auth + Role)
+│   │   │           ├── DashboardController.php
+│   │   │           ├── PersonController.php
+│   │   │           ├── MarriageController.php
+│   │   │           ├── EventController.php
+│   │   │           ├── UserController.php
+│   │   │           └── SubmissionController.php
+│   │   │
+│   │   ├── Requests/
+│   │   │   ├── Guest/                      # Validation per context
+│   │   │   │   └── ContactRequest.php
+│   │   │   ├── Portal/
+│   │   │   │   ├── UpdateProfileRequest.php
+│   │   │   │   └── SubmitDataRequest.php
+│   │   │   └── Admin/
+│   │   │       ├── StorePersonRequest.php
+│   │   │       └── UpdatePersonRequest.php
+│   │   │
+│   │   ├── Resources/
+│   │   │   ├── PersonResource.php          # Reusable
+│   │   │   ├── PersonDetailResource.php    # Portal: with relationship
+│   │   │   ├── PersonListResource.php      # Admin: with extra fields
+│   │   │   └── EventResource.php
+│   │   │
+│   │   └── Middleware/
+│   │       ├── EnsureIsMember.php          # Check role: member+
+│   │       └── EnsureIsAdmin.php           # Check role: admin+
+│   │
+│   ├── Services/                           # 🔄 SHARED (All controllers use)
+│   │   ├── AuthService.php
+│   │   ├── PersonService.php
+│   │   ├── MarriageService.php
+│   │   ├── RelationshipService.php         # LCA Algorithm
+│   │   ├── EventService.php
+│   │   └── SubmissionService.php
+│   │
+│   ├── Repositories/                       # 🔄 SHARED
+│   │   ├── Contracts/
+│   │   │   ├── PersonRepositoryInterface.php
+│   │   │   ├── MarriageRepositoryInterface.php
+│   │   │   └── EventRepositoryInterface.php
+│   │   ├── PersonRepository.php
+│   │   ├── MarriageRepository.php
+│   │   └── EventRepository.php
+│   │
+│   ├── Models/                             # 🔄 SHARED
+│   ├── Exceptions/
+│   └── Traits/
+│       └── ApiResponse.php
+│
+├── routes/
+│   ├── api.php                             # Main router (includes below)
+│   ├── api/
+│   │   ├── guest.php                       # /api/guest/*
+│   │   ├── portal.php                      # /api/portal/*
+│   │   └── admin.php                       # /api/admin/*
+│
+└── config/
+```
+
+### Route Organization
+
+```php
+// routes/api.php
+<?php
+
+// Guest routes (no auth)
+Route::prefix('guest')->group(base_path('routes/api/guest.php'));
+
+// Portal routes (auth required)
+Route::prefix('portal')
+    ->middleware(['auth:sanctum'])
+    ->group(base_path('routes/api/portal.php'));
+
+// Admin routes (auth + admin role)
+Route::prefix('admin')
+    ->middleware(['auth:sanctum', 'admin'])
+    ->group(base_path('routes/api/admin.php'));
+```
+
+```php
+// routes/api/guest.php
+use App\Http\Controllers\Api\Guest;
+
+Route::get('/events', [Guest\EventController::class, 'index']);
+Route::get('/events/{slug}', [Guest\EventController::class, 'show']);
+Route::get('/news', [Guest\NewsController::class, 'index']);
+Route::get('/branches', [Guest\HomeController::class, 'branches']);
+```
+
+```php
+// routes/api/portal.php
+use App\Http\Controllers\Api\Portal;
+
+Route::get('/me', [Portal\AuthController::class, 'me']);
+Route::post('/logout', [Portal\AuthController::class, 'logout']);
+
+Route::get('/silsilah', [Portal\SilsilahController::class, 'index']);
+Route::get('/silsilah/branch/{id}', [Portal\SilsilahController::class, 'branch']);
+Route::get('/persons/{id}', [Portal\PersonController::class, 'show']);
+Route::get('/relationship/{personId}', [Portal\PersonController::class, 'relationship']);
+
+Route::post('/submissions', [Portal\SubmissionController::class, 'store']);
+```
+
+```php
+// routes/api/admin.php
+use App\Http\Controllers\Api\Admin;
+
+Route::get('/dashboard', [Admin\DashboardController::class, 'index']);
+
+Route::apiResource('persons', Admin\PersonController::class);
+Route::apiResource('marriages', Admin\MarriageController::class);
+Route::apiResource('events', Admin\EventController::class);
+Route::apiResource('users', Admin\UserController::class);
+
+Route::get('/submissions', [Admin\SubmissionController::class, 'index']);
+Route::post('/submissions/{id}/approve', [Admin\SubmissionController::class, 'approve']);
+Route::post('/submissions/{id}/reject', [Admin\SubmissionController::class, 'reject']);
+```
+
+### API Endpoint Summary
+
+| Frontend | Route Prefix | Auth | Middleware | Examples |
+|----------|--------------|------|------------|----------|
+| **public-web** | `/api/guest` | ❌ No | - | `/api/guest/events`, `/api/guest/news` |
+| **portal** | `/api/portal` | ✅ Yes | `auth:sanctum` | `/api/portal/silsilah`, `/api/portal/persons/5` |
+| **admin** | `/api/admin` | ✅ Yes | `auth:sanctum`, `admin` | `/api/admin/persons`, `/api/admin/submissions` |
+
+### Controller Responsibilities per Frontend
+
+| Controller | Guest | Portal | Admin |
+|------------|-------|--------|-------|
+| **PersonController** | - | Read + relationship | Full CRUD |
+| **EventController** | Read public | Read + register | Full CRUD |
+| **SilsilahController** | - | View tree | - |
+| **SubmissionController** | - | Create | Review + approve |
+| **UserController** | - | - | Full CRUD |
+
+
+### Layer Responsibilities
+
+| Layer | Tanggung Jawab | Contoh |
+|-------|----------------|--------|
+| **Controller** | Terima request, validasi, return response | `PersonController` |
+| **Request** | Validasi input | `StorePersonRequest` |
+| **Service** | Business logic, orchestration | `RelationshipService` (LCA) |
+| **Repository** | Query database, CRUD | `PersonRepository` |
+| **Resource** | Transform model ke JSON | `PersonResource` |
+| **Model** | Eloquent, relationships | `Person`, `Marriage` |
+
+---
+
+### API Contract & Response Format
+
+#### Success Response
+
+```json
+{
+  "success": true,
+  "message": "Data berhasil diambil",
+  "data": {
+    "id": 1,
+    "full_name": "Ahmad Zaini",
+    ...
+  },
+  "meta": {
+    "current_page": 1,
+    "total": 100
+  }
+}
+```
+
+#### Error Response
+
+```json
+{
+  "success": false,
+  "message": "Validation error",
+  "errors": {
+    "email": ["Email sudah digunakan"],
+    "password": ["Password minimal 8 karakter"]
+  }
+}
+```
+
+#### ApiResponse Trait
+
+```php
+// app/Traits/ApiResponse.php
+namespace App\Traits;
+
+trait ApiResponse
+{
+    protected function success($data = null, string $message = 'Success', int $code = 200)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'data' => $data,
+        ], $code);
+    }
+
+    protected function error(string $message = 'Error', int $code = 400, $errors = null)
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'errors' => $errors,
+        ], $code);
+    }
+
+    protected function paginated($paginator, string $message = 'Success')
+    {
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'data' => $paginator->items(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+        ]);
+    }
+}
+```
+
+---
+
+### Error Handling
+
+#### Global Exception Handler
+
+```php
+// app/Exceptions/Handler.php
+namespace App\Exceptions;
+
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
+
+class Handler extends ExceptionHandler
+{
+    public function render($request, Throwable $e)
+    {
+        if ($request->expectsJson()) {
+            // Validation Error
+            if ($e instanceof ValidationException) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation error',
+                    'errors' => $e->errors(),
+                ], 422);
+            }
+
+            // Not Found
+            if ($e instanceof NotFoundHttpException) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Resource tidak ditemukan',
+                ], 404);
+            }
+
+            // Auth Error
+            if ($e instanceof AuthenticationException) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
+
+            // Generic Error
+            return response()->json([
+                'success' => false,
+                'message' => config('app.debug') ? $e->getMessage() : 'Server error',
+            ], 500);
+        }
+
+        return parent::render($request, $e);
+    }
+}
+```
+
+---
+
+### Secure Authentication (Best Practices)
+
+#### 1. Sanctum Cookie-Based (SPA)
+
+```php
+// config/sanctum.php
+'stateful' => [
+    'localhost:5173',
+    'localhost:5174',
+    'bamseribuputu.my.id',
+    'portal.bamseribuputu.my.id',
+    'admin.bamseribuputu.my.id',
+],
+```
+
+#### 2. CSRF Protection
+
+```php
+// Frontend harus request CSRF cookie dulu
+await fetch('/sanctum/csrf-cookie', { credentials: 'include' })
+```
+
+#### 3. Rate Limiting
+
+```php
+// routes/api.php
+Route::middleware('throttle:10,1')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+});
+```
+
+#### 4. Password Hashing (Default Laravel)
+
+```php
+// Sudah otomatis di User model
+protected function casts(): array
+{
+    return ['password' => 'hashed'];
+}
+```
+
+#### 5. Role-Based Authorization
+
+```php
+// app/Http/Middleware/EnsureIsAdmin.php
+namespace App\Http\Middleware;
+
+use Closure;
+
+class EnsureIsAdmin
+{
+    public function handle($request, Closure $next)
+    {
+        if (!$request->user()?->isAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Forbidden: Admin access required',
+            ], 403);
+        }
+        return $next($request);
+    }
+}
+
+// routes/api.php
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::apiResource('persons', AdminPersonController::class);
+});
+```
+
+---
+
+### Contoh Implementasi Lengkap
+
+#### Repository Interface
+
+```php
+// app/Repositories/Contracts/PersonRepositoryInterface.php
+namespace App\Repositories\Contracts;
+
+interface PersonRepositoryInterface
+{
+    public function all(array $filters = []);
+    public function find(int $id);
+    public function create(array $data);
+    public function update(int $id, array $data);
+    public function delete(int $id);
+    public function getByBranch(int $branchId);
+}
+```
+
+#### Repository Implementation
+
+```php
+// app/Repositories/PersonRepository.php
+namespace App\Repositories;
+
+use App\Models\Person;
+use App\Repositories\Contracts\PersonRepositoryInterface;
+
+class PersonRepository implements PersonRepositoryInterface
+{
+    public function __construct(protected Person $model) {}
+
+    public function all(array $filters = [])
+    {
+        $query = $this->model->query();
+        
+        if (isset($filters['branch_id'])) {
+            $query->where('branch_id', $filters['branch_id']);
+        }
+        if (isset($filters['generation'])) {
+            $query->where('generation', $filters['generation']);
+        }
+        if (isset($filters['search'])) {
+            $query->where('full_name', 'like', "%{$filters['search']}%");
+        }
+        
+        return $query->paginate($filters['per_page'] ?? 15);
+    }
+
+    public function find(int $id)
+    {
+        return $this->model->findOrFail($id);
+    }
+
+    public function create(array $data)
+    {
+        return $this->model->create($data);
+    }
+
+    public function update(int $id, array $data)
+    {
+        $person = $this->find($id);
+        $person->update($data);
+        return $person;
+    }
+
+    public function delete(int $id)
+    {
+        return $this->find($id)->delete();
+    }
+
+    public function getByBranch(int $branchId)
+    {
+        return $this->model->where('branch_id', $branchId)->get();
+    }
+}
+```
+
+#### Service Layer
+
+```php
+// app/Services/PersonService.php
+namespace App\Services;
+
+use App\Repositories\Contracts\PersonRepositoryInterface;
+
+class PersonService
+{
+    public function __construct(
+        protected PersonRepositoryInterface $personRepository
+    ) {}
+
+    public function getAllPersons(array $filters = [])
+    {
+        return $this->personRepository->all($filters);
+    }
+
+    public function getPersonWithRelationship(int $personId, int $viewerId)
+    {
+        $person = $this->personRepository->find($personId);
+        
+        // Business logic: Calculate relationship
+        $relationship = app(RelationshipService::class)
+            ->calculate($viewerId, $personId);
+        
+        return [
+            'person' => $person,
+            'relationship' => $relationship,
+        ];
+    }
+
+    public function createPerson(array $data)
+    {
+        // Business logic: Set generation based on parents
+        if (isset($data['parent_marriage_id'])) {
+            $data['generation'] = $this->calculateGeneration($data['parent_marriage_id']);
+        }
+        
+        return $this->personRepository->create($data);
+    }
+
+    protected function calculateGeneration(int $marriageId): int
+    {
+        // Logic to calculate generation from parent marriage
+        // ...
+    }
+}
+```
+
+#### Controller (Thin)
+
+```php
+// app/Http/Controllers/Api/PersonController.php
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePersonRequest;
+use App\Http\Resources\PersonResource;
+use App\Services\PersonService;
+use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
+
+class PersonController extends Controller
+{
+    use ApiResponse;
+
+    public function __construct(protected PersonService $personService) {}
+
+    public function index(Request $request)
+    {
+        $persons = $this->personService->getAllPersons($request->all());
+        return $this->paginated($persons);
+    }
+
+    public function show(Request $request, int $id)
+    {
+        $viewerId = $request->user()?->person_id;
+        $data = $this->personService->getPersonWithRelationship($id, $viewerId);
+        
+        return $this->success([
+            'person' => new PersonResource($data['person']),
+            'relationship' => $data['relationship'],
+        ]);
+    }
+
+    public function store(StorePersonRequest $request)
+    {
+        $person = $this->personService->createPerson($request->validated());
+        return $this->success(new PersonResource($person), 'Person created', 201);
+    }
+}
+```
+
+#### Service Provider Binding
+
+```php
+// app/Providers/AppServiceProvider.php
+use App\Repositories\Contracts\PersonRepositoryInterface;
+use App\Repositories\PersonRepository;
+
+public function register(): void
+{
+    $this->app->bind(PersonRepositoryInterface::class, PersonRepository::class);
+}
+```
+
+---
+
+
 ## 2.1 Frontend Architecture (Feature-Based)
 
 Menggunakan arsitektur **feature-based** yang memisahkan `features/` (logic & components) dan `pages/` (route entry points).

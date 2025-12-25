@@ -1,22 +1,26 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
+| Multi-frontend API structure:
+| - /api/guest/*  → Public (no auth)
+| - /api/portal/* → Members (auth required)
+| - /api/admin/*  → Admins (auth + admin role)
 */
 
-// Public routes
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+// Guest routes (no auth) - for public-web
+Route::prefix('guest')->group(base_path('routes/api/guest.php'));
 
-// Protected routes
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', [AuthController::class, 'user']);
-});
+// Portal routes (auth required) - for portal
+Route::prefix('portal')
+    ->middleware(['auth:sanctum'])
+    ->group(base_path('routes/api/portal.php'));
 
+// Admin routes (auth + admin role) - for admin
+Route::prefix('admin')
+    ->middleware(['auth:sanctum', 'admin'])
+    ->group(base_path('routes/api/admin.php'));
