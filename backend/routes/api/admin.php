@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\PersonController;
+use App\Http\Controllers\Api\Admin\MarriageController;
+use App\Http\Controllers\Api\Admin\BranchController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +24,16 @@ Route::get('/dashboard', function () {
     ]);
 });
 
-// TODO: Add admin CRUD routes
-// Route::apiResource('persons', Admin\PersonController::class);
-// Route::apiResource('events', Admin\EventController::class);
+// Branches
+Route::get('/branches', [BranchController::class, 'index']);
+Route::get('/branches/{id}', [BranchController::class, 'show']);
+
+// Persons CRUD
+Route::get('/persons/search', [PersonController::class, 'search']);
+Route::apiResource('persons', PersonController::class);
+
+// Marriages CRUD
+Route::get('/marriages/check-internal', [MarriageController::class, 'checkInternal']);
+Route::get('/marriages/{id}/children', [MarriageController::class, 'children']);
+Route::post('/marriages/{id}/children', [MarriageController::class, 'addChild']);
+Route::apiResource('marriages', MarriageController::class);

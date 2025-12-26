@@ -21,12 +21,19 @@ export default function LoginPage() {
                 credentials: 'include',
             })
 
+            // Get XSRF token from cookie
+            const xsrfToken = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1]
+
             // Login - using new guest endpoint
             const response = await fetch(`${API_URL}/guest/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
+                    ...(xsrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(xsrfToken) }),
                 },
                 credentials: 'include',
                 body: JSON.stringify({ email, password }),
@@ -48,71 +55,95 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center py-12 px-4">
+        <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 bg-[#f8f6f6]">
             <div className="max-w-md w-full">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800">Login Portal</h1>
-                    <p className="text-gray-600 mt-2">
+                    <div className="size-16 mx-auto rounded-full bg-[#ec1325]/10 flex items-center justify-center mb-4">
+                        <span className="material-symbols-outlined text-[#ec1325] text-3xl">lock</span>
+                    </div>
+                    <h1 className="text-3xl font-bold text-[#181112]">Login Portal</h1>
+                    <p className="text-[#896165] mt-2">
                         Masuk untuk akses silsilah lengkap dan fitur member
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-xl p-8">
+                <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-xl p-8 border border-[#e6dbdc]">
                     {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-sm">error</span>
                             {error}
                         </div>
                     )}
 
                     <div className="mb-4">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="email" className="block text-sm font-medium text-[#181112] mb-1">
                             Email
                         </label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            placeholder="email@contoh.com"
-                            required
-                        />
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span className="material-symbols-outlined text-[#896165] text-lg">mail</span>
+                            </div>
+                            <input
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full pl-10 pr-4 py-3 border border-[#e6dbdc] rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-transparent bg-[#f8f6f6] text-[#181112] placeholder:text-[#896165]"
+                                placeholder="email@contoh.com"
+                                required
+                            />
+                        </div>
                     </div>
 
                     <div className="mb-6">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="password" className="block text-sm font-medium text-[#181112] mb-1">
                             Password
                         </label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            placeholder="••••••••"
-                            required
-                        />
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span className="material-symbols-outlined text-[#896165] text-lg">key</span>
+                            </div>
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full pl-10 pr-4 py-3 border border-[#e6dbdc] rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-transparent bg-[#f8f6f6] text-[#181112] placeholder:text-[#896165]"
+                                placeholder="••••••••"
+                                required
+                            />
+                        </div>
                     </div>
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-green-700 text-white py-3 rounded-lg font-semibold hover:bg-green-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-[#ec1325] text-white py-3 rounded-lg font-semibold hover:bg-[#c91020] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
-                        {loading ? 'Memproses...' : 'Login'}
+                        {loading ? (
+                            <>
+                                <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                                Memproses...
+                            </>
+                        ) : (
+                            <>
+                                <span className="material-symbols-outlined">login</span>
+                                Login
+                            </>
+                        )}
                     </button>
 
-                    <div className="mt-6 text-center text-gray-600">
+                    <div className="mt-6 text-center text-[#896165]">
                         <p>
                             Belum punya akun?{' '}
-                            <Link to="/register" className="text-green-700 font-medium hover:underline">
+                            <Link to="/register" className="text-[#ec1325] font-medium hover:underline">
                                 Daftar
                             </Link>
                         </p>
                     </div>
                 </form>
 
-                <p className="text-center text-gray-500 text-sm mt-6">
+                <p className="text-center text-[#896165] text-sm mt-6">
                     Setelah login, Anda akan dialihkan ke Portal Member
                 </p>
             </div>

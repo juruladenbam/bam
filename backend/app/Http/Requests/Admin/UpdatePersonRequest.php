@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Http\Requests\Admin;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdatePersonRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'full_name' => ['sometimes', 'string', 'max:255'],
+            'nickname' => ['nullable', 'string', 'max:100'],
+            'gender' => ['sometimes', 'in:male,female'],
+            'birth_date' => ['nullable', 'date'],
+            'birth_place' => ['nullable', 'string', 'max:255'],
+            'death_date' => ['nullable', 'date', 'after_or_equal:birth_date'],
+            'is_alive' => ['sometimes', 'boolean'],
+            'photo_url' => ['nullable', 'url'],
+            'bio' => ['nullable', 'string'],
+            'branch_id' => ['sometimes', 'exists:branches,id'],
+            'generation' => ['nullable', 'integer', 'min:1'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'gender.in' => 'Jenis kelamin harus male atau female',
+            'branch_id.exists' => 'Cabang tidak valid',
+            'death_date.after_or_equal' => 'Tanggal wafat harus setelah tanggal lahir',
+        ];
+    }
+}

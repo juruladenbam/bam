@@ -24,6 +24,7 @@ class AuthController extends Controller
 
         return $this->success([
             'user' => $user,
+            'person' => $user->person,
         ]);
     }
 

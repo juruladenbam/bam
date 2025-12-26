@@ -4,99 +4,205 @@ export default function HomePage() {
     return (
         <div>
             {/* Hero Section */}
-            <section className="bg-gradient-to-br from-green-700 to-green-900 text-white py-20">
-                <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-5xl font-bold mb-4">
-                        Bani Abdul Manan
-                    </h1>
-                    <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
-                        Portal Digital Keluarga Besar dengan 500+ anggota dari 5 generasi.
-                        Menjaga silaturahmi, merawat silsilah, dan melestarikan tradisi.
-                    </p>
-                    <div className="flex gap-4 justify-center">
-                        <Link
-                            to="/login"
-                            className="bg-white text-green-800 px-8 py-3 rounded-lg font-semibold hover:bg-green-100 transition"
-                        >
-                            Login Portal
-                        </Link>
-                        <Link
-                            to="/tentang"
-                            className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition"
-                        >
-                            Tentang Kami
-                        </Link>
+            <section className="flex flex-1 justify-center py-5 px-4 sm:px-10 lg:px-40 bg-[#f8f6f6]">
+                <div className="flex flex-col max-w-[1200px] flex-1">
+                    <div className="flex flex-col gap-6 py-10 lg:flex-row items-center">
+                        {/* Hero Text & Login */}
+                        <div className="flex flex-col gap-6 lg:gap-8 lg:justify-center flex-1">
+                            <div className="flex flex-col gap-4 text-left">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ec1325]/10 text-[#ec1325] w-fit">
+                                    <span className="material-symbols-outlined text-sm">auto_awesome</span>
+                                    <span className="text-xs font-bold uppercase tracking-wider">Portal Keluarga Resmi</span>
+                                </div>
+                                <h1 className="text-[#181112] text-4xl font-black leading-tight tracking-tight lg:text-5xl xl:text-6xl">
+                                    Selamat Datang di Keluarga Digital Bani Abdul Manan
+                                </h1>
+                                <h2 className="text-[#896165] text-lg font-normal leading-relaxed max-w-lg">
+                                    Menghubungkan generasi, melestarikan sejarah, dan merayakan masa depan bersama. Akses warisan keluarga Anda hari ini.
+                                </h2>
+                            </div>
+
+                            {/* Quick Access Card */}
+                            <div className="p-6 bg-white border border-[#e6dbdc] rounded-xl shadow-sm max-w-[480px]">
+                                <h3 className="text-base font-bold text-[#181112] mb-4">Akses Cepat Member</h3>
+                                <Link
+                                    to="/login"
+                                    className="flex w-full cursor-pointer items-center justify-center rounded-lg h-12 px-6 bg-[#ec1325] text-white text-sm font-bold hover:bg-[#c91020] transition-colors"
+                                >
+                                    Login ke Portal
+                                </Link>
+                                <div className="mt-3 flex justify-between text-xs">
+                                    <span className="text-[#896165]">Belum punya akun?</span>
+                                    <Link to="/register" className="text-[#ec1325] font-medium hover:underline">
+                                        Daftar Sekarang
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Hero Image */}
+                        <div className="w-full flex-1 aspect-[4/3] rounded-2xl overflow-hidden shadow-xl relative group">
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                            <div
+                                className="w-full h-full bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-105"
+                                style={{
+                                    backgroundImage: `url("https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&auto=format&fit=crop&q=60")`,
+                                }}
+                            ></div>
+                            <div className="absolute bottom-6 left-6 z-20 text-white">
+                                <p className="text-sm font-medium opacity-90 uppercase tracking-widest mb-1">Sejak 1945</p>
+                                <p className="text-2xl font-bold">Pertemuan Akbar Keluarga</p>
+                                <div className="flex items-center gap-1 text-xs opacity-80 mt-1">
+                                    <span className="material-symbols-outlined text-sm">location_on</span>
+                                    <span>Yogyakarta, Indonesia</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* Stats Section */}
-            <section className="py-16 bg-white">
-                <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-                        <div className="p-6">
-                            <div className="text-4xl font-bold text-green-700">500+</div>
-                            <div className="text-gray-600 mt-2">Anggota Keluarga</div>
+            {/* Features Section */}
+            <section id="features" className="flex flex-1 justify-center py-10 bg-white">
+                <div className="flex flex-col max-w-[1200px] flex-1 px-4 sm:px-10">
+                    <div className="flex flex-col gap-10 py-10">
+                        <div className="flex flex-col gap-4 text-center items-center">
+                            <h2 className="text-[#ec1325] font-bold tracking-widest uppercase text-sm">Fitur Utama</h2>
+                            <h1 className="text-[#181112] text-3xl font-bold leading-tight md:text-4xl max-w-[720px]">
+                                Mengapa Bergabung dengan Portal?
+                            </h1>
+                            <p className="text-[#896165] text-base font-normal leading-normal max-w-[600px]">
+                                Rumah digital kami memungkinkan setiap anggota keluarga tetap terhubung, terinformasi, dan terlibat dalam pelestarian silsilah.
+                            </p>
                         </div>
-                        <div className="p-6">
-                            <div className="text-4xl font-bold text-green-700">5</div>
-                            <div className="text-gray-600 mt-2">Generasi</div>
-                        </div>
-                        <div className="p-6">
-                            <div className="text-4xl font-bold text-green-700">11</div>
-                            <div className="text-gray-600 mt-2">Cabang Keluarga</div>
-                        </div>
-                        <div className="p-6">
-                            <div className="text-4xl font-bold text-green-700">3</div>
-                            <div className="text-gray-600 mt-2">Acara Tahunan</div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Feature 1 */}
+                            <div className="flex flex-1 gap-4 rounded-xl border border-[#e6dbdc] bg-[#f8f6f6] p-8 flex-col hover:border-[#ec1325]/30 transition-colors group cursor-pointer">
+                                <div className="size-12 rounded-full bg-white flex items-center justify-center shadow-sm text-[#ec1325] group-hover:bg-[#ec1325] group-hover:text-white transition-colors">
+                                    <span className="material-symbols-outlined text-[28px]">account_tree</span>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <h2 className="text-[#181112] text-xl font-bold leading-tight">Silsilah Interaktif</h2>
+                                    <p className="text-[#896165] text-sm font-normal leading-relaxed">
+                                        Jelajahi silsilah lengkap Bani Abdul Manan, telusuri leluhur, dan temukan koneksi Anda ke akar keluarga.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Feature 2 */}
+                            <div className="flex flex-1 gap-4 rounded-xl border border-[#e6dbdc] bg-[#f8f6f6] p-8 flex-col hover:border-[#ec1325]/30 transition-colors group cursor-pointer">
+                                <div className="size-12 rounded-full bg-white flex items-center justify-center shadow-sm text-[#ec1325] group-hover:bg-[#ec1325] group-hover:text-white transition-colors">
+                                    <span className="material-symbols-outlined text-[28px]">calendar_month</span>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <h2 className="text-[#181112] text-xl font-bold leading-tight">Kalender Acara</h2>
+                                    <p className="text-[#896165] text-sm font-normal leading-relaxed">
+                                        Ikuti update acara keluarga mendatang, reuni, halal bihalal, dan kegiatan keagamaan penting.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Feature 3 */}
+                            <div className="flex flex-1 gap-4 rounded-xl border border-[#e6dbdc] bg-[#f8f6f6] p-8 flex-col hover:border-[#ec1325]/30 transition-colors group cursor-pointer">
+                                <div className="size-12 rounded-full bg-white flex items-center justify-center shadow-sm text-[#ec1325] group-hover:bg-[#ec1325] group-hover:text-white transition-colors">
+                                    <span className="material-symbols-outlined text-[28px]">history_edu</span>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <h2 className="text-[#181112] text-xl font-bold leading-tight">Arsip Digital</h2>
+                                    <p className="text-[#896165] text-sm font-normal leading-relaxed">
+                                        Akses repositori bersama foto historis, dokumen scan, dan kenangan berharga dari masa lalu.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Events Section */}
-            <section className="py-16 bg-gray-50">
-                <div className="container mx-auto px-4">
-                    <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-                        Acara Tahunan
-                    </h2>
+            <section id="events" className="flex flex-1 justify-center py-16 bg-[#f8f6f6]">
+                <div className="flex flex-col max-w-[1200px] flex-1 px-4 sm:px-10">
+                    <div className="flex flex-col gap-4 text-center items-center mb-12">
+                        <h2 className="text-[#ec1325] font-bold tracking-widest uppercase text-sm">Acara Tahunan</h2>
+                        <h1 className="text-[#181112] text-3xl font-bold leading-tight md:text-4xl">
+                            Rangkaian Kegiatan Keluarga
+                        </h1>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Festival BAM */}
-                        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                            <div className="bg-green-600 h-32 flex items-center justify-center">
-                                <span className="text-5xl">🕌</span>
+                        <div className="bg-white rounded-xl shadow-md overflow-hidden border border-[#e6dbdc] hover:shadow-lg transition-shadow">
+                            <div className="bg-gradient-to-br from-[#ec1325] to-[#8b0a13] h-32 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-white text-5xl">mosque</span>
                             </div>
                             <div className="p-6">
-                                <h3 className="text-xl font-bold mb-2">Festival BAM</h3>
-                                <p className="text-gray-600">
-                                    Rangkaian ibadah pra-Ramadhan: Tahlil, Manaqib, Ziarah, dan Maulid Diba'.
+                                <h3 className="text-xl font-bold text-[#181112] mb-2">Festival BAM</h3>
+                                <p className="text-[#896165] text-sm">
+                                    Rangkaian ibadah pra-Ramadhan: Tahlil, Manaqib, Ziarah Makam, dan Maulid Diba'.
                                 </p>
                             </div>
                         </div>
 
                         {/* Halal Bihalal */}
-                        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                            <div className="bg-amber-500 h-32 flex items-center justify-center">
-                                <span className="text-5xl">🤝</span>
+                        <div className="bg-white rounded-xl shadow-md overflow-hidden border border-[#e6dbdc] hover:shadow-lg transition-shadow">
+                            <div className="bg-gradient-to-br from-amber-500 to-amber-700 h-32 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-white text-5xl">handshake</span>
                             </div>
                             <div className="p-6">
-                                <h3 className="text-xl font-bold mb-2">Halal Bihalal</h3>
-                                <p className="text-gray-600">
-                                    Silaturahmi H+2 Lebaran dengan update silsilah keluarga.
+                                <h3 className="text-xl font-bold text-[#181112] mb-2">Halal Bihalal</h3>
+                                <p className="text-[#896165] text-sm">
+                                    Silaturahmi H+2 Lebaran dengan update silsilah dan rapat keluarga tahunan.
                                 </p>
                             </div>
                         </div>
 
                         {/* Merajut Cinta */}
-                        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                            <div className="bg-blue-500 h-32 flex items-center justify-center">
-                                <span className="text-5xl">⛺</span>
+                        <div className="bg-white rounded-xl shadow-md overflow-hidden border border-[#e6dbdc] hover:shadow-lg transition-shadow">
+                            <div className="bg-gradient-to-br from-blue-500 to-blue-700 h-32 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-white text-5xl">camping</span>
                             </div>
                             <div className="p-6">
-                                <h3 className="text-xl font-bold mb-2">Merajut Cinta</h3>
-                                <p className="text-gray-600">
-                                    Youth camp untuk generasi muda SMP - belum menikah.
+                                <h3 className="text-xl font-bold text-[#181112] mb-2">Merajut Cinta</h3>
+                                <p className="text-[#896165] text-sm">
+                                    Youth camp untuk generasi muda SMP hingga belum menikah.
                                 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Legacy Section */}
+            <section className="flex flex-1 justify-center py-12 md:py-20 px-4 sm:px-10 bg-white">
+                <div className="flex flex-col max-w-[1000px] flex-1">
+                    <div className="flex flex-col md:flex-row gap-12 items-center">
+                        <div className="flex-1 flex flex-col gap-6">
+                            <h2 className="text-[#ec1325] font-bold tracking-widest uppercase text-sm">Warisan Kami</h2>
+                            <h3 className="text-[#181112] text-3xl font-bold leading-tight">Legasi Abdul Manan</h3>
+                            <p className="text-[#896165] text-lg leading-relaxed">
+                                Kisah kami bermula dari nilai-nilai yang ditanamkan oleh leluhur kami, Abdul Manan. Visi tentang persatuan, keimanan, dan kemajuan yang telah membimbing keluarga kami selama puluhan tahun.
+                            </p>
+                            <p className="text-[#896165] text-base leading-relaxed">
+                                Dari awal yang sederhana hingga jaringan luas profesional, cendekiawan, dan pemimpin masyarakat, keluarga Bani Abdul Manan terus menghormati masa lalu sambil merangkul masa depan.
+                            </p>
+                            <Link
+                                to="/tentang"
+                                className="w-fit mt-2 text-[#181112] font-bold underline decoration-[#ec1325] decoration-2 underline-offset-4 hover:text-[#ec1325] transition-colors"
+                            >
+                                Baca Sejarah Lengkap
+                            </Link>
+                        </div>
+                        <div className="flex-1 w-full">
+                            <div className="relative w-full aspect-[4/5] md:aspect-square rounded-2xl overflow-hidden bg-[#e6dbdc]">
+                                <img
+                                    alt="Legacy Photo"
+                                    className="w-full h-full object-cover sepia-[.3] hover:sepia-0 transition-all duration-500"
+                                    src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&auto=format&fit=crop&q=60"
+                                />
+                                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white">
+                                    <blockquote className="italic font-light">"Keluarga adalah kompas yang membimbing kita."</blockquote>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -104,17 +210,17 @@ export default function HomePage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-green-800 text-white">
+            <section className="py-16 bg-gradient-to-br from-[#ec1325] to-[#8b0a13] text-white">
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-3xl font-bold mb-4">
                         Bergabung dengan Portal Keluarga
                     </h2>
-                    <p className="text-green-100 mb-8 max-w-xl mx-auto">
+                    <p className="text-white/80 mb-8 max-w-xl mx-auto">
                         Akses silsilah lengkap, daftar acara, dan tetap terhubung dengan keluarga besar.
                     </p>
                     <Link
                         to="/login"
-                        className="bg-white text-green-800 px-8 py-3 rounded-lg font-semibold hover:bg-green-100 transition inline-block"
+                        className="bg-white text-[#ec1325] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition inline-block"
                     >
                         Login Sekarang
                     </Link>

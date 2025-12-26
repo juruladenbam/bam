@@ -11,7 +11,10 @@ class Person extends Model
 {
     use HasFactory;
 
+    protected $table = 'persons';
+
     protected $fillable = [
+        'legacy_id',
         'full_name',
         'nickname',
         'gender',
@@ -25,6 +28,7 @@ class Person extends Model
         'occupation',
         'bio',
         'generation',
+        'birth_order',
         'branch_id',
     ];
 

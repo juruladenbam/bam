@@ -1,8 +1,31 @@
+/* Google Fonts - must be first */
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+/* Tailwind */
 @import "tailwindcss";
 
-/* BAM Portal - Custom Styles */
+/* BAM Portal Theme - Light Mode Only */
 :root {
-  --bam-primary: #166534;
-  --bam-secondary: #14532d;
-  --bam-accent: #4ade80;
+  --primary: #ec1325;
+  --primary-hover: #c91020;
+  --background: #f8f6f6;
+  --background-white: #ffffff;
+  --text-primary: #181112;
+  --text-secondary: #896165;
+  --border-color: #e6dbdc;
+}
+
+/* Base Styles */
+body {
+  font-family: 'Lexend', sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }

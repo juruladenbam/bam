@@ -12,6 +12,7 @@ class Marriage extends Model
     use HasFactory;
 
     protected $fillable = [
+        'legacy_id',
         'husband_id',
         'wife_id',
         'marriage_date',
