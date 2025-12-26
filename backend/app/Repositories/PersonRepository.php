@@ -91,6 +91,7 @@ class PersonRepository implements PersonRepositoryInterface
             ->where('full_name', 'like', "%{$query}%")
             ->orWhere('nickname', 'like', "%{$query}%")
             ->limit($limit)
+            ->with('branch:id,name')
             ->get(['id', 'full_name', 'nickname', 'gender', 'branch_id']);
     }
 

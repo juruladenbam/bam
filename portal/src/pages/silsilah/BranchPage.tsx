@@ -1,6 +1,6 @@
 
 import { useState, useMemo, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { useReactFlow, ReactFlowProvider } from '@xyflow/react'
 import { useBranch, useMe, FamilyTree } from '../../features/silsilah'
 import { buildTreeLayout } from '../../features/silsilah/utils/treeLayout'
@@ -104,29 +104,37 @@ function BranchPageContent() {
     // Auth User
     const { data: me } = useMe()
 
+    const [searchParams] = useSearchParams()
+    const focusId = searchParams.get('focus')
+
     // Auto-focus Logic
     useEffect(() => {
         if (nodes.length > 0) {
-            // Priority 1: Focus on Logged-in User if present in this branch
-            const userNode = me?.person ? nodes.find(n => n.id === `person-${me.person.id}`) : null
+            let targetNode = null
+            let zoomLevel = 1.2
 
-            if (userNode) {
-                const x = userNode.position.x + 90
-                const y = userNode.position.y + 45
-                setTimeout(() => {
-                    reactFlowInstance.setCenter(x, y, { zoom: 1.5, duration: 1200 })
-                }, 100)
-                return
+            // Priority 0: URL Search Param (?focus=ID)
+            if (focusId) {
+                targetNode = nodes.find(n => n.id === `person-${focusId}`)
+                if (targetNode) zoomLevel = 1.5
             }
 
-            // Priority 2: Focus on Root (Gen 1)
-            const rootNode = nodes.find(n => n.type === 'personNode' && (n.data as any)?.generation === 1)
+            // Priority 1: Logged-in User
+            if (!targetNode && me?.person) {
+                targetNode = nodes.find(n => n.id === `person-${me.person.id}`)
+                if (targetNode) zoomLevel = 1.5
+            }
 
-            if (rootNode) {
-                const x = rootNode.position.x + 90
-                const y = rootNode.position.y + 45
+            // Priority 2: Root (Gen 1)
+            if (!targetNode) {
+                targetNode = nodes.find(n => n.type === 'personNode' && (n.data as any)?.generation === 1)
+            }
+
+            if (targetNode) {
+                const x = targetNode.position.x + 90
+                const y = targetNode.position.y + 45
                 setTimeout(() => {
-                    reactFlowInstance.setCenter(x, y, { zoom: 1.2, duration: 1000 })
+                    reactFlowInstance.setCenter(x, y, { zoom: zoomLevel, duration: 1200 })
                 }, 100)
             } else {
                 // Priority 3: Fit View
@@ -135,7 +143,7 @@ function BranchPageContent() {
                 }, 100)
             }
         }
-    }, [nodes, reactFlowInstance, me])
+    }, [nodes, reactFlowInstance, me, focusId])
 
     // Handlers
     const handleNodeClick = (personId: number) => {
