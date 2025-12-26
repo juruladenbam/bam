@@ -1,18 +1,25 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
+import { HomePage } from './pages/home/HomePage'
 import { SilsilahPage } from './pages/silsilah/SilsilahPage'
 import { BranchPage } from './pages/silsilah/BranchPage'
 import { PersonDetailPage } from './pages/silsilah/PersonDetailPage'
+import { EventsPage } from './pages/events/EventsPage'
+import { ArchivesPage } from './pages/archives/ArchivesPage'
 
 function App() {
   return (
     <Routes>
-      {/* Default redirect to silsilah */}
-      <Route path="/" element={<Navigate to="/silsilah" replace />} />
+      {/* Home */}
+      <Route path="/" element={<HomePage />} />
 
       {/* Silsilah routes */}
       <Route path="/silsilah" element={<SilsilahPage />} />
       <Route path="/silsilah/branch/:id" element={<BranchPage />} />
       <Route path="/silsilah/person/:id" element={<PersonDetailPage />} />
+
+      {/* Static pages */}
+      <Route path="/events" element={<EventsPage />} />
+      <Route path="/archives" element={<ArchivesPage />} />
 
       {/* 404 */}
       <Route path="*" element={
@@ -28,3 +35,4 @@ function App() {
 }
 
 export default App
+
