@@ -85,13 +85,14 @@ class PersonRepository implements PersonRepositoryInterface
             ->get();
     }
 
-    public function search(string $query, int $limit = 10): Collection
+    public function search(string $query, int $limit = 10, int $offset = 0): Collection
     {
         return $this->model
             ->where('full_name', 'like', "%{$query}%")
             ->orWhere('nickname', 'like', "%{$query}%")
-            ->limit($limit)
-            ->with('branch:id,name')
+            ->skip($offset)
+            ->take($limit)
+            ->with('branch:id,name,order')
             ->get(['id', 'full_name', 'nickname', 'gender', 'branch_id']);
     }
 

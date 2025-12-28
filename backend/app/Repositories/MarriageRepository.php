@@ -17,7 +17,9 @@ class MarriageRepository implements MarriageRepositoryInterface
 
     public function all(array $filters = []): LengthAwarePaginator
     {
-        $query = $this->model->query()->with(['husband', 'wife']);
+        $query = $this->model->query()
+            ->with(['husband', 'wife'])
+            ->withCount('children');
 
         if (isset($filters['is_active'])) {
             $query->where('is_active', $filters['is_active']);
@@ -103,16 +105,22 @@ class MarriageRepository implements MarriageRepositoryInterface
 
     public function isInternal(int $husbandId, int $wifeId): bool
     {
-        // Check if both persons share a common ancestor (same branch or related)
-        $husband = Person::find($husbandId);
-        $wife = Person::find($wifeId);
+        // Internal marriage: both spouses are BAM descendants (not external/pasangan luar)
+        // External spouse branch has order = 99
+        $husband = Person::with('branch')->find($husbandId);
+        $wife = Person::with('branch')->find($wifeId);
 
         if (!$husband || !$wife) {
             return false;
         }
 
-        // Simple check: same branch means potentially related
-        // More sophisticated check would use LCA algorithm
-        return $husband->branch_id === $wife->branch_id;
+        // Get the external spouse branch order (order = 99 means "Pasangan Luar")
+        $externalBranchOrder = 99;
+        
+        $husbandIsBAM = $husband->branch && $husband->branch->order < $externalBranchOrder;
+        $wifeIsBAM = $wife->branch && $wife->branch->order < $externalBranchOrder;
+
+        // If both are BAM descendants, it's an internal marriage
+        return $husbandIsBAM && $wifeIsBAM;
     }
 }

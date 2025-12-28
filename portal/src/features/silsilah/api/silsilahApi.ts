@@ -1,4 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+const PUBLIC_WEB_URL = import.meta.env.VITE_PUBLIC_WEB_URL || 'http://localhost:5173'
 
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const response = await fetch(`${API_URL}${endpoint}`, {
@@ -12,6 +13,18 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
     })
 
     if (!response.ok) {
+        // Handle 401 Unauthorized - redirect to login
+        if (response.status === 401) {
+            const returnUrl = encodeURIComponent(window.location.href)
+            window.location.href = `${PUBLIC_WEB_URL}/login?redirect=${returnUrl}`
+            throw new Error('Unauthorized - redirecting to login')
+        }
+
+        // Handle 403 Forbidden
+        if (response.status === 403) {
+            throw new Error('Anda tidak memiliki akses ke halaman ini')
+        }
+
         throw new Error(`API Error: ${response.status}`)
     }
 

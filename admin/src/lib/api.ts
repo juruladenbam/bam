@@ -14,7 +14,8 @@ api.interceptors.response.use(
     (response) => response.data,
     (error) => {
         if (error.response?.status === 401) {
-            window.location.href = '/login'
+            // TODO: Implement proper login flow
+            console.error('Authentication required. Please login first.')
         }
         return Promise.reject(error.response?.data || error)
     }

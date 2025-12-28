@@ -89,10 +89,14 @@ class PersonController extends Controller
     public function search(Request $request)
     {
         $query = $request->query('q', '');
-        $limit = $request->query('limit', 10);
+        $limit = (int) $request->query('limit', 10);
+        $offset = (int) $request->query('offset', 0);
 
-        $results = $this->personService->searchPersons($query, $limit);
+        $results = $this->personService->searchPersons($query, $limit, $offset);
 
-        return $this->success($results);
+        return $this->success([
+            'data' => $results,
+            'has_more' => count($results) === $limit,
+        ]);
     }
 }
