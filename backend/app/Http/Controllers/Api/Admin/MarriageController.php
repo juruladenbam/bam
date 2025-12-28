@@ -24,7 +24,7 @@ class MarriageController extends Controller
      */
     public function index(Request $request)
     {
-        $filters = $request->only(['is_active', 'is_internal', 'year', 'per_page']);
+        $filters = $request->only(['is_active', 'is_internal', 'year', 'per_page', 'search']);
 
         $marriages = $this->marriageService->getAllMarriages($filters);
 

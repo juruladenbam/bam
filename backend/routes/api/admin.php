@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 | Middleware: auth:sanctum, admin (applied in api.php)
 */
 
+// Auth Routes
+Route::get('/me', [\App\Http\Controllers\Api\Portal\AuthController::class, 'me']);
+Route::post('/logout', [\App\Http\Controllers\Api\Portal\AuthController::class, 'logout']);
+
 // Dashboard
 Route::get('/dashboard', function () {
     $totalPersons = \App\Models\Person::count();

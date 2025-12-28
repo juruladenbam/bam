@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { usePerson, useCreatePerson, useUpdatePerson, useBranches } from '../../features/admin/hooks/useAdmin'
-import type { CreatePersonData, Branch } from '../../types'
+import { usePerson, useCreatePerson, useUpdatePerson, useInfiniteMarriages } from '../../features/admin/hooks/useAdmin'
+import { Combobox } from '../../components/Combobox'
+import type { CreatePersonData } from '../../types'
 
 interface ValidationErrors {
     [key: string]: string[]
@@ -13,11 +14,9 @@ export function PersonFormPage() {
     const isEdit = !!id
 
     const { data: personData, isLoading: isLoadingPerson } = usePerson(Number(id))
-    const { data: branchesData } = useBranches()
     const createPerson = useCreatePerson()
     const updatePerson = useUpdatePerson()
 
-    const branches: Branch[] = branchesData?.data || []
     const person = personData?.data?.person
 
     const [formData, setFormData] = useState<Partial<CreatePersonData>>({
@@ -30,9 +29,30 @@ export function PersonFormPage() {
         is_alive: true,
         generation: undefined,
         birth_order: undefined,
+        parent_marriage_id: undefined,
     })
     const [errors, setErrors] = useState<ValidationErrors>({})
     const [generalError, setGeneralError] = useState('')
+
+    // Parent Search State
+    const [parentSearch, setParentSearch] = useState('')
+
+    const {
+        data: infiniteMarriages,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isLoading: isLoadingMarriages
+    } = useInfiniteMarriages({
+        search: parentSearch,
+        per_page: 10
+    })
+
+    const marriageOptions = infiniteMarriages?.pages.flatMap(page => page.data).map(m => ({
+        id: m.id,
+        label: `${m.husband?.full_name} & ${m.wife?.full_name}`,
+        subLabel: m.marriage_date ? `Menikah: ${m.marriage_date.substring(0, 4)}` : undefined
+    })) || []
 
     // Populate form when editing
     useEffect(() => {
@@ -47,6 +67,7 @@ export function PersonFormPage() {
                 is_alive: person.is_alive,
                 generation: person.generation,
                 birth_order: person.birth_order,
+                parent_marriage_id: person.parent_marriage_id,
             })
         }
     }, [person])
@@ -72,16 +93,19 @@ export function PersonFormPage() {
         setErrors({})
         setGeneralError('')
 
+        // Determine branch_id logic: 
+        // If parent_marriage_id is SET, we let backend auto-detect (send undefined/null for branch_id if we want, or existing).
+        // If parent_marriage_id is NOT set, we assume External Spouse => branch_id found be NULL.
+        // Actually, logic:
+        // - Descendant (Has Parent): Send parent_marriage_id. branch_id can be whatever (backend overrides).
+        // - External (No Parent): parent_marriage_id null. branch_id null.
+
         const data: CreatePersonData = {
-            full_name: formData.full_name!,
-            nickname: formData.nickname || undefined,
-            gender: formData.gender!,
-            branch_id: formData.branch_id!,
-            birth_date: formData.birth_date || undefined,
-            death_date: formData.death_date || undefined,
-            is_alive: formData.is_alive,
-            generation: formData.generation || undefined, // Don't send 0 or empty
-            birth_order: formData.birth_order || undefined,
+            ...formData as CreatePersonData,
+            // Force null branch_id if no parent (External), unless it's Root (handled by is_root prop but here we don't edit root prop).
+            // Actually, if we clear parent, we should clear branch_id to be safe.
+            branch_id: formData.parent_marriage_id ? formData.branch_id : null,
+            generation: undefined // Backend handles generation. We don't send it from UI anymore.
         }
 
         try {
@@ -105,6 +129,10 @@ export function PersonFormPage() {
     }
 
     const isPending = createPerson.isPending || updatePerson.isPending
+
+    const initialParentLabel = person?.parents && person.parents.length > 0
+        ? person.parents.map(p => p.full_name).join(' & ')
+        : '';
 
     if (isEdit && isLoadingPerson) {
         return (
@@ -133,6 +161,7 @@ export function PersonFormPage() {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-[#e6dbdc] p-6 space-y-6">
+
                 {/* Error Banner */}
                 {(generalError || Object.keys(errors).length > 0) && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -154,9 +183,40 @@ export function PersonFormPage() {
                     </div>
                 )}
 
+                {/* Parents Selection */}
+                <div className="pt-2">
+                    <h2 className="font-semibold text-[#181112] mb-4">Orang Tua (Khusus Keturunan)</h2>
+                    <p className="text-sm text-gray-500 mb-2">
+                        Pilih pernikahan orang tua jika anggota ini adalah keturunan. Kosongkan jika ini adalah pasangan dari luar (menantu).
+                    </p>
+                    <div className="w-full">
+                        <Combobox
+                            label="Anak dari Pernikahan"
+                            placeholder="Cari nama orang tua (Suami/Istri)..."
+                            onSearch={setParentSearch}
+                            options={marriageOptions}
+                            selectedId={formData.parent_marriage_id}
+                            onSelect={(option) => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    parent_marriage_id: option ? Number(option.id) : undefined,
+                                    branch_id: undefined
+                                }))
+                            }}
+                            loading={isLoadingMarriages || isFetchingNextPage}
+                            onLoadMore={fetchNextPage}
+                            hasMore={hasNextPage}
+                            initialLabel={initialParentLabel}
+                            helperText={formData.parent_marriage_id
+                                ? "✅ Anggota Keluarga (Keturunan)"
+                                : "ℹ️ Pasangan Luar (Data Qobilah kosong)"}
+                        />
+                    </div>
+                </div>
+
                 {/* Basic Info */}
-                <div className="space-y-4">
-                    <h2 className="font-semibold text-[#181112] border-b border-[#e6dbdc] pb-2">Informasi Dasar</h2>
+                <div className="space-y-4 pt-4 border-t border-[#e6dbdc]">
+                    <h2 className="font-semibold text-[#181112]">Informasi Dasar</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -200,24 +260,6 @@ export function PersonFormPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-[#181112] mb-1">Qobilah *</label>
-                            <select
-                                name="branch_id"
-                                value={formData.branch_id || ''}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-2 border border-[#e6dbdc] rounded-lg bg-white focus:outline-none focus:border-[#ec1325]/50"
-                            >
-                                <option value="">Pilih qobilah</option>
-                                {branches.map((b) => (
-                                    <option key={b.id} value={b.id}>{b.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
                             <label className="block text-sm font-medium text-[#181112] mb-1">Tanggal Lahir</label>
                             <input
                                 type="date"
@@ -227,34 +269,28 @@ export function PersonFormPage() {
                                 className="w-full px-4 py-2 border border-[#e6dbdc] rounded-lg focus:outline-none focus:border-[#ec1325]/50"
                             />
                         </div>
+                    </div>
+
+                    {/* Urutan Lahir only if parent selected? Or always? */}
+                    {/* Usually only relevant for descendants. Let's show it if parent selected. */}
+                    {formData.parent_marriage_id && (
                         <div>
-                            <label className="block text-sm font-medium text-[#181112] mb-1">Generasi</label>
-                            <input
-                                type="number"
-                                name="generation"
-                                value={formData.generation || ''}
-                                onChange={handleChange}
-                                className="w-full px-4 py-2 border border-[#e6dbdc] rounded-lg focus:outline-none focus:border-[#ec1325]/50"
-                                placeholder="Nomor generasi"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-[#181112] mb-1">Urutan Lahir</label>
+                            <label className="block text-sm font-medium text-[#181112] mb-1">Urutan Lahir (Anak Ke-)</label>
                             <input
                                 type="number"
                                 name="birth_order"
                                 value={formData.birth_order || ''}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 border border-[#e6dbdc] rounded-lg focus:outline-none focus:border-[#ec1325]/50"
-                                placeholder="Anak ke-"
+                                className="w-full md:w-1/4 px-4 py-2 border border-[#e6dbdc] rounded-lg focus:outline-none focus:border-[#ec1325]/50"
+                                placeholder="Ex: 1"
                             />
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 {/* Status */}
-                <div className="space-y-4">
-                    <h2 className="font-semibold text-[#181112] border-b border-[#e6dbdc] pb-2">Status</h2>
+                <div className="space-y-4 pt-4 border-t border-[#e6dbdc]">
+                    <h2 className="font-semibold text-[#181112]">Status</h2>
 
                     <div className="flex items-center gap-6">
                         <label className="flex items-center gap-2 cursor-pointer">

@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query'
 import { adminApi } from '../api/adminApi'
 import type { PersonFilters, MarriageFilters, CreatePersonData, CreateMarriageData } from '../../../types'
 
@@ -65,6 +65,20 @@ export function useMarriages(filters: MarriageFilters = {}) {
     return useQuery({
         queryKey: ['marriages', filters],
         queryFn: () => adminApi.getMarriages(filters),
+    })
+}
+
+export function useInfiniteMarriages(filters: MarriageFilters = {}) {
+    return useInfiniteQuery({
+        queryKey: ['marriages', 'infinite', filters],
+        queryFn: ({ pageParam = 1 }) => adminApi.getMarriages({ ...filters, page: pageParam }),
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => {
+            if (lastPage.meta.current_page < lastPage.meta.last_page) {
+                return lastPage.meta.current_page + 1
+            }
+            return undefined
+        },
     })
 }
 

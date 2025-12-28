@@ -22,6 +22,7 @@ class Person extends Model
         'birth_place',
         'death_date',
         'is_alive',
+        'is_root',
         'photo_url',
         'phone',
         'address',
@@ -36,6 +37,7 @@ class Person extends Model
         'birth_date' => 'date',
         'death_date' => 'date',
         'is_alive' => 'boolean',
+        'is_root' => 'boolean',
     ];
 
     public function branch(): BelongsTo
@@ -91,7 +93,7 @@ class Person extends Model
     // Mendapatkan orang tua
     public function getParentsAttribute()
     {
-        $parentChild = ParentChild::where('child_id', $this->id)->first();
+        $parentChild = $this->parentChild; // Use relation
 
         if (!$parentChild) {
             return collect();
@@ -99,5 +101,17 @@ class Person extends Model
 
         $marriage = $parentChild->marriage;
         return collect([$marriage->husband, $marriage->wife])->filter();
+    }
+
+    // Relasi ke parent_child table (sebagai anak)
+    public function parentChild(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ParentChild::class, 'child_id');
+    }
+
+    // Accessor for parent_marriage_id
+    public function getParentMarriageIdAttribute()
+    {
+        return $this->parentChild?->marriage_id;
     }
 }

@@ -54,15 +54,56 @@ class BranchRepository implements BranchRepositoryInterface
             $personIds = \App\Models\Person::where('branch_id', $branch->id)->pluck('id');
             
             // Count marriages where one partner is in this branch and the other is NOT
-            $spouseCount = \App\Models\Marriage::where(function($q) use ($personIds) {
+            // Count marriages where one partner is in this branch and the other is NOT
+            $spouseQuery = function($q) use ($personIds) {
                 $q->whereIn('husband_id', $personIds)
                   ->whereNotIn('wife_id', $personIds);
-            })->orWhere(function($q) use ($personIds) {
+            };
+            
+            $spouseQueryOr = function($q) use ($personIds) {
                 $q->whereIn('wife_id', $personIds)
                   ->whereNotIn('husband_id', $personIds);
-            })->count();
+            };
 
-            $branch->spouse_count = $spouseCount;
+            // Total Spouses
+            $spouseCount = \App\Models\Marriage::where($spouseQuery)
+                ->orWhere($spouseQueryOr)
+                ->count();
+
+            // Living Spouses (We need to join properly to check is_alive of the EXTERNAL spouse)
+            // This is complex with Eloquent standard check. 
+            // Simplified: Iterate or custom query?
+            // Let's use get() and filter for accuracy or refined query.
+            // Query approach:
+            
+            $marriages = \App\Models\Marriage::with(['husband', 'wife'])
+                ->where(function($q) use ($personIds) {
+                     $q->whereIn('husband_id', $personIds)
+                       ->whereNotIn('wife_id', $personIds);
+                })->orWhere(function($q) use ($personIds) {
+                     $q->whereIn('wife_id', $personIds)
+                       ->whereNotIn('husband_id', $personIds);
+                })->get();
+
+            $spouseTotal = 0;
+            $spouseLiving = 0;
+
+            foreach ($marriages as $marriage) {
+                $spouseTotal++;
+                // Check which one is the external spouse (not in personIds)
+                // personIds is Collection/Array? It's a pluck result (Collection).
+                // Use strict check.
+                
+                $isHusbandInternal = $personIds->contains($marriage->husband_id);
+                $externalSpouse = $isHusbandInternal ? $marriage->wife : $marriage->husband;
+                
+                if ($externalSpouse && $externalSpouse->is_alive) {
+                    $spouseLiving++;
+                }
+            }
+
+            $branch->spouse_count = $spouseTotal;
+            $branch->spouse_living_count = $spouseLiving;
         }
 
         return $branches;

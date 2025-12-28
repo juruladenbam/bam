@@ -33,6 +33,19 @@ class MarriageRepository implements MarriageRepositoryInterface
             $query->whereYear('marriage_date', $filters['year']);
         }
 
+        if (isset($filters['search'])) {
+            $searchTerm = '%' . trim($filters['search']) . '%';
+            $query->where(function ($q) use ($searchTerm) {
+                $q->whereHas('husband', function ($q) use ($searchTerm) {
+                    $q->where('full_name', 'like', $searchTerm)
+                      ->orWhere('nickname', 'like', $searchTerm);
+                })->orWhereHas('wife', function ($q) use ($searchTerm) {
+                    $q->where('full_name', 'like', $searchTerm)
+                      ->orWhere('nickname', 'like', $searchTerm);
+                });
+            });
+        }
+
         return $query->orderByDesc('marriage_date')->paginate($filters['per_page'] ?? 15);
     }
 
@@ -105,22 +118,20 @@ class MarriageRepository implements MarriageRepositoryInterface
 
     public function isInternal(int $husbandId, int $wifeId): bool
     {
-        // Internal marriage: both spouses are BAM descendants (not external/pasangan luar)
-        // External spouse branch has order = 99
-        $husband = Person::with('branch')->find($husbandId);
-        $wife = Person::with('branch')->find($wifeId);
+        // Internal marriage: both spouses are BAM members (keturunan or root)
+        // BAM member = has branch_id (keturunan) OR is_root = true (pendiri)
+        $husband = Person::find($husbandId);
+        $wife = Person::find($wifeId);
 
         if (!$husband || !$wife) {
             return false;
         }
 
-        // Get the external spouse branch order (order = 99 means "Pasangan Luar")
-        $externalBranchOrder = 99;
-        
-        $husbandIsBAM = $husband->branch && $husband->branch->order < $externalBranchOrder;
-        $wifeIsBAM = $wife->branch && $wife->branch->order < $externalBranchOrder;
+        // A person is BAM member if they have branch_id OR are the root
+        $husbandIsBAM = $husband->branch_id !== null || $husband->is_root;
+        $wifeIsBAM = $wife->branch_id !== null || $wife->is_root;
 
-        // If both are BAM descendants, it's an internal marriage
+        // If both are BAM members, it's an internal marriage
         return $husbandIsBAM && $wifeIsBAM;
     }
 }

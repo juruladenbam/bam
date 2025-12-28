@@ -48,6 +48,17 @@ class PersonService
         // Auto-calculate generation if parent marriage provided
         if (isset($data['parent_marriage_id'])) {
             $data['generation'] = $this->calculateGeneration($data['parent_marriage_id']);
+            
+            // Auto-detect branch if not explicitly provided and not indicating external spouse (explicit null)
+            // Note: If branch_id is strictly NULL/missing in input, we try to detect. 
+            // If user likely wants external spouse, they send explicit NULL/undefined from frontend, 
+            // but we should only auto-detect if we HAVE a parent. External spouses usually don't have parent_marriage_id in DB.
+            if (!isset($data['branch_id'])) {
+                $detectedBranch = $this->detectBranchFromParent($data['parent_marriage_id']);
+                if ($detectedBranch) {
+                    $data['branch_id'] = $detectedBranch;
+                }
+            }
         }
 
         $person = $this->personRepository->create($data);
@@ -164,5 +175,36 @@ class PersonService
         );
 
         return $parentGeneration + 1;
+    }
+
+    /**
+     * Detect branch ID from parent marriage
+     */
+    protected function detectBranchFromParent(int $marriageId): ?int
+    {
+        $marriage = $this->marriageRepository->find($marriageId);
+        
+        if (!$marriage) {
+            return null;
+        }
+
+        $husband = $this->personRepository->find($marriage->husband_id);
+        $wife = $this->personRepository->find($marriage->wife_id);
+
+        // If husband is BAM member (has branch or is root), inherit his branch
+        // Note: If husband is root, he has no branch_id, so child gets null?
+        // Wait, root's children are the FOUNDERS of branches 1-10.
+        // So strict inheritance works for Gen 2+ (cucu dst).
+        // For Gen 1 (anak root), they must be assigned manually.
+        
+        if ($husband && $husband->branch_id) {
+            return $husband->branch_id;
+        }
+
+        if ($wife && $wife->branch_id) {
+            return $wife->branch_id;
+        }
+
+        return null; // Fallback: manual selection needed (e.g. child of root)
     }
 }

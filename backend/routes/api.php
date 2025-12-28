@@ -23,5 +23,5 @@ Route::prefix('portal')
 // Admin routes (auth + admin role) - for admin
 // TODO: Re-enable auth middleware before production
 Route::prefix('admin')
-    // ->middleware(['auth:sanctum', 'admin'])  // Disabled for development
+    ->middleware(['auth:sanctum', 'admin'])
     ->group(base_path('routes/api/admin.php'));
