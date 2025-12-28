@@ -94,4 +94,7 @@ export const silsilahApi = {
         user: any
         person: import('../types').Person
     }>('/portal/me'),
+
+    // Logout
+    logout: () => fetchApi('/logout', { method: 'POST' }),
 }

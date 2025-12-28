@@ -44,9 +44,45 @@ export function PortalHeader() {
         navigate(`/silsilah/branch/${person.branch_id}?focus=${person.id}`)
     }
 
-    // Close on click outside (simple version: close on navigation change)
+    // User and Menu State
+    const [user, setUser] = useState<any>(null)
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+
+    // Fetch User
+    useEffect(() => {
+        silsilahApi.getMe().then(data => {
+            setUser(data.user)
+        }).catch(err => {
+            console.error('Failed to fetch user:', err)
+        })
+    }, [])
+
+    // Environment Variables
+    const PUBLIC_WEB_URL = import.meta.env.VITE_PUBLIC_WEB_URL || 'http://localhost:5173'
+
+    const handleLogoutClick = () => {
+        setIsUserMenuOpen(false)
+        setIsMenuOpen(false)
+        setShowLogoutConfirm(true)
+    }
+
+    const confirmLogout = async () => {
+        try {
+            await silsilahApi.logout()
+            window.location.href = PUBLIC_WEB_URL
+        } catch (error) {
+            console.error('Logout failed:', error)
+            window.location.href = PUBLIC_WEB_URL
+        }
+    }
+
+    // Close menus on navigation
     useEffect(() => {
         setShowResults(false)
+        setIsMenuOpen(false)
+        setIsUserMenuOpen(false)
+        setShowLogoutConfirm(false)
     }, [location.pathname])
 
     const isActive = (path: string) => {
@@ -165,11 +201,43 @@ export function PortalHeader() {
                     </span>
                 </button>
 
-                {/* User Avatar */}
-                <div className="hidden md:block bg-gray-200 bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-[#ec1325]/10 cursor-pointer hover:ring-[#ec1325]/30 transition-all">
-                    <span className="flex items-center justify-center w-full h-full text-xs font-bold text-gray-500">
-                        U
-                    </span>
+                {/* User Avatar Dropdown */}
+                <div className="relative hidden md:block">
+                    <button
+                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                        className="bg-gray-200 bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-[#ec1325]/10 cursor-pointer hover:ring-[#ec1325]/30 transition-all focus:outline-none"
+                    >
+                        <span className="flex items-center justify-center w-full h-full text-xs font-bold text-gray-500">
+                            {user?.name?.charAt(0) || 'U'}
+                        </span>
+                    </button>
+
+                    {/* Desktop User Menu */}
+                    {isUserMenuOpen && (
+                        <div className="absolute top-12 right-0 w-48 bg-white rounded-xl shadow-xl border border-[#f4f0f0] overflow-hidden py-1 z-50 animate-in fade-in zoom-in duration-200">
+                            <div className="px-4 py-2 border-b border-gray-100">
+                                <p className="text-sm font-bold text-[#181112] truncate">{user?.name || 'User'}</p>
+                                <p className="text-xs text-[#896165] truncate">{user?.email}</p>
+                            </div>
+                            {user?.role === 'admin' && (
+                                <a
+                                    href="/admin"
+                                    target="_blank"
+                                    className="flex items-center gap-2 px-4 py-2 text-sm text-[#181112] hover:bg-[#f8f6f6] transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+                                    Dashboard Admin
+                                </a>
+                            )}
+                            <button
+                                onClick={handleLogoutClick}
+                                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">logout</span>
+                                Keluar
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -181,9 +249,53 @@ export function PortalHeader() {
                     <Link to="/events" className="text-[#181112] font-medium py-2">Acara</Link>
                     <Link to="/archives" className="text-[#181112] font-medium py-2">Arsip</Link>
                     <hr className="border-[#f4f0f0]" />
-                    <div className="flex items-center gap-3 py-2">
-                        <div className="size-8 rounded-full bg-gray-200"></div>
-                        <span className="font-medium text-[#181112]">User Profile</span>
+                    <div className="py-2">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="size-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-xs text-gray-500">
+                                {user?.name?.charAt(0) || 'U'}
+                            </div>
+                            <div>
+                                <p className="font-medium text-[#181112] text-sm">{user?.name || 'User'}</p>
+                                <p className="text-xs text-[#896165]">{user?.email}</p>
+                            </div>
+                        </div>
+                        {user?.role === 'admin' && (
+                            <a href="/admin" className="flex items-center gap-2 py-2 text-sm text-[#181112]">
+                                <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+                                Dashboard Admin
+                            </a>
+                        )}
+                        <button onClick={handleLogoutClick} className="flex items-center gap-2 py-2 text-sm text-red-600 w-full text-left">
+                            <span className="material-symbols-outlined text-[18px]">logout</span>
+                            Keluar
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Logout Confirmation Modal */}
+            {showLogoutConfirm && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 animate-in fade-in zoom-in duration-200">
+                        <div className="mb-4">
+                            <span className="material-symbols-outlined text-4xl text-[#ec1325]">logout</span>
+                        </div>
+                        <h3 className="text-lg font-bold text-[#181112] mb-2">Konfirmasi Keluar</h3>
+                        <p className="text-[#896165] mb-6">Apakah Anda yakin ingin keluar dari portal?</p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowLogoutConfirm(false)}
+                                className="flex-1 py-2.5 rounded-xl font-medium text-[#181112] bg-[#f8f6f6] hover:bg-gray-200 transition-colors"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={confirmLogout}
+                                className="flex-1 py-2.5 rounded-xl font-medium bg-[#ec1325] text-white hover:bg-red-600 transition-colors"
+                            >
+                                Ya, Keluar
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
