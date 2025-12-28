@@ -15,11 +15,27 @@ use Illuminate\Support\Facades\Route;
 
 // Dashboard
 Route::get('/dashboard', function () {
+    $totalPersons = \App\Models\Person::count();
+    $totalAlive = \App\Models\Person::where('is_alive', true)->count();
+    $totalMarriages = \App\Models\Marriage::count();
+    $totalBranches = \App\Models\Branch::count();
+    
+    // Recent persons (last 5 added)
+    $recentPersons = \App\Models\Person::orderBy('created_at', 'desc')
+        ->take(5)
+        ->get(['id', 'full_name', 'gender', 'created_at']);
+    
     return response()->json([
         'success' => true,
-        'message' => 'Admin dashboard',
+        'message' => 'Admin dashboard stats',
         'data' => [
-            'welcome' => 'Selamat datang di Admin Panel BAM',
+            'stats' => [
+                'total_persons' => $totalPersons,
+                'total_alive' => $totalAlive,
+                'total_marriages' => $totalMarriages,
+                'total_branches' => $totalBranches,
+            ],
+            'recent_persons' => $recentPersons,
         ],
     ]);
 });

@@ -124,3 +124,12 @@ export function useBranch(id: number) {
         enabled: !!id,
     })
 }
+
+// ==================== DASHBOARD HOOKS ====================
+
+export function useDashboard() {
+    return useQuery({
+        queryKey: ['dashboard'],
+        queryFn: () => adminApi.getDashboard(),
+    })
+}

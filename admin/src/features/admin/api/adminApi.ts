@@ -87,7 +87,34 @@ export async function getBranch(id: number): Promise<ApiResponse<Branch>> {
     return api.get(`/branches/${id}`) as unknown as ApiResponse<Branch>
 }
 
+// ==================== DASHBOARD ====================
+
+export interface DashboardStats {
+    total_persons: number
+    total_alive: number
+    total_marriages: number
+    total_branches: number
+}
+
+export interface RecentPerson {
+    id: number
+    full_name: string
+    gender: 'male' | 'female'
+    created_at: string
+}
+
+export interface DashboardData {
+    stats: DashboardStats
+    recent_persons: RecentPerson[]
+}
+
+export async function getDashboard(): Promise<ApiResponse<DashboardData>> {
+    return api.get('/dashboard') as unknown as ApiResponse<DashboardData>
+}
+
 export const adminApi = {
+    // Dashboard
+    getDashboard,
     // Persons
     getPersons,
     getPerson,
