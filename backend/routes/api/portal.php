@@ -29,3 +29,9 @@ Route::get('/persons/{id}', [PersonController::class, 'show']);
 
 // Relationship
 Route::get('/relationship/{personId}', [RelationshipController::class, 'calculate']);
+
+// Content
+Route::get('/home', [\App\Http\Controllers\Api\Portal\HomeController::class, 'index']);
+Route::get('/events', [\App\Http\Controllers\Api\Portal\EventController::class, 'index']);
+Route::get('/events/{id}', [\App\Http\Controllers\Api\Portal\EventController::class, 'show']);
+Route::get('/archives', [\App\Http\Controllers\Api\Portal\ArchiveController::class, 'index']);

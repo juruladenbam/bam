@@ -6,6 +6,12 @@ import { PersonFormPage } from './pages/persons/PersonFormPage'
 import { MarriagesPage } from './pages/marriages/MarriagesPage'
 import { MarriageFormPage } from './pages/marriages/MarriageFormPage'
 import { BranchesPage } from './pages/branches/BranchesPage'
+import { EventListPage } from './pages/events/EventListPage'
+import { EventFormPage } from './pages/events/EventFormPage'
+import { NewsListPage } from './pages/news/NewsListPage'
+import { NewsFormPage } from './pages/news/NewsFormPage'
+import { MediaListPage } from './pages/media/MediaListPage'
+import { MediaUploadPage } from './pages/media/MediaUploadPage'
 import { LoginPage } from './pages/auth/LoginPage'
 
 function App() {
@@ -32,6 +38,20 @@ function App() {
 
             {/* Branches */}
             <Route path="/branches" element={<BranchesPage />} />
+
+            {/* Events */}
+            <Route path="/events" element={<EventListPage />} />
+            <Route path="/events/create" element={<EventFormPage />} />
+            <Route path="/events/:id/edit" element={<EventFormPage />} />
+
+            {/* News */}
+            <Route path="/news" element={<NewsListPage />} />
+            <Route path="/news/create" element={<NewsFormPage />} />
+            <Route path="/news/:id/edit" element={<NewsFormPage />} />
+
+            {/* Media/Archives */}
+            <Route path="/media" element={<MediaListPage />} />
+            <Route path="/media/upload" element={<MediaUploadPage />} />
 
             {/* 404 */}
             <Route path="*" element={

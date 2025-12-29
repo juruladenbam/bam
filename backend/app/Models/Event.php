@@ -21,12 +21,14 @@ class Event extends Model
         'location_name',
         'location_maps_url',
         'is_active',
+        'meta_data',
     ];
 
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'is_active' => 'boolean',
+        'meta_data' => 'array',
     ];
 
     public function schedules(): HasMany

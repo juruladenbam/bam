@@ -4,6 +4,7 @@ import { SilsilahPage } from './pages/silsilah/SilsilahPage'
 import { BranchPage } from './pages/silsilah/BranchPage'
 import { PersonDetailPage } from './pages/silsilah/PersonDetailPage'
 import { EventsPage } from './pages/events/EventsPage'
+import { EventDetailPage } from './pages/events/EventDetailPage'
 import { ArchivesPage } from './pages/archives/ArchivesPage'
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
 
       {/* Static pages */}
       <Route path="/events" element={<EventsPage />} />
+      <Route path="/events/:id" element={<EventDetailPage />} />
       <Route path="/archives" element={<ArchivesPage />} />
 
       {/* 404 */}

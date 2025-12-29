@@ -1,42 +1,7 @@
+import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import { PortalHeader } from '../../components/layout/PortalHeader'
-
-interface Event {
-    id: number
-    title: string
-    date: string
-    location: string
-    description: string
-    type: 'upcoming' | 'past'
-    image?: string
-}
-
-// Placeholder data - nanti bisa diganti dengan API
-const events: Event[] = [
-    {
-        id: 1,
-        title: 'Haul Akbar Bani Abdul Manan',
-        date: '2025-03-15',
-        location: 'Pondok Pesantren Langitan, Tuban',
-        description: 'Peringatan tahunan Haul Akbar untuk para leluhur Bani Abdul Manan. Acara ini dihadiri oleh seluruh keluarga besar dari berbagai daerah.',
-        type: 'upcoming',
-    },
-    {
-        id: 2,
-        title: 'Silaturahmi Nasional BAM',
-        date: '2025-06-20',
-        location: 'Surabaya, Jawa Timur',
-        description: 'Pertemuan tahunan seluruh anggota Bani Abdul Manan se-Indonesia. Agenda mencakup musyawarah keluarga dan ramah-tamah.',
-        type: 'upcoming',
-    },
-    {
-        id: 3,
-        title: 'Pengajian Rutin Bulanan',
-        date: '2025-01-05',
-        location: 'Masjid Besar Langitan',
-        description: 'Pengajian bulanan yang diadakan setiap awal bulan untuk mempererat tali silaturahmi.',
-        type: 'upcoming',
-    },
-]
+import { contentApi } from '../../features/content/api/contentApi'
 
 function formatDate(dateString: string): string {
     const date = new Date(dateString)
@@ -49,8 +14,16 @@ function formatDate(dateString: string): string {
 }
 
 export function EventsPage() {
-    const upcomingEvents = events.filter((e) => e.type === 'upcoming')
-    const pastEvents = events.filter((e) => e.type === 'past')
+    const { data: upcomingEvents, isLoading: loadingUpcoming } = useQuery({
+        queryKey: ['portal', 'events', 'upcoming'],
+        queryFn: () => contentApi.getEvents('upcoming')
+    })
+
+    const { data: pastEvents } = useQuery({
+        queryKey: ['portal', 'events', 'past'],
+        queryFn: () => contentApi.getEvents('past')
+    })
+
 
     return (
         <div className="min-h-screen bg-[#f8f6f6] flex flex-col">
@@ -74,12 +47,15 @@ export function EventsPage() {
                         Acara Mendatang
                     </h2>
 
-                    {upcomingEvents.length > 0 ? (
+                    {loadingUpcoming ? (
+                        <div className="text-center py-8 text-gray-500">Memuat acara...</div>
+                    ) : (upcomingEvents || []).length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {upcomingEvents.map((event) => (
-                                <div
+                            {upcomingEvents?.map((event: any) => (
+                                <Link
+                                    to={`/events/${event.id}`}
                                     key={event.id}
-                                    className="bg-white border border-[#e6dbdc] rounded-xl overflow-hidden hover:shadow-lg transition-all group"
+                                    className="bg-white border border-[#e6dbdc] rounded-xl overflow-hidden hover:shadow-lg transition-all group cursor-pointer block"
                                 >
                                     {/* Event Image Placeholder */}
                                     <div className="h-40 bg-gradient-to-br from-[#ec1325]/10 to-[#ec1325]/5 flex items-center justify-center">
@@ -92,23 +68,24 @@ export function EventsPage() {
                                         {/* Date Badge */}
                                         <div className="flex items-center gap-2 text-sm text-[#ec1325] font-medium mb-3">
                                             <span className="material-symbols-outlined text-[18px]">calendar_today</span>
-                                            {formatDate(event.date)}
+                                            {formatDate(event.start_date)}
                                         </div>
 
                                         <h3 className="font-bold text-lg text-[#181112] mb-2 group-hover:text-[#ec1325] transition-colors">
-                                            {event.title}
+                                            {event.name}
                                         </h3>
 
                                         <div className="flex items-center gap-2 text-sm text-[#896165] mb-3">
                                             <span className="material-symbols-outlined text-[16px]">location_on</span>
-                                            {event.location}
+                                            {event.location_name}
                                         </div>
 
-                                        <p className="text-sm text-[#896165] line-clamp-2">
-                                            {event.description}
-                                        </p>
+                                        <div
+                                            className="text-sm text-[#896165] line-clamp-2 prose prose-sm max-w-none [&>p]:mb-0"
+                                            dangerouslySetInnerHTML={{ __html: event.description }}
+                                        />
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     ) : (
@@ -120,7 +97,7 @@ export function EventsPage() {
                 </div>
 
                 {/* Past Events */}
-                {pastEvents.length > 0 && (
+                {(pastEvents || []).length > 0 && (
                     <div>
                         <h2 className="text-xl font-bold text-[#181112] mb-6 flex items-center gap-2">
                             <span className="material-symbols-outlined text-gray-400">history</span>
@@ -128,17 +105,17 @@ export function EventsPage() {
                         </h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-70">
-                            {pastEvents.map((event) => (
+                            {pastEvents?.map((event: any) => (
                                 <div
                                     key={event.id}
                                     className="bg-white border border-[#e6dbdc] rounded-xl p-5"
                                 >
                                     <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
                                         <span className="material-symbols-outlined text-[18px]">calendar_today</span>
-                                        {formatDate(event.date)}
+                                        {formatDate(event.start_date)}
                                     </div>
-                                    <h3 className="font-bold text-lg text-[#181112] mb-1">{event.title}</h3>
-                                    <p className="text-sm text-[#896165]">{event.location}</p>
+                                    <h3 className="font-bold text-lg text-[#181112] mb-1">{event.name}</h3>
+                                    <p className="text-sm text-[#896165]">{event.location_name}</p>
                                 </div>
                             ))}
                         </div>

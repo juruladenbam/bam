@@ -1,68 +1,17 @@
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { PortalHeader } from '../../components/layout/PortalHeader'
-
-interface ArchiveItem {
-    id: number
-    title: string
-    type: 'document' | 'photo' | 'video' | 'audio'
-    date: string
-    description: string
-    thumbnail?: string
-}
-
-// Placeholder data - nanti bisa diganti dengan API
-const archives: ArchiveItem[] = [
-    {
-        id: 1,
-        title: 'Silsilah Asli Bani Abdul Manan',
-        type: 'document',
-        date: '1920',
-        description: 'Dokumen silsilah asli yang ditulis tangan oleh para sesepuh keluarga.',
-    },
-    {
-        id: 2,
-        title: 'Foto Haul Akbar 2024',
-        type: 'photo',
-        date: '2024-03-15',
-        description: 'Dokumentasi foto kegiatan Haul Akbar Bani Abdul Manan tahun 2024.',
-    },
-    {
-        id: 3,
-        title: 'Rekaman Ceramah KH. Ahmad Marzuqi',
-        type: 'audio',
-        date: '2020-05-10',
-        description: 'Rekaman ceramah dari salah satu ulama keluarga Bani Abdul Manan.',
-    },
-    {
-        id: 4,
-        title: 'Video Silaturahmi Nasional 2023',
-        type: 'video',
-        date: '2023-06-20',
-        description: 'Dokumentasi video kegiatan Silaturahmi Nasional BAM di Surabaya.',
-    },
-]
-
-const typeIcons: Record<ArchiveItem['type'], string> = {
-    document: 'description',
-    photo: 'photo_library',
-    audio: 'headphones',
-    video: 'videocam',
-}
-
-const typeLabels: Record<ArchiveItem['type'], string> = {
-    document: 'Dokumen',
-    photo: 'Foto',
-    audio: 'Audio',
-    video: 'Video',
-}
-
-const typeColors: Record<ArchiveItem['type'], string> = {
-    document: 'bg-blue-50 text-blue-600',
-    photo: 'bg-green-50 text-green-600',
-    audio: 'bg-orange-50 text-orange-600',
-    video: 'bg-purple-50 text-purple-600',
-}
+import { contentApi } from '../../features/content/api/contentApi'
+import type { MediaItem } from '../../features/content/api/contentApi'
 
 export function ArchivesPage() {
+    const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null)
+
+    const { data: archives, isLoading } = useQuery({
+        queryKey: ['portal', 'archives'],
+        queryFn: () => contentApi.getArchives().then(res => res.data)
+    })
+
     return (
         <div className="min-h-screen bg-[#f8f6f6] flex flex-col">
             <PortalHeader />
@@ -75,72 +24,90 @@ export function ArchivesPage() {
                     </h1>
                     <p className="text-[#896165] max-w-2xl">
                         Koleksi dokumen, foto, video, dan rekaman bersejarah keluarga besar Bani Abdul Manan.
-                        Melestarikan warisan untuk generasi mendatang.
                     </p>
-                </div>
-
-                {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                    {(['document', 'photo', 'audio', 'video'] as const).map((type) => {
-                        const count = archives.filter((a) => a.type === type).length
-                        return (
-                            <div
-                                key={type}
-                                className="bg-white border border-[#e6dbdc] rounded-xl p-4 flex items-center gap-3"
-                            >
-                                <div className={`size-10 rounded-lg flex items-center justify-center ${typeColors[type]}`}>
-                                    <span className="material-symbols-outlined">{typeIcons[type]}</span>
-                                </div>
-                                <div>
-                                    <p className="text-xl font-bold text-[#181112]">{count}</p>
-                                    <p className="text-xs text-[#896165]">{typeLabels[type]}</p>
-                                </div>
-                            </div>
-                        )
-                    })}
                 </div>
 
                 {/* Archives Grid */}
                 <div className="mb-8">
-                    <h2 className="text-xl font-bold text-[#181112] mb-6 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-[#ec1325]">inventory_2</span>
-                        Koleksi Arsip
-                    </h2>
+                    {isLoading ? (
+                        <div className="text-center py-12 text-gray-500">Memuat arsip...</div>
+                    ) : (archives || []).length > 0 ? (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {archives?.map((item: any) => (
+                                <div
+                                    key={item.id}
+                                    onClick={() => setSelectedMedia(item)}
+                                    className="group relative bg-white border border-[#e6dbdc] rounded-xl overflow-hidden cursor-pointer aspect-square hover:shadow-lg transition-all"
+                                >
+                                    {item.type === 'video' ? (
+                                        <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                                            <span className="material-symbols-outlined text-4xl text-[#ec1325]">play_circle</span>
+                                        </div>
+                                    ) : (
+                                        <img
+                                            src={item.file_url}
+                                            alt={item.caption}
+                                            className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).src = 'https://placehold.co/400?text=Image'
+                                            }}
+                                        />
+                                    )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {archives.map((item) => (
-                            <div
-                                key={item.id}
-                                className="bg-white border border-[#e6dbdc] rounded-xl overflow-hidden hover:shadow-lg transition-all group cursor-pointer"
-                            >
-                                {/* Thumbnail */}
-                                <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center">
-                                    <span className={`material-symbols-outlined text-5xl opacity-30 ${typeColors[item.type].split(' ')[1]}`}>
-                                        {typeIcons[item.type]}
-                                    </span>
-                                </div>
-
-                                <div className="p-4">
-                                    {/* Type Badge */}
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${typeColors[item.type]}`}>
-                                            {typeLabels[item.type]}
-                                        </span>
-                                        <span className="text-[10px] text-[#896165]">{item.date}</span>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                                        <p className="text-white text-sm font-medium line-clamp-2">{item.caption || 'Tanpa Keterangan'}</p>
+                                        <span className="text-white/70 text-xs mt-1">{item.year || '-'}</span>
                                     </div>
-
-                                    <h3 className="font-bold text-sm text-[#181112] mb-1 group-hover:text-[#ec1325] transition-colors line-clamp-2">
-                                        {item.title}
-                                    </h3>
-
-                                    <p className="text-xs text-[#896165] line-clamp-2">
-                                        {item.description}
-                                    </p>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-12 bg-white rounded-xl border border-[#e6dbdc]">
+                            <span className="material-symbols-outlined text-4xl text-gray-300 mb-2">perm_media</span>
+                            <p className="text-gray-500">Belum ada arsip yang ditampilkan.</p>
+                        </div>
+                    )}
                 </div>
+
+                {/* Lightbox Modal */}
+                {selectedMedia && (
+                    <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" onClick={() => setSelectedMedia(null)}>
+                        <div className="relative max-w-5xl max-h-screen w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
+                            <button
+                                onClick={() => setSelectedMedia(null)}
+                                className="absolute -top-12 right-0 text-white hover:text-[#ec1325] transition-colors"
+                            >
+                                <span className="material-symbols-outlined text-3xl">close</span>
+                            </button>
+
+                            {selectedMedia.type === 'video' ? (
+                                <div className="w-full aspect-video bg-black rounded-lg overflow-hidden">
+                                    {selectedMedia.file_url.includes('youtube') ? (
+                                        <iframe
+                                            src={selectedMedia.file_url.replace('watch?v=', 'embed/')}
+                                            className="w-full h-full"
+                                            frameBorder="0"
+                                            allowFullScreen
+                                        />
+                                    ) : (
+                                        <video src={selectedMedia.file_url} controls className="w-full h-full" />
+                                    )}
+                                </div>
+                            ) : (
+                                <img
+                                    src={selectedMedia.file_url}
+                                    alt={selectedMedia.caption}
+                                    className="max-w-full max-h-[80vh] object-contain rounded-lg"
+                                />
+                            )}
+
+                            <div className="mt-4 text-center text-white">
+                                <p className="font-medium text-lg">{selectedMedia.caption}</p>
+                                <p className="text-white/60 text-sm">{selectedMedia.year}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Coming Soon Notice */}
                 <div className="mt-8 bg-gradient-to-r from-[#ec1325]/5 to-transparent border border-[#ec1325]/10 rounded-xl p-6">
