@@ -33,6 +33,7 @@ class EventController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'thumbnail' => 'nullable|string|max:500',
             'type' => ['required', Rule::in(['festival', 'halal_bihalal', 'youth_camp', 'other'])],
             'year' => 'required|integer|min:1900|max:2100',
             'start_date' => 'required|date',
@@ -54,6 +55,7 @@ class EventController extends Controller
     {
         $validated = $request->validate([
             'name' => 'string|max:255',
+            'thumbnail' => 'nullable|string|max:500',
             'type' => [Rule::in(['festival', 'halal_bihalal', 'youth_camp', 'other'])],
             'year' => 'integer|min:1900|max:2100',
             'start_date' => 'date',

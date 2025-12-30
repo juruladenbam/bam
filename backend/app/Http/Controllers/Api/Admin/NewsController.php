@@ -25,15 +25,19 @@ class NewsController extends Controller
 
     public function show($id)
     {
-         // Quick fix: fetch directly via repository logic from service helper if available
-         // For now, return 501 but with correct method
-        return $this->error('Method not implemented yet', 501);
+        $news = $this->service->getNews($id);
+        if (!$news) {
+            return $this->error('News not found', 404);
+        }
+        return $this->success($news);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'thumbnail' => 'nullable|string|max:500', 
+            'description' => 'nullable|string|max:1000',
             'content' => 'required|string',
             'category' => ['required', Rule::in(['kelahiran', 'lelayu', 'prestasi', 'umum'])],
             'is_public' => 'boolean',
@@ -50,6 +54,8 @@ class NewsController extends Controller
     {
         $validated = $request->validate([
             'title' => 'string|max:255',
+            'thumbnail' => 'nullable|string|max:500',
+            'description' => 'nullable|string|max:1000',
             'content' => 'string',
             'category' => [Rule::in(['kelahiran', 'lelayu', 'prestasi', 'umum'])],
             'is_public' => 'boolean',

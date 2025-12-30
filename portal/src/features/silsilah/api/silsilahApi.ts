@@ -1,14 +1,31 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 const PUBLIC_WEB_URL = import.meta.env.VITE_PUBLIC_WEB_URL || 'http://localhost:5173'
 
+function getCookie(name: string): string | null {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return decodeURIComponent(parts.pop()?.split(';').shift() || '');
+    return null;
+}
+
 export async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...options?.headers,
+    }
+
+    // Add CSRF token for non-GET requests
+    if (options?.method && options.method !== 'GET' && options.method !== 'HEAD') {
+        const csrfToken = getCookie('XSRF-TOKEN')
+        if (csrfToken) {
+            (headers as any)['X-XSRF-TOKEN'] = csrfToken
+        }
+    }
+
     const response = await fetch(`${API_URL}${endpoint}`, {
         ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            ...options?.headers,
-        },
+        headers,
         credentials: 'include',
     })
 
@@ -25,11 +42,21 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
             throw new Error('Anda tidak memiliki akses ke halaman ini')
         }
 
+        // Handle 419 CSRF Token Mismatch
+        if (response.status === 419) {
+            throw new Error('Sesi anda telah berakhir (CSRF), silahkan muat ulang halaman.')
+        }
+
         throw new Error(`API Error: ${response.status}`)
     }
 
+    // For 204 No Content, return empty object
+    if (response.status === 204) {
+        return {} as T
+    }
+
     const data = await response.json()
-    return data.data
+    return data.data || data // Handle standard wrap or direct response
 }
 
 export const silsilahApi = {

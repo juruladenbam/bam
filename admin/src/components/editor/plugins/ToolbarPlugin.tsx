@@ -1,6 +1,11 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { FORMAT_TEXT_COMMAND, type TextFormatType } from 'lexical';
 import { TOGGLE_LINK_COMMAND } from '@lexical/link';
+import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text';
+import { $setBlocksType } from '@lexical/selection';
+import { $getSelection, $isRangeSelection } from 'lexical';
+import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list';
+
 
 export default function ToolbarPlugin() {
     const [editor] = useLexicalComposerContext();
@@ -9,41 +14,65 @@ export default function ToolbarPlugin() {
         editor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
     };
 
+    const formatHeading = (headingLevel: 'h1' | 'h2' | 'h3') => {
+        editor.update(() => {
+            const selection = $getSelection();
+            if ($isRangeSelection(selection)) {
+                $setBlocksType(selection, () => $createHeadingNode(headingLevel));
+            }
+        });
+    };
+
+    const formatQuote = () => {
+        editor.update(() => {
+            const selection = $getSelection();
+            if ($isRangeSelection(selection)) {
+                $setBlocksType(selection, () => $createQuoteNode());
+            }
+        });
+    };
+
     return (
-        <div className="flex items-center gap-1 border-b border-[#e6dbdc] p-2 bg-gray-50 rounded-t-lg">
-            <button
-                type="button"
-                onClick={() => onClick('bold')}
-                className={'p-1 hover:bg-white rounded transition-colors text-gray-600'}
-                title="Bold"
-            >
-                <span className="material-symbols-outlined text-[20px]">format_bold</span>
-            </button>
-            <button
-                type="button"
-                onClick={() => onClick('italic')}
-                className={'p-1 hover:bg-white rounded transition-colors text-gray-600'}
-                title="Italic"
-            >
-                <span className="material-symbols-outlined text-[20px]">format_italic</span>
-            </button>
-            <button
-                type="button"
-                onClick={() => onClick('underline')}
-                className={'p-1 hover:bg-white rounded transition-colors text-gray-600'}
-                title="Underline"
-            >
-                <span className="material-symbols-outlined text-[20px]">format_underlined</span>
-            </button>
-            <button
-                type="button"
-                onClick={() => onClick('strikethrough')}
-                className={'p-1 hover:bg-white rounded transition-colors text-gray-600'}
-                title="Strikethrough"
-            >
-                <span className="material-symbols-outlined text-[20px]">format_strikethrough</span>
-            </button>
+        <div className="flex items-center gap-1 border-b border-[#e6dbdc] p-2 bg-gray-50 rounded-t-lg flex-wrap">
+            {/* Inline Formatting */}
+            <div className="flex items-center gap-1">
+                <button
+                    type="button"
+                    onClick={() => onClick('bold')}
+                    className={'p-1 hover:bg-white rounded transition-colors text-gray-600'}
+                    title="Bold"
+                >
+                    <span className="material-symbols-outlined text-[20px]">format_bold</span>
+                </button>
+                <button
+                    type="button"
+                    onClick={() => onClick('italic')}
+                    className={'p-1 hover:bg-white rounded transition-colors text-gray-600'}
+                    title="Italic"
+                >
+                    <span className="material-symbols-outlined text-[20px]">format_italic</span>
+                </button>
+                <button
+                    type="button"
+                    onClick={() => onClick('underline')}
+                    className={'p-1 hover:bg-white rounded transition-colors text-gray-600'}
+                    title="Underline"
+                >
+                    <span className="material-symbols-outlined text-[20px]">format_underlined</span>
+                </button>
+                <button
+                    type="button"
+                    onClick={() => onClick('strikethrough')}
+                    className={'p-1 hover:bg-white rounded transition-colors text-gray-600'}
+                    title="Strikethrough"
+                >
+                    <span className="material-symbols-outlined text-[20px]">format_strikethrough</span>
+                </button>
+            </div>
+
             <div className="w-[1px] h-4 bg-gray-300 mx-1"></div>
+
+            {/* Link */}
             <button
                 type="button"
                 onClick={() => {
@@ -55,6 +84,52 @@ export default function ToolbarPlugin() {
             >
                 <span className="material-symbols-outlined text-[20px]">link</span>
             </button>
+
+            <div className="w-[1px] h-4 bg-gray-300 mx-1"></div>
+
+            {/* Block Formatting */}
+            <div className="flex items-center gap-1">
+                <button
+                    type="button"
+                    onClick={() => formatHeading('h1')}
+                    className={'p-1 hover:bg-white rounded transition-colors text-gray-600 font-bold text-xs w-[30px] flex justify-center'}
+                    title="Heading 1"
+                >
+                    H1
+                </button>
+                <button
+                    type="button"
+                    onClick={() => formatHeading('h2')}
+                    className={'p-1 hover:bg-white rounded transition-colors text-gray-600 font-bold text-xs w-[30px] flex justify-center'}
+                    title="Heading 2"
+                >
+                    H2
+                </button>
+                <button
+                    type="button"
+                    onClick={() => formatQuote()}
+                    className={'p-1 hover:bg-white rounded transition-colors text-gray-600'}
+                    title="Quote"
+                >
+                    <span className="material-symbols-outlined text-[20px]">format_quote</span>
+                </button>
+                <button
+                    type="button"
+                    onClick={() => editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)}
+                    className={'p-1 hover:bg-white rounded transition-colors text-gray-600'}
+                    title="Bullet List"
+                >
+                    <span className="material-symbols-outlined text-[20px]">format_list_bulleted</span>
+                </button>
+                <button
+                    type="button"
+                    onClick={() => editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)}
+                    className={'p-1 hover:bg-white rounded transition-colors text-gray-600'}
+                    title="Numbered List"
+                >
+                    <span className="material-symbols-outlined text-[20px]">format_list_numbered</span>
+                </button>
+            </div>
         </div>
     );
 }

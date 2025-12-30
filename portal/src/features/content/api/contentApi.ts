@@ -8,7 +8,9 @@ export interface NewsItem {
     category: string
     published_at: string
     author: { name: string }
-    // Add content excerpt if needed
+    thumbnail?: string
+    content?: string // HTML content
+    claps?: number
 }
 
 export interface EventSchedule {
@@ -64,6 +66,13 @@ export const contentApi = {
         fetchApi<EventItem[]>(`/portal/events?type=${type}`),
 
     getEventDetail: (id: number) => fetchApi<EventItem>(`/portal/events/${id}`),
+
+    getNewsDetail: (id: number) => fetchApi<NewsItem>(`/portal/news/${id}`),
+
+    clapNews: (id: number) => fetchApi<{ claps: number }>(`/portal/news/${id}/clap`, {
+        method: 'POST'
+    }),
+
     getEvent: (id: number) => fetchApi<EventItem>(`/portal/events/${id}`),
 
     getArchives: (params?: { type?: string, year?: number }) => {

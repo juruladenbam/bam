@@ -14,6 +14,8 @@ class NewsPost extends Model
         'author_id',
         'slug',
         'title',
+        'thumbnail',
+        'description',
         'content',
         'category',
         'is_public',

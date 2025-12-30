@@ -12,6 +12,7 @@ export interface SidebarItem {
 export interface Event {
     id: number
     name: string
+    thumbnail?: string
     type: 'festival' | 'halal_bihalal' | 'youth_camp' | 'other'
     year: number
     start_date: string
@@ -45,6 +46,8 @@ export interface NewsPost {
     id: number
     slug: string
     title: string
+    thumbnail?: string
+    description?: string // Short excerpt
     content: string
     category: 'kelahiran' | 'lelayu' | 'prestasi' | 'umum'
     is_public: boolean

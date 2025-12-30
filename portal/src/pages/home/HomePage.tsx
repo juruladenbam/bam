@@ -114,14 +114,18 @@ export function HomePage() {
                         <div className="lg:col-span-2">
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-2xl font-bold text-[#181112]">Berita Terkini</h2>
-                                <span className="text-sm text-[#ec1325] font-medium cursor-pointer hover:underline">Lihat Semua</span>
+                                {/* <span className="text-sm text-[#ec1325] font-medium cursor-pointer hover:underline">Lihat Semua</span> */}
                             </div>
 
                             {/* News List */}
                             <div className="space-y-4">
                                 {(homeData?.news || []).length > 0 ? (
                                     homeData?.news.map((news: any) => (
-                                        <div key={news.id} className="bg-white border border-[#e6dbdc] rounded-xl p-5 hover:shadow-md transition-shadow">
+                                        <Link
+                                            to={`/news/${news.id}`}
+                                            key={news.id}
+                                            className="block bg-white border border-[#e6dbdc] rounded-xl p-5 hover:shadow-md transition-shadow group"
+                                        >
                                             <div className="flex items-center gap-3 text-xs text-[#896165] mb-2">
                                                 <span className={`px-2 py-0.5 rounded capitalize ${news.category === 'lelayu' ? 'bg-black text-white' : 'bg-red-50 text-red-600'
                                                     }`}>
@@ -130,14 +134,14 @@ export function HomePage() {
                                                 <span>•</span>
                                                 <span>{new Date(news.published_at).toLocaleDateString('id-ID', { dateStyle: 'long' })}</span>
                                             </div>
-                                            <h3 className="text-lg font-bold text-[#181112] mb-2 line-clamp-2 hover:text-[#ec1325] transition-colors cursor-pointer">
+                                            <h3 className="text-lg font-bold text-[#181112] mb-2 line-clamp-2 group-hover:text-[#ec1325] transition-colors">
                                                 {news.title}
                                             </h3>
                                             <div className="flex items-center gap-2 mt-3 text-sm text-[#896165]">
                                                 <span className="material-symbols-outlined text-[16px]">edit_note</span>
                                                 <span>{news.author?.name || 'Admin'}</span>
                                             </div>
-                                        </div>
+                                        </Link>
                                     ))
                                 ) : (
                                     <div className="bg-gray-50 rounded-xl p-8 text-center text-gray-500">

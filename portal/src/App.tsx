@@ -6,6 +6,7 @@ import { PersonDetailPage } from './pages/silsilah/PersonDetailPage'
 import { EventsPage } from './pages/events/EventsPage'
 import { EventDetailPage } from './pages/events/EventDetailPage'
 import { ArchivesPage } from './pages/archives/ArchivesPage'
+import { NewsDetailPage } from './pages/news/NewsDetailPage'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       {/* Static pages */}
       <Route path="/events" element={<EventsPage />} />
       <Route path="/events/:id" element={<EventDetailPage />} />
+      <Route path="/news/:id" element={<NewsDetailPage />} />
       <Route path="/archives" element={<ArchivesPage />} />
 
       {/* 404 */}
@@ -37,4 +39,3 @@ function App() {
 }
 
 export default App
-

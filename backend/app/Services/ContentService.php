@@ -27,6 +27,11 @@ class ContentService
         return $this->newsRepository->all($filters);
     }
 
+    public function getNews(int $id): ?\App\Models\NewsPost
+    {
+        return $this->newsRepository->find($id);
+    }
+
     public function createNews(array $data): \App\Models\NewsPost
     {
         if (isset($data['title']) && !isset($data['slug'])) {
