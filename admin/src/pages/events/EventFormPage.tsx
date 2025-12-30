@@ -3,10 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { contentApi } from '../../features/content/api/contentApi'
-import type { CreateEventData } from '../../features/content/api/contentApi'
+import type { CreateEventData, SidebarItem } from '../../features/content/api/contentApi'
 import RichTextEditor from '../../components/editor/RichTextEditor'
-import EventScheduleManager from './components/EventScheduleManager'
-import EventSidebarManager from './components/EventSidebarManager'
+import { EventScheduleManager } from './components/EventScheduleManager'
+import { EventSidebarManager } from './components/EventSidebarManager'
 
 export function EventFormPage() {
     const { id } = useParams()
@@ -256,7 +256,16 @@ export function EventFormPage() {
                     </div>
 
                     {/* Meta Data Manager (Sidebar Items) */}
-                    <EventSidebarManager control={control} register={register} />
+                    <Controller
+                        name="meta_data"
+                        control={control}
+                        render={({ field }) => (
+                            <EventSidebarManager
+                                items={(field.value as SidebarItem[]) || []}
+                                onChange={field.onChange}
+                            />
+                        )}
+                    />
 
                 </div>
 
