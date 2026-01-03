@@ -10,12 +10,14 @@ interface NavItem {
 
 const navItems: NavItem[] = [
     { label: 'Dashboard', path: '/', icon: 'dashboard' },
+    { label: 'Submission', path: '/submissions', icon: 'inbox' },
     { label: 'Anggota', path: '/persons', icon: 'group' },
     { label: 'Pernikahan', path: '/marriages', icon: 'favorite' },
     { label: 'Qobilah', path: '/branches', icon: 'account_tree' },
     { label: 'Acara', path: '/events', icon: 'event' },
     { label: 'Berita', path: '/news', icon: 'article' },
     { label: 'Arsip', path: '/media', icon: 'perm_media' },
+    { label: 'Pengguna', path: '/users', icon: 'manage_accounts' },
 ]
 
 interface AdminLayoutProps {

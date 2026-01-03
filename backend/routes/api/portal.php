@@ -37,3 +37,9 @@ Route::get('/events/{id}', [\App\Http\Controllers\Api\Portal\EventController::cl
 Route::get('/news/{id}', [\App\Http\Controllers\Api\Portal\NewsController::class, 'show']);
 Route::post('/news/{id}/clap', [\App\Http\Controllers\Api\Portal\NewsController::class, 'clap']);
 Route::get('/archives', [\App\Http\Controllers\Api\Portal\ArchiveController::class, 'index']);
+
+// Submissions (Member Data Approval)
+Route::get('/submissions', [\App\Http\Controllers\Api\Portal\SubmissionController::class, 'index']);
+Route::post('/submissions', [\App\Http\Controllers\Api\Portal\SubmissionController::class, 'store']);
+Route::get('/submissions/{id}', [\App\Http\Controllers\Api\Portal\SubmissionController::class, 'show']);
+

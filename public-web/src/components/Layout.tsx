@@ -20,9 +20,12 @@ export default function Layout() {
                         <Link to="/tentang" className="text-[#181112] text-sm font-medium hover:text-[#ec1325] transition-colors">
                             Tentang
                         </Link>
-                        <a href="#events" className="text-[#181112] text-sm font-medium hover:text-[#ec1325] transition-colors">
+                        <Link to="/acara" className="text-[#181112] text-sm font-medium hover:text-[#ec1325] transition-colors">
                             Acara
-                        </a>
+                        </Link>
+                        <Link to="/berita" className="text-[#181112] text-sm font-medium hover:text-[#ec1325] transition-colors">
+                            Berita
+                        </Link>
                     </nav>
                     <Link
                         to="/login"
@@ -65,8 +68,8 @@ export default function Layout() {
                         <div className="flex flex-col gap-3">
                             <h4 className="text-[#181112] font-bold text-sm">Keluarga</h4>
                             <a href="#" className="text-[#896165] text-sm hover:text-[#ec1325]">Silsilah</a>
-                            <a href="#events" className="text-[#896165] text-sm hover:text-[#ec1325]">Acara</a>
-                            <a href="#" className="text-[#896165] text-sm hover:text-[#ec1325]">Galeri</a>
+                            <Link to="/acara" className="text-[#896165] text-sm hover:text-[#ec1325]">Acara</Link>
+                            <Link to="/berita" className="text-[#896165] text-sm hover:text-[#ec1325]">Berita</Link>
                         </div>
                     </div>
                 </div>

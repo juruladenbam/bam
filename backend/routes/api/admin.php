@@ -18,31 +18,7 @@ Route::get('/me', [\App\Http\Controllers\Api\Portal\AuthController::class, 'me']
 Route::post('/logout', [\App\Http\Controllers\Api\Portal\AuthController::class, 'logout']);
 
 // Dashboard
-Route::get('/dashboard', function () {
-    $totalPersons = \App\Models\Person::count();
-    $totalAlive = \App\Models\Person::where('is_alive', true)->count();
-    $totalMarriages = \App\Models\Marriage::count();
-    $totalBranches = \App\Models\Branch::count();
-    
-    // Recent persons (last 5 added)
-    $recentPersons = \App\Models\Person::orderBy('created_at', 'desc')
-        ->take(5)
-        ->get(['id', 'full_name', 'gender', 'created_at']);
-    
-    return response()->json([
-        'success' => true,
-        'message' => 'Admin dashboard stats',
-        'data' => [
-            'stats' => [
-                'total_persons' => $totalPersons,
-                'total_alive' => $totalAlive,
-                'total_marriages' => $totalMarriages,
-                'total_branches' => $totalBranches,
-            ],
-            'recent_persons' => $recentPersons,
-        ],
-    ]);
-});
+Route::get('/dashboard', [\App\Http\Controllers\Api\Admin\DashboardController::class, 'index']);
 
 // Branches
 Route::get('/branches', [BranchController::class, 'index']);
@@ -63,3 +39,13 @@ Route::apiResource('events', \App\Http\Controllers\Api\Admin\EventController::cl
 Route::apiResource('news', \App\Http\Controllers\Api\Admin\NewsController::class);
 Route::apiResource('media', \App\Http\Controllers\Api\Admin\MediaController::class);
 Route::apiResource('events.schedules', \App\Http\Controllers\Api\Admin\EventScheduleController::class)->shallow();
+
+// User Management
+Route::apiResource('users', \App\Http\Controllers\Api\Admin\UserController::class)->except(['store']);
+
+// Submission Approval
+Route::get('/submissions', [\App\Http\Controllers\Api\Admin\SubmissionController::class, 'index']);
+Route::get('/submissions/{id}', [\App\Http\Controllers\Api\Admin\SubmissionController::class, 'show']);
+Route::post('/submissions/{id}/approve', [\App\Http\Controllers\Api\Admin\SubmissionController::class, 'approve']);
+Route::post('/submissions/{id}/reject', [\App\Http\Controllers\Api\Admin\SubmissionController::class, 'reject']);
+

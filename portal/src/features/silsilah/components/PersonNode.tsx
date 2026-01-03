@@ -1,11 +1,14 @@
 
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { Handle, Position } from '@xyflow/react'
 import type { Person } from '../types'
+import { GhostNodeBadge } from './GhostNodeBadge'
 
 interface PersonNodeData extends Person {
     isGhost?: boolean
+    originalPersonId?: number
     originalBranchId?: number
+    originalBranchName?: string
     isDimmed?: boolean
     customStyle?: string
 }
@@ -18,13 +21,25 @@ function PersonNodeComponent({ data }: PersonNodeProps) {
     const isMale = data.gender === 'male'
     const isDeceased = !data.is_alive
 
+
+    // Handle navigation to original person node
+    const handleGhostNavigate = useCallback((personId: number, branchId: number) => {
+        // Find the original node and center on it
+        const originalNodeId = `person-${personId}`
+
+        // Emit custom event for parent to handle branch switching if needed
+        window.dispatchEvent(new CustomEvent('ghost-navigate', {
+            detail: { personId, branchId, nodeId: originalNodeId }
+        }))
+    }, [])
+
     return (
         <div
             className={`
         relative px-4 py-3 rounded-xl shadow-sm border w-[180px] min-h-[90px] flex flex-col justify-center z-10 transition-all duration-200 group
         bg-white border-[#e6dbdc]
         ${isDeceased ? 'opacity-75 grayscale' : ''}
-        ${data.isGhost ? 'border-dashed opacity-50' : ''}
+        ${data.isGhost ? 'border-dashed opacity-60' : ''}
         ${data.isDimmed
                     ? 'opacity-40 grayscale hover:opacity-100 hover:grayscale-0'
                     : 'hover:shadow-md hover:border-[#ec1325] hover:scale-105'
@@ -56,11 +71,15 @@ function PersonNodeComponent({ data }: PersonNodeProps) {
                 style={{ left: 0, top: '50%' }}
             />
 
-            {/* Ghost badge */}
-            {data.isGhost && (
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#ec1325] rounded-full flex items-center justify-center text-white text-xs">
-                    🔗
-                </div>
+            {/* Ghost badge with navigation */}
+            {data.isGhost && data.originalPersonId && (
+                <GhostNodeBadge
+                    originalPersonId={data.originalPersonId}
+                    personName={data.full_name}
+                    originalBranchId={data.originalBranchId || data.branch_id}
+                    originalBranchName={data.originalBranchName}
+                    onNavigate={handleGhostNavigate}
+                />
             )}
 
             {/* Photo or Avatar */}

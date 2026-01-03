@@ -13,6 +13,9 @@ import { NewsFormPage } from './pages/news/NewsFormPage'
 import { MediaListPage } from './pages/media/MediaListPage'
 import { MediaUploadPage } from './pages/media/MediaUploadPage'
 import { LoginPage } from './pages/auth/LoginPage'
+import { SubmissionListPage } from './pages/submissions/SubmissionListPage'
+import { SubmissionDetailPage } from './pages/submissions/SubmissionDetailPage'
+import { UserListPage } from './pages/users/UserListPage'
 
 function App() {
   return (
@@ -53,6 +56,13 @@ function App() {
             <Route path="/media" element={<MediaListPage />} />
             <Route path="/media/upload" element={<MediaUploadPage />} />
 
+            {/* Submissions */}
+            <Route path="/submissions" element={<SubmissionListPage />} />
+            <Route path="/submissions/:id" element={<SubmissionDetailPage />} />
+
+            {/* Users */}
+            <Route path="/users" element={<UserListPage />} />
+
             {/* 404 */}
             <Route path="*" element={
               <div className="flex items-center justify-center h-64">
@@ -70,3 +80,4 @@ function App() {
 }
 
 export default App
+

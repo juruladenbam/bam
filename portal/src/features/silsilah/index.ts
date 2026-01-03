@@ -1,6 +1,7 @@
 // Components
 export { PersonNode } from './components/PersonNode'
 export { FamilyTree } from './components/FamilyTree'
+export { GhostNodeBadge } from './components/GhostNodeBadge'
 
 // Hooks
 export {

@@ -120,6 +120,9 @@ export function PortalHeader() {
                     <Link to="/archives" className={`text-sm transition-colors ${isActive('/archives')}`}>
                         Arsip
                     </Link>
+                    <Link to="/submissions" className={`text-sm transition-colors ${isActive('/submissions')}`}>
+                        Lapor Data
+                    </Link>
                 </div>
             </div>
 
@@ -248,6 +251,7 @@ export function PortalHeader() {
                     <Link to="/silsilah" className="text-[#181112] font-medium py-2">Silsilah</Link>
                     <Link to="/events" className="text-[#181112] font-medium py-2">Acara</Link>
                     <Link to="/archives" className="text-[#181112] font-medium py-2">Arsip</Link>
+                    <Link to="/submissions" className="text-[#181112] font-medium py-2">Lapor Data</Link>
                     <hr className="border-[#f4f0f0]" />
                     <div className="py-2">
                         <div className="flex items-center gap-3 mb-4">

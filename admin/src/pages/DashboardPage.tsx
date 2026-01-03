@@ -71,6 +71,21 @@ export function DashboardPage() {
                         </div>
                     </div>
                 </div>
+                <Link to="/submissions" className="bg-white rounded-xl p-6 border border-[#e6dbdc] hover:border-yellow-400 hover:shadow-md transition-all block">
+                    <div className="flex items-center gap-4">
+                        <div className="size-12 rounded-lg bg-yellow-50 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-yellow-600">inbox</span>
+                        </div>
+                        <div>
+                            {isLoading ? (
+                                <div className="h-8 w-16 bg-gray-200 rounded animate-pulse"></div>
+                            ) : (
+                                <p className="text-2xl font-bold text-[#181112]">{(stats as any)?.pending_submissions || 0}</p>
+                            )}
+                            <p className="text-sm text-[#896165]">Submission Pending</p>
+                        </div>
+                    </div>
+                </Link>
             </div>
 
             {/* Quick Actions */}

@@ -65,5 +65,13 @@ class User extends Authenticatable
     {
         return in_array($this->role, ['admin', 'superadmin']);
     }
+
+    /**
+     * Get submissions created by this user
+     */
+    public function submissions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Submission::class);
+    }
 }
 
