@@ -305,15 +305,10 @@ export function buildTreeLayout(
             const minGap = 40 // Compact gap for standard couples
 
             if (!isPolygamy && !hasPivotChildren) {
-                // Standard Monogamy: Keep couple close, let children flare out.
-                // Sibling spacing (subtreeWidth) handles non-overlap with Uncles.
+                // Standard Monogamy: Keep couple close
                 spouseGaps.set(sid, minGap)
             } else {
-                // Polygamy or Mixed: Must ensure internal non-overlap.
-                // 1. Must fit Spouse's Children Half Width (w/2).
-                // 2. Must fit Pivot's Children Spill (pivotSpill).
-                // 3. Must fit minimum buffer (20px).
-
+                // Polygamy or Mixed: gap based on children width
                 const neededGap = (w / 2) + pivotSpill + 20
                 spouseGaps.set(sid, Math.max(minGap, neededGap))
             }
@@ -348,20 +343,14 @@ export function buildTreeLayout(
                 const gap = spouseGaps.get(sid)!
                 const pairKey = `${Math.min(personId, sid)}-${Math.max(personId, sid)}`
                 const marriageY = y + NODE_HEIGHT / 2
-                const COUPLE_GAP = gap * 2
 
-                // Spouse position (left edge)
-                const spouseX = baseX + COUPLE_GAP
+                // MN position based on children width (gap)
+                const mnX = baseX + gap - 4 // -4 to center 8px MN
+
+                // Spouse position: close to MN (fixed small gap, not based on children width)
+                const SPOUSE_TO_MN_GAP = 30 // Fixed gap between spouse and MN
+                const spouseX = mnX + 4 + SPOUSE_TO_MN_GAP // MN center + half MN width + gap
                 positions.set(sid, { x: spouseX, y })
-
-                // MN at exact midpoint between handle positions
-                // Pivot right handle = baseX (node right edge, handle is at edge)
-                // Spouse left handle = spouseX (node left edge, handle is at edge)
-                // Note: Handles are positioned at edges with CSS offset, but for connection purposes
-                // the midpoint should be between the visible gap between nodes
-                const pivotHandleX = baseX  // Right edge of pivot node
-                const spouseHandleX = spouseX  // Left edge of spouse node
-                const mnX = (pivotHandleX + spouseHandleX) / 2 - 4 // -4 to center 8px MN
 
                 marriageNodes.set(pairKey, {
                     id: `marriage-${pairKey}`,
@@ -378,17 +367,15 @@ export function buildTreeLayout(
                 const gap = spouseGaps.get(sid)!
                 const pairKey = `${Math.min(personId, sid)}-${Math.max(personId, sid)}`
                 const marriageY = y + NODE_HEIGHT / 2
-                const COUPLE_GAP = gap * 2
 
-                // Spouse position (right edge of spouse = baseX - COUPLE_GAP, so left edge = that - NODE_WIDTH)
-                const spouseX = baseX - COUPLE_GAP - NODE_WIDTH
+                // MN position based on children width (gap)
+                const mnX = baseX - gap - 4 // -4 to center 8px MN
+
+                // Spouse position: close to MN (fixed small gap, not based on children width)
+                const SPOUSE_TO_MN_GAP = 30 // Fixed gap between spouse and MN
+                const spouseX = mnX - 4 - SPOUSE_TO_MN_GAP - NODE_WIDTH // MN center - half MN - gap - node width
                 positions.set(sid, { x: spouseX, y })
 
-                // MN at exact midpoint between Spouse right edge and Pivot left edge
-                // Pivot left edge = baseX
-                // Spouse right edge = spouseX + NODE_WIDTH
-                const spouseRightEdge = spouseX + NODE_WIDTH
-                const mnX = (spouseRightEdge + baseX) / 2 - 4 // -4 to center the 8px MN node
                 marriageNodes.set(pairKey, {
                     id: `marriage-${pairKey}`,
                     x: mnX,
