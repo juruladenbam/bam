@@ -15,10 +15,8 @@ use Illuminate\Support\Facades\Route;
 // Guest routes (no auth) - for public-web
 Route::prefix('guest')->group(base_path('routes/api/guest.php'));
 
-// Portal routes (auth required) - for portal
-Route::prefix('portal')
-    ->middleware(['auth:sanctum'])
-    ->group(base_path('routes/api/portal.php'));
+// Portal routes - for portal (middleware applied per route inside)
+Route::prefix('portal')->group(base_path('routes/api/portal.php'));
 
 // Admin routes (auth + admin role) - for admin
 // TODO: Re-enable auth middleware before production

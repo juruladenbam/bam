@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 
+const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
+
 export default function HomePage() {
     return (
         <div>
@@ -25,17 +27,17 @@ export default function HomePage() {
                             {/* Quick Access Card */}
                             <div className="p-6 bg-white border border-[#e6dbdc] rounded-xl shadow-sm max-w-[480px]">
                                 <h3 className="text-base font-bold text-[#181112] mb-4">Akses Cepat Member</h3>
-                                <Link
-                                    to="/login"
+                                <a
+                                    href={`${PORTAL_URL}/login`}
                                     className="flex w-full cursor-pointer items-center justify-center rounded-lg h-12 px-6 bg-[#ec1325] text-white text-sm font-bold hover:bg-[#c91020] transition-colors"
                                 >
                                     Login ke Portal
-                                </Link>
+                                </a>
                                 <div className="mt-3 flex justify-between text-xs">
                                     <span className="text-[#896165]">Belum punya akun?</span>
-                                    <Link to="/register" className="text-[#ec1325] font-medium hover:underline">
+                                    <a href={`${PORTAL_URL}/register`} className="text-[#ec1325] font-medium hover:underline">
                                         Daftar Sekarang
-                                    </Link>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -218,12 +220,12 @@ export default function HomePage() {
                     <p className="text-white/80 mb-8 max-w-xl mx-auto">
                         Akses silsilah lengkap, daftar acara, dan tetap terhubung dengan keluarga besar.
                     </p>
-                    <Link
-                        to="/login"
+                    <a
+                        href={`${PORTAL_URL}/login`}
                         className="bg-white text-[#ec1325] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition inline-block"
                     >
                         Login Sekarang
-                    </Link>
+                    </a>
                 </div>
             </section>
         </div>

@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom'
+
+
+const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 
 export default function AboutPage() {
     return (
@@ -136,13 +138,13 @@ export default function AboutPage() {
             <section className="py-12 bg-white">
                 <div className="container mx-auto px-4 text-center">
                     <p className="text-[#896165] mb-4">Ingin melihat silsilah lengkap?</p>
-                    <Link
-                        to="/login"
+                    <a
+                        href={`${PORTAL_URL}/login`}
                         className="inline-flex items-center gap-2 bg-[#ec1325] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#c91020] transition-colors"
                     >
                         <span className="material-symbols-outlined">login</span>
                         Login ke Portal
-                    </Link>
+                    </a>
                 </div>
             </section>
         </div>

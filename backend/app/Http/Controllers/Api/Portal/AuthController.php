@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Services\AuthService;
 use App\Traits\ApiResponse;
 
@@ -13,6 +14,18 @@ class AuthController extends Controller
     public function __construct(
         protected AuthService $authService
     ) {
+    }
+
+    /**
+     * Login user
+     */
+    public function login(LoginRequest $request)
+    {
+        $user = $this->authService->login($request->validated());
+
+        return $this->success([
+            'user' => $user,
+        ], 'Login berhasil');
     }
 
     /**

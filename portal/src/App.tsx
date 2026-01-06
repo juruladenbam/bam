@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
+import { AuthGuard } from './components/AuthGuard'
 import { HomePage } from './pages/home/HomePage'
+import { LoginPage } from './pages/auth/LoginPage'
 import { SilsilahPage } from './pages/silsilah/SilsilahPage'
 import { BranchPage } from './pages/silsilah/BranchPage'
 import { PersonDetailPage } from './pages/silsilah/PersonDetailPage'
@@ -12,22 +14,19 @@ import { SubmissionsPage } from './pages/submissions/SubmissionsPage'
 function App() {
   return (
     <Routes>
-      {/* Home */}
-      <Route path="/" element={<HomePage />} />
+      {/* Public Auth Route */}
+      <Route path="/login" element={<LoginPage />} />
 
-      {/* Silsilah routes */}
-      <Route path="/silsilah" element={<SilsilahPage />} />
-      <Route path="/silsilah/branch/:id" element={<BranchPage />} />
-      <Route path="/silsilah/person/:id" element={<PersonDetailPage />} />
-
-      {/* Submissions */}
-      <Route path="/submissions" element={<SubmissionsPage />} />
-
-      {/* Static pages */}
-      <Route path="/events" element={<EventsPage />} />
-      <Route path="/events/:id" element={<EventDetailPage />} />
-      <Route path="/news/:id" element={<NewsDetailPage />} />
-      <Route path="/archives" element={<ArchivesPage />} />
+      {/* Protected Routes - require authentication */}
+      <Route path="/" element={<AuthGuard><HomePage /></AuthGuard>} />
+      <Route path="/silsilah" element={<AuthGuard><SilsilahPage /></AuthGuard>} />
+      <Route path="/silsilah/branch/:id" element={<AuthGuard><BranchPage /></AuthGuard>} />
+      <Route path="/silsilah/person/:id" element={<AuthGuard><PersonDetailPage /></AuthGuard>} />
+      <Route path="/submissions" element={<AuthGuard><SubmissionsPage /></AuthGuard>} />
+      <Route path="/events" element={<AuthGuard><EventsPage /></AuthGuard>} />
+      <Route path="/events/:id" element={<AuthGuard><EventDetailPage /></AuthGuard>} />
+      <Route path="/news/:id" element={<AuthGuard><NewsDetailPage /></AuthGuard>} />
+      <Route path="/archives" element={<AuthGuard><ArchivesPage /></AuthGuard>} />
 
       {/* 404 */}
       <Route path="*" element={
@@ -43,4 +42,3 @@ function App() {
 }
 
 export default App
-

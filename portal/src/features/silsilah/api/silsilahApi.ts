@@ -1,5 +1,4 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
-const PUBLIC_WEB_URL = import.meta.env.VITE_PUBLIC_WEB_URL || 'http://localhost:5173'
 
 function getCookie(name: string): string | null {
     const value = `; ${document.cookie}`;
@@ -33,7 +32,7 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
         // Handle 401 Unauthorized - redirect to login
         if (response.status === 401) {
             const returnUrl = encodeURIComponent(window.location.href)
-            window.location.href = `${PUBLIC_WEB_URL}/login?redirect=${returnUrl}`
+            window.location.href = `/login?redirect=${returnUrl}`
             throw new Error('Unauthorized - redirecting to login')
         }
 
@@ -47,7 +46,26 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
             throw new Error('Sesi anda telah berakhir (CSRF), silahkan muat ulang halaman.')
         }
 
-        throw new Error(`API Error: ${response.status}`)
+        // Try to parse error message from response
+        try {
+            const errorData = await response.json()
+            // Laravel validation errors
+            if (errorData.errors) {
+                const firstError = Object.values(errorData.errors)[0]
+                throw new Error(Array.isArray(firstError) ? firstError[0] : String(firstError))
+            }
+            // Standard message
+            if (errorData.message) {
+                throw new Error(errorData.message)
+            }
+        } catch (e) {
+            // If parsing fails and it's not our thrown error, use generic message
+            if (e instanceof Error && !e.message.startsWith('API Error')) {
+                throw e
+            }
+        }
+
+        throw new Error(`Terjadi kesalahan pada server (${response.status})`)
     }
 
     // For 204 No Content, return empty object
@@ -60,6 +78,19 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
 }
 
 export const silsilahApi = {
+    // Login
+    login: async (email: string, password: string) => {
+        // Get CSRF cookie first
+        await fetch(`${API_URL.replace('/api', '')}/sanctum/csrf-cookie`, {
+            credentials: 'include',
+        })
+
+        return fetchApi<{ user: any }>('/portal/login', {
+            method: 'POST',
+            body: JSON.stringify({ email, password })
+        })
+    },
+
     // Get all branches with stats
     getBranches: () => fetchApi<{
         branches: import('../types').Branch[]

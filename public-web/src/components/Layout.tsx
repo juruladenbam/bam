@@ -1,5 +1,7 @@
 import { Outlet, Link } from 'react-router-dom'
 
+const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
+
 export default function Layout() {
     return (
         <div className="relative flex min-h-screen w-full flex-col">
@@ -27,12 +29,12 @@ export default function Layout() {
                             Berita
                         </Link>
                     </nav>
-                    <Link
-                        to="/login"
+                    <a
+                        href={`${PORTAL_URL}/login`}
                         className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-[#ec1325] text-white text-sm font-bold hover:bg-[#c91020] transition-colors"
                     >
                         Login
-                    </Link>
+                    </a>
                 </div>
 
                 {/* Mobile Menu Icon */}
@@ -62,12 +64,12 @@ export default function Layout() {
                     <div className="flex flex-wrap gap-12">
                         <div className="flex flex-col gap-3">
                             <h4 className="text-[#181112] font-bold text-sm">Portal</h4>
-                            <Link to="/login" className="text-[#896165] text-sm hover:text-[#ec1325]">Login</Link>
-                            <Link to="/register" className="text-[#896165] text-sm hover:text-[#ec1325]">Daftar</Link>
+                            <a href={`${PORTAL_URL}/login`} className="text-[#896165] text-sm hover:text-[#ec1325]">Login</a>
+                            <a href={`${PORTAL_URL}/register`} className="text-[#896165] text-sm hover:text-[#ec1325]">Daftar</a>
                         </div>
                         <div className="flex flex-col gap-3">
                             <h4 className="text-[#181112] font-bold text-sm">Keluarga</h4>
-                            <a href="#" className="text-[#896165] text-sm hover:text-[#ec1325]">Silsilah</a>
+                            <a href={PORTAL_URL} className="text-[#896165] text-sm hover:text-[#ec1325]">Silsilah</a>
                             <Link to="/acara" className="text-[#896165] text-sm hover:text-[#ec1325]">Acara</Link>
                             <Link to="/berita" className="text-[#896165] text-sm hover:text-[#ec1325]">Berita</Link>
                         </div>

@@ -1,14 +1,16 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { silsilahApi } from '../../features/silsilah/api/silsilahApi'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
-const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
-
-export default function LoginPage() {
+export function LoginPage() {
+    const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+
+    const PUBLIC_WEB_URL = import.meta.env.VITE_PUBLIC_WEB_URL || 'http://localhost:5173'
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -16,48 +18,30 @@ export default function LoginPage() {
         setLoading(true)
 
         try {
-            // Get CSRF cookie first
-            await fetch(`${API_URL.replace('/api', '')}/sanctum/csrf-cookie`, {
-                credentials: 'include',
-            })
+            await silsilahApi.login(email, password)
 
-            // Get XSRF token from cookie
-            const xsrfToken = document.cookie
-                .split('; ')
-                .find(row => row.startsWith('XSRF-TOKEN='))
-                ?.split('=')[1]
-
-            // Login - using new guest endpoint
-            const response = await fetch(`${API_URL}/guest/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    ...(xsrfToken && { 'X-XSRF-TOKEN': decodeURIComponent(xsrfToken) }),
-                },
-                credentials: 'include',
-                body: JSON.stringify({ email, password }),
-            })
-
-            const data = await response.json()
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Login gagal')
+            // Redirect to intended destination or home
+            const redirect = searchParams.get('redirect')
+            if (redirect) {
+                window.location.href = redirect
+            } else {
+                navigate('/')
             }
-
-            // Redirect to portal
-            window.location.href = PORTAL_URL
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Terjadi kesalahan')
+            setError(err instanceof Error ? err.message : 'Login gagal. Periksa email dan password Anda.')
         } finally {
             setLoading(false)
         }
     }
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 bg-[#f8f6f6]">
+        <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-[#f8f6f6]">
             <div className="max-w-md w-full">
                 <div className="text-center mb-8">
+                    <a href={PUBLIC_WEB_URL} className="inline-flex items-center gap-2 mb-6 text-[#181112] hover:text-[#ec1325] transition-colors">
+                        <span className="material-symbols-outlined">arrow_back</span>
+                        <span className="text-sm font-medium">Kembali ke Website</span>
+                    </a>
                     <div className="size-16 mx-auto rounded-full bg-[#ec1325]/10 flex items-center justify-center mb-4">
                         <span className="material-symbols-outlined text-[#ec1325] text-3xl">lock</span>
                     </div>
@@ -132,19 +116,16 @@ export default function LoginPage() {
                             </>
                         )}
                     </button>
-
-                    <div className="mt-6 text-center text-[#896165]">
-                        <p>
-                            Belum punya akun?{' '}
-                            <Link to="/register" className="text-[#ec1325] font-medium hover:underline">
-                                Daftar
-                            </Link>
-                        </p>
-                    </div>
                 </form>
 
                 <p className="text-center text-[#896165] text-sm mt-6">
-                    Setelah login, Anda akan dialihkan ke Portal Member
+                    Belum punya akun?{' '}
+                    <a
+                        href={`${PUBLIC_WEB_URL}/register`}
+                        className="text-[#ec1325] font-medium hover:underline"
+                    >
+                        Daftar
+                    </a>
                 </p>
             </div>
         </div>

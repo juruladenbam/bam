@@ -1,5 +1,6 @@
 import { useEvents, EventCard } from '@/features/events';
-import { Link } from 'react-router-dom';
+
+const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 
 export default function EventsPage() {
     const { data, isLoading, error } = useEvents();
@@ -54,12 +55,12 @@ export default function EventsPage() {
                     <p className="text-[#896165] mb-6 max-w-lg mx-auto">
                         Login ke Portal Member untuk mendaftar acara dan mendapatkan update terbaru.
                     </p>
-                    <Link
-                        to="/login"
+                    <a
+                        href={`${PORTAL_URL}/login`}
                         className="inline-block px-8 py-3 bg-[#ec1325] text-white font-semibold rounded-lg hover:bg-[#c91020] transition-colors"
                     >
                         Login ke Portal
-                    </Link>
+                    </a>
                 </div>
             </section>
         </div>

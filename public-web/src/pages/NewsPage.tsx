@@ -1,6 +1,7 @@
 import { useNews, NewsCard } from '@/features/news';
-import { Link } from 'react-router-dom';
 import { useState } from 'react';
+
+const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 
 export default function NewsPage() {
     const [page, setPage] = useState(1);
@@ -81,12 +82,12 @@ export default function NewsPage() {
                     <p className="text-[#896165] mb-6 max-w-lg mx-auto">
                         Login ke Portal Member untuk mengakses berita khusus anggota keluarga.
                     </p>
-                    <Link
-                        to="/login"
+                    <a
+                        href={`${PORTAL_URL}/login`}
                         className="inline-block px-8 py-3 bg-[#ec1325] text-white font-semibold rounded-lg hover:bg-[#c91020] transition-colors"
                     >
                         Login ke Portal
-                    </Link>
+                    </a>
                 </div>
             </section>
         </div>
