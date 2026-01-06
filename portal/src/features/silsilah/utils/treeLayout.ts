@@ -187,10 +187,11 @@ export function buildTreeLayout(
                     const nextW = getSubtreeWidth(nextChildId, newVisited)
 
                     // Dynamic gap based on subtree widths to prevent overlap
-                    // Each child's subtree extends w/2 to each side from center
-                    // Gap = half of this child's width + half of next child's width + buffer
-                    const minBuffer = 20 // Minimum visual separation
-                    const gap = Math.max(minBuffer, (w / 2) + (nextW / 2) - (170 * 0.8))
+                    // Use fraction of width difference to allow more compact layout
+                    const minBuffer = 120 // Minimum visual separation between families
+                    // Only add extra gap proportional to how much larger than a single node the subtrees are
+                    const combinedExcess = Math.max(0, (w + nextW) - 340) // 340 = 2 nodes
+                    const gap = minBuffer + (combinedExcess * 0.15)
                     return sum + w + gap
                 }
                 return sum + w
@@ -198,45 +199,26 @@ export function buildTreeLayout(
         }
 
         const NODE_WIDTH = 170
-        const MIN_GAP = 40 // Minimum gap per side
+        const COUPLE_GAP = 40 // Visual gap between spouse nodes
 
-        // Calculate actual gap needed based on children width under each spouse
-        // This matches the dynamic gap logic in layoutSubtree
-        let totalFamilyWidth = NODE_WIDTH // Start with pivot width
+        // Calculate couple visual width
+        // For a person with spouse(s), they extend to the sides
+        // Need to account for spouse on the right side which could overlap with next sibling
+        const spouseExtension = activeSpouses.length > 0
+            ? (NODE_WIDTH + COUPLE_GAP) * activeSpouses.length
+            : 0
 
-        if (activeSpouses.length > 0) {
-            // For each spouse, calculate actual gap needed (same logic as spouseGaps in layoutSubtree)
-            activeSpouses.forEach(sid => {
-                // Get children of this spouse pair
-                const spouseChildren: number[] = []
-                childrenByParent.get(personId)?.forEach(cid => {
-                    const link = parentChildLinks.find(l => l.child_id === cid)
-                    if (link && (link.father_id === sid || link.mother_id === sid)) {
-                        spouseChildren.push(cid)
-                    }
-                })
+        // Base width = pivot node + spouse extensions
+        // Add extra buffer to prevent spouse overlap with adjacent siblings
+        const rightSpouseBuffer = activeSpouses.length > 0 ? 180 : 0 // Extra space for right-side spouse
+        const coupleWidth = NODE_WIDTH + spouseExtension + rightSpouseBuffer
 
-                // Calculate cluster width for this spouse's children
-                let clusterWidth = 0
-                spouseChildren.forEach((cid, idx) => {
-                    if (!newVisited.has(cid)) {
-                        clusterWidth += getSubtreeWidth(cid, newVisited)
-                        if (idx < spouseChildren.length - 1) {
-                            const hasSpouse = (spouseMap.get(cid)?.length ?? 0) > 0
-                            clusterWidth += hasSpouse ? 50 : 30
-                        }
-                    }
-                })
+        // If no children, just use couple width (compact)
+        // If has children, use max of couple width or children subtree width
+        const totalWidth = children.length > 0
+            ? Math.max(coupleWidth, childrenWidth)
+            : coupleWidth
 
-                // Dynamic gap: base 40 + overflow if children are wide
-                const neededGap = Math.max(MIN_GAP, (clusterWidth / 2) + 20)
-                const coupleGap = neededGap * 2
-
-                totalFamilyWidth += NODE_WIDTH + coupleGap
-            })
-        }
-
-        const totalWidth = Math.max(totalFamilyWidth, childrenWidth)
         widthCache.set(cacheKey, totalWidth)
         return totalWidth
     }
@@ -300,8 +282,9 @@ export function buildTreeLayout(
                     const nextW = getSubtreeWidth(nextChild.id, new Set())
 
                     // Dynamic gap: prevent subtree overlap
-                    const minBuffer = 20
-                    const gap = Math.max(minBuffer, (thisW / 2) + (nextW / 2) - (NODE_WIDTH * 0.8))
+                    const minBuffer = 120
+                    const combinedExcess = Math.max(0, (thisW + nextW) - 340)
+                    const gap = minBuffer + (combinedExcess * 0.15)
                     totalWidth += gap
                 }
             })
@@ -435,8 +418,9 @@ export function buildTreeLayout(
                     const nextW = getSubtreeWidth(nextChild.id, new Set())
 
                     // Dynamic gap: prevent subtree overlap
-                    const minBuffer = 20
-                    const gap = Math.max(minBuffer, (w / 2) + (nextW / 2) - (NODE_WIDTH * 0.8))
+                    const minBuffer = 120
+                    const combinedExcess = Math.max(0, (w + nextW) - 340)
+                    const gap = minBuffer + (combinedExcess * 0.15)
                     currentChildX += w + gap
                 } else {
                     currentChildX += w
