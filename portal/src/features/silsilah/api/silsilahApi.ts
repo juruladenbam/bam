@@ -154,5 +154,5 @@ export const silsilahApi = {
     }>('/portal/me'),
 
     // Logout
-    logout: () => fetchApi('/logout', { method: 'POST' }),
+    logout: () => fetchApi('/portal/logout', { method: 'POST' }),
 }

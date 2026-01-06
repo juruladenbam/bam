@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useState, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { silsilahApi } from '../features/silsilah/api/silsilahApi'
 
@@ -12,22 +12,36 @@ export function AuthGuard({ children }: AuthGuardProps) {
     const [isChecking, setIsChecking] = useState(true)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
+    const checkAuth = useCallback(async () => {
+        setIsChecking(true)
+        setIsAuthenticated(false)
+
+        try {
+            await silsilahApi.getMe()
+            setIsAuthenticated(true)
+        } catch {
+            // Not authenticated, redirect to login
+            const returnUrl = encodeURIComponent(window.location.href)
+            navigate(`/login?redirect=${returnUrl}`, { replace: true })
+        } finally {
+            setIsChecking(false)
+        }
+    }, [navigate])
+
+    // Check auth on mount and when pathname changes
     useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                await silsilahApi.getMe()
-                setIsAuthenticated(true)
-            } catch {
-                // Not authenticated, redirect to login
-                const returnUrl = encodeURIComponent(window.location.href)
-                navigate(`/login?redirect=${returnUrl}`, { replace: true })
-            } finally {
-                setIsChecking(false)
-            }
+        checkAuth()
+    }, [checkAuth, location.pathname])
+
+    // Also check auth when window gains focus (user might have logged out in another tab)
+    useEffect(() => {
+        const handleFocus = () => {
+            checkAuth()
         }
 
-        checkAuth()
-    }, [navigate, location.pathname])
+        window.addEventListener('focus', handleFocus)
+        return () => window.removeEventListener('focus', handleFocus)
+    }, [checkAuth])
 
     if (isChecking) {
         return (

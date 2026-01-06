@@ -22,11 +22,29 @@ export function LoginPage() {
 
             // Redirect to intended destination or home
             const redirect = searchParams.get('redirect')
+
+            // Validate redirect URL to prevent open redirect
             if (redirect) {
-                window.location.href = redirect
-            } else {
-                navigate('/')
+                try {
+                    // Allow relative paths starting with /
+                    if (redirect.startsWith('/') && !redirect.startsWith('//')) {
+                        navigate(redirect)
+                        return
+                    }
+
+                    // Allow absolute URLs only if they match current origin
+                    const url = new URL(redirect)
+                    if (url.origin === window.location.origin) {
+                        window.location.href = redirect
+                        return
+                    }
+                } catch {
+                    // Invalid URL, ignore
+                }
             }
+
+            // Fallback to home
+            navigate('/')
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Login gagal. Periksa email dan password Anda.')
         } finally {

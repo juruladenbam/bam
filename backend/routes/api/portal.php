@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Public portal routes (no auth required)
-Route::post('/login', [AuthController::class, 'login']);
+// Public portal routes (no auth required)
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1');
 
 // Protected routes (auth required)
 Route::middleware('auth:sanctum')->group(function () {
