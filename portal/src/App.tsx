@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router-dom'
 import { AuthGuard } from './components/AuthGuard'
 import { HomePage } from './pages/home/HomePage'
 import { LoginPage } from './pages/auth/LoginPage'
+import { RegisterPage } from './pages/auth/RegisterPage'
+import { ClaimProfilePage } from './pages/auth/ClaimProfilePage'
 import { SilsilahPage } from './pages/silsilah/SilsilahPage'
 import { BranchPage } from './pages/silsilah/BranchPage'
 import { PersonDetailPage } from './pages/silsilah/PersonDetailPage'
@@ -17,9 +19,11 @@ function App() {
     <Routes>
       {/* Public Auth Route */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       {/* Protected Routes - require authentication */}
       <Route path="/" element={<AuthGuard><HomePage /></AuthGuard>} />
+      <Route path="/claim-profile" element={<AuthGuard><ClaimProfilePage /></AuthGuard>} />
       <Route path="/silsilah" element={<AuthGuard><SilsilahPage /></AuthGuard>} />
       <Route path="/silsilah/branch/:id" element={<AuthGuard><BranchPage /></AuthGuard>} />
       <Route path="/silsilah/person/:id" element={<AuthGuard><PersonDetailPage /></AuthGuard>} />

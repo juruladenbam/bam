@@ -12,9 +12,11 @@ export function AuthGuard({ children }: AuthGuardProps) {
     const [isChecking, setIsChecking] = useState(true)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-    const checkAuth = useCallback(async () => {
-        setIsChecking(true)
-        setIsAuthenticated(false)
+    const checkAuth = useCallback(async (silent = false) => {
+        if (!silent) {
+            setIsChecking(true)
+            setIsAuthenticated(false)
+        }
 
         try {
             await silsilahApi.getMe()
@@ -24,7 +26,9 @@ export function AuthGuard({ children }: AuthGuardProps) {
             const returnUrl = encodeURIComponent(window.location.href)
             navigate(`/login?redirect=${returnUrl}`, { replace: true })
         } finally {
-            setIsChecking(false)
+            if (!silent) {
+                setIsChecking(false)
+            }
         }
     }, [navigate])
 
@@ -33,10 +37,10 @@ export function AuthGuard({ children }: AuthGuardProps) {
         checkAuth()
     }, [checkAuth, location.pathname])
 
-    // Also check auth when window gains focus (user might have logged out in another tab)
+    // Also check auth when window gains focus (silent check)
     useEffect(() => {
         const handleFocus = () => {
-            checkAuth()
+            checkAuth(true)
         }
 
         window.addEventListener('focus', handleFocus)

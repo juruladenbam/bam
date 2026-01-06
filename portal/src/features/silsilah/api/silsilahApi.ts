@@ -78,7 +78,6 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
 }
 
 export const silsilahApi = {
-    // Login
     login: async (email: string, password: string) => {
         // Get CSRF cookie first
         await fetch(`${API_URL.replace('/api', '')}/sanctum/csrf-cookie`, {
@@ -90,6 +89,18 @@ export const silsilahApi = {
             body: JSON.stringify({ email, password })
         })
     },
+
+    // Register
+    register: (data: any) => fetchApi<{ user: any }>('/portal/register', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+
+    // Claim person profile
+    claimPerson: (personId: number) => fetchApi<{ user: any, person: any }>('/portal/me/claim', {
+        method: 'POST',
+        body: JSON.stringify({ person_id: personId })
+    }),
 
     // Get all branches with stats
     getBranches: () => fetchApi<{

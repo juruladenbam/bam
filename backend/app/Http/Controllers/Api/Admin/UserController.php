@@ -33,7 +33,7 @@ class UserController extends Controller
             $query->where('role', $request->role);
         }
         
-        $users = $query->orderBy('name')->paginate($request->input('per_page', 15));
+        $users = $query->with('person:id,full_name,gender')->orderBy('name')->paginate($request->input('per_page', 15));
         
         return $this->paginated($users, 'Data user berhasil diambil');
     }

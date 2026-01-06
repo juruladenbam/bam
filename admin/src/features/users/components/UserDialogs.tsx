@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { User } from '../api/userApi'
+import { Combobox } from '../../../components/Combobox'
+import { adminApi } from '../../admin/api/adminApi'
 
 interface EditUserDialogProps {
     user: User | null
@@ -12,18 +14,47 @@ interface EditUserDialogProps {
 export function EditUserDialog({ user, isOpen, onClose, onSave, isLoading }: EditUserDialogProps) {
     const [name, setName] = useState('')
     const [role, setRole] = useState<string>('member')
+    const [selectedPerson, setSelectedPerson] = useState<{ id: number; full_name: string } | null>(null)
+    const [personOptions, setPersonOptions] = useState<{ id: number; label: string; subLabel?: string }[]>([])
+    const [personLoading, setPersonLoading] = useState(false)
 
     useEffect(() => {
         if (user) {
             setName(user.name)
             setRole(user.role)
+            // Use user.person type from API which matches {id, full_name, gender}
+            setSelectedPerson(user.person ? { id: user.person.id, full_name: user.person.full_name } : null)
         }
     }, [user])
+
+    const handleSearchPerson = async (query: string) => {
+        if (!query || query.length < 2) {
+            setPersonOptions([])
+            return
+        }
+        setPersonLoading(true)
+        try {
+            const { data } = await adminApi.searchPersons(query)
+            setPersonOptions(data.data.map(p => ({
+                id: p.id,
+                label: p.full_name,
+                subLabel: p.branch ? `Qobilah ${p.branch.name.replace('Qobilah ', '')}` : `Gen ${p.generation}`,
+            })))
+        } catch (error) {
+            console.error('Failed to search persons', error)
+        } finally {
+            setPersonLoading(false)
+        }
+    }
 
     if (!isOpen || !user) return null
 
     const handleSave = () => {
-        onSave(user.id, { name, role: role as any })
+        onSave(user.id, {
+            name,
+            role: role as any,
+            person_id: selectedPerson?.id || null,
+        })
     }
 
     return (
@@ -69,11 +100,42 @@ export function EditUserDialog({ user, isOpen, onClose, onSave, isLoading }: Edi
                         <p className="text-sm text-gray-600">
                             <span className="font-medium">Email:</span> {user.email}
                         </p>
-                        {user.person && (
-                            <p className="text-sm text-gray-600 mt-1">
-                                <span className="font-medium">Linked to:</span> {user.person.full_name}
-                            </p>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Link Person
+                        </label>
+                        {selectedPerson ? (
+                            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-300">
+                                <div>
+                                    <p className="text-sm font-medium text-[#181112]">{selectedPerson.full_name}</p>
+                                    <p className="text-xs text-[#896165]">ID: {selectedPerson.id}</p>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedPerson(null)}
+                                    className="text-xs text-red-600 hover:text-red-800 font-medium px-3 py-1.5 rounded hover:bg-red-50 border border-red-100 transition-colors"
+                                >
+                                    Unlink
+                                </button>
+                            </div>
+                        ) : (
+                            <Combobox
+                                label=""
+                                placeholder="Cari nama person..."
+                                onSearch={handleSearchPerson}
+                                options={personOptions}
+                                onSelect={(opt) => {
+                                    if (opt) {
+                                        setSelectedPerson({ id: Number(opt.id), full_name: opt.label })
+                                    }
+                                }}
+                                loading={personLoading}
+                            />
                         )}
+                        <p className="text-xs text-gray-500 mt-1">
+                            Hubungkan akun user ini dengan data person di silsilah.
+                        </p>
                     </div>
                 </div>
 

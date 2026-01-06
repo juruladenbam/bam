@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { silsilahApi } from '../../features/silsilah/api/silsilahApi'
 
-export function LoginPage() {
+export function RegisterPage() {
     const navigate = useNavigate()
-    const [searchParams] = useSearchParams()
+    const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [passwordConfirmation, setPasswordConfirmation] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -15,38 +16,27 @@ export function LoginPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
+
+        if (password !== passwordConfirmation) {
+            setError('Konfirmasi password tidak sesuai.')
+            return
+        }
+
         setLoading(true)
 
         try {
-            await silsilahApi.login(email, password)
+            await silsilahApi.register({
+                name,
+                email,
+                password,
+                password_confirmation: passwordConfirmation
+            })
 
-            // Redirect to intended destination or home
-            const redirect = searchParams.get('redirect')
-
-            // Validate redirect URL to prevent open redirect
-            if (redirect) {
-                try {
-                    // Allow relative paths starting with /
-                    if (redirect.startsWith('/') && !redirect.startsWith('//')) {
-                        navigate(redirect)
-                        return
-                    }
-
-                    // Allow absolute URLs only if they match current origin
-                    const url = new URL(redirect)
-                    if (url.origin === window.location.origin) {
-                        window.location.href = redirect
-                        return
-                    }
-                } catch {
-                    // Invalid URL, ignore
-                }
-            }
-
-            // Fallback to home
-            navigate('/')
+            // On success, redirect to login with message or auto-login
+            // For now, redirect to login
+            navigate('/login?registered=true')
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Login gagal. Periksa email dan password Anda.')
+            setError(err instanceof Error ? err.message : 'Registrasi gagal. Silahkan coba lagi.')
         } finally {
             setLoading(false)
         }
@@ -61,11 +51,11 @@ export function LoginPage() {
                         <span className="text-sm font-medium">Kembali ke Website</span>
                     </a>
                     <div className="size-16 mx-auto rounded-full bg-[#ec1325]/10 flex items-center justify-center mb-4">
-                        <span className="material-symbols-outlined text-[#ec1325] text-3xl">lock</span>
+                        <span className="material-symbols-outlined text-[#ec1325] text-3xl">person_add</span>
                     </div>
-                    <h1 className="text-3xl font-bold text-[#181112]">Login Portal</h1>
+                    <h1 className="text-3xl font-bold text-[#181112]">Pendaftaran Member</h1>
                     <p className="text-[#896165] mt-2">
-                        Masuk untuk akses silsilah lengkap dan fitur member
+                        Daftar untuk menjadi bagian dari keluarga besar
                     </p>
                 </div>
 
@@ -76,6 +66,26 @@ export function LoginPage() {
                             {error}
                         </div>
                     )}
+
+                    <div className="mb-4">
+                        <label htmlFor="name" className="block text-sm font-medium text-[#181112] mb-1">
+                            Nama Lengkap
+                        </label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span className="material-symbols-outlined text-[#896165] text-lg">badge</span>
+                            </div>
+                            <input
+                                type="text"
+                                id="name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="w-full pl-10 pr-4 py-3 border border-[#e6dbdc] rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-transparent bg-[#f8f6f6] text-[#181112] placeholder:text-[#896165]"
+                                placeholder="Nama Lengkap"
+                                required
+                            />
+                        </div>
+                    </div>
 
                     <div className="mb-4">
                         <label htmlFor="email" className="block text-sm font-medium text-[#181112] mb-1">
@@ -97,7 +107,7 @@ export function LoginPage() {
                         </div>
                     </div>
 
-                    <div className="mb-6">
+                    <div className="mb-4">
                         <label htmlFor="password" className="block text-sm font-medium text-[#181112] mb-1">
                             Password
                         </label>
@@ -111,7 +121,28 @@ export function LoginPage() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="w-full pl-10 pr-4 py-3 border border-[#e6dbdc] rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-transparent bg-[#f8f6f6] text-[#181112] placeholder:text-[#896165]"
-                                placeholder="••••••••"
+                                placeholder="Minimal 8 karakter"
+                                minLength={8}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="mb-6">
+                        <label htmlFor="password_confirmation" className="block text-sm font-medium text-[#181112] mb-1">
+                            Konfirmasi Password
+                        </label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span className="material-symbols-outlined text-[#896165] text-lg">lock_reset</span>
+                            </div>
+                            <input
+                                type="password"
+                                id="password_confirmation"
+                                value={passwordConfirmation}
+                                onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                className="w-full pl-10 pr-4 py-3 border border-[#e6dbdc] rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-transparent bg-[#f8f6f6] text-[#181112] placeholder:text-[#896165]"
+                                placeholder="Ulangi password"
                                 required
                             />
                         </div>
@@ -129,20 +160,20 @@ export function LoginPage() {
                             </>
                         ) : (
                             <>
-                                <span className="material-symbols-outlined">login</span>
-                                Login
+                                <span className="material-symbols-outlined">how_to_reg</span>
+                                Daftar
                             </>
                         )}
                     </button>
                 </form>
 
                 <p className="text-center text-[#896165] text-sm mt-6">
-                    Belum punya akun?{' '}
+                    Sudah punya akun?{' '}
                     <Link
-                        to="/register"
+                        to="/login"
                         className="text-[#ec1325] font-medium hover:underline"
                     >
-                        Daftar
+                        Login
                     </Link>
                 </p>
             </div>
