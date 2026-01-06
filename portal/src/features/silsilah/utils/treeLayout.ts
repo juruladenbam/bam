@@ -5,6 +5,7 @@ interface ParentChildLink {
     marriage_id: number
     father_id: number | null
     mother_id: number | null
+    birth_order?: number
 }
 
 interface Marriage {
@@ -52,6 +53,14 @@ export function buildTreeLayout(
 
     const personById = new Map<number, Person>()
     persons.forEach((p) => personById.set(p.id, p))
+
+    // Build birth_order lookup from parentChildLinks (this is the source of truth)
+    const birthOrderByChild = new Map<number, number>()
+    parentChildLinks.forEach((link) => {
+        if (link.birth_order !== undefined && link.birth_order !== null) {
+            birthOrderByChild.set(link.child_id, link.birth_order)
+        }
+    })
 
     // Build parent -> children map
     const childrenByParent = new Map<number, number[]>()
@@ -126,8 +135,9 @@ export function buildTreeLayout(
             .filter((id) => personById.has(id) && !placed.has(id))
             .map((id) => personById.get(id)!)
             .sort((a, b) => {
-                const aOrder = a.birth_order ?? 999
-                const bOrder = b.birth_order ?? 999
+                // Use birth_order from parentChildLinks (source of truth), fallback to person.birth_order
+                const aOrder = birthOrderByChild.get(a.id) ?? a.birth_order ?? 999
+                const bOrder = birthOrderByChild.get(b.id) ?? b.birth_order ?? 999
                 if (aOrder !== bOrder) return aOrder - bOrder
                 return a.full_name.localeCompare(b.full_name)
             })
@@ -173,13 +183,14 @@ export function buildTreeLayout(
                 // 3. Base gap for readability
 
                 if (idx < children.length - 1) {
-                    const thisChildSpouses = spouseMap.get(childId)?.length ?? 0
                     const nextChildId = children[idx + 1]
-                    const nextChildSpouses = spouseMap.get(nextChildId)?.length ?? 0
+                    const nextW = getSubtreeWidth(nextChildId, newVisited)
 
-                    // More spouses = more spacing needed
-                    const hasComplexFamily = thisChildSpouses > 0 || nextChildSpouses > 0
-                    const gap = hasComplexFamily ? 150 : 30
+                    // Dynamic gap based on subtree widths to prevent overlap
+                    // Each child's subtree extends w/2 to each side from center
+                    // Gap = half of this child's width + half of next child's width + buffer
+                    const minBuffer = 20 // Minimum visual separation
+                    const gap = Math.max(minBuffer, (w / 2) + (nextW / 2) - (170 * 0.8))
                     return sum + w + gap
                 }
                 return sum + w
@@ -282,13 +293,16 @@ export function buildTreeLayout(
             let totalWidth = 0
             clusterWaitList.forEach((c, idx) => {
                 totalWidth += getSubtreeWidth(c.id, new Set())
-                // Gap to next sibling - consider both siblings' spouses
+                // Gap to next sibling - based on subtree widths
                 if (idx < clusterWaitList.length - 1) {
-                    const thisChildSpouses = spouseMap.get(c.id)?.length ?? 0
+                    const thisW = getSubtreeWidth(c.id, new Set())
                     const nextChild = clusterWaitList[idx + 1]
-                    const nextChildSpouses = spouseMap.get(nextChild.id)?.length ?? 0
-                    const hasComplexFamily = thisChildSpouses > 0 || nextChildSpouses > 0
-                    totalWidth += hasComplexFamily ? 150 : 30
+                    const nextW = getSubtreeWidth(nextChild.id, new Set())
+
+                    // Dynamic gap: prevent subtree overlap
+                    const minBuffer = 20
+                    const gap = Math.max(minBuffer, (thisW / 2) + (nextW / 2) - (NODE_WIDTH * 0.8))
+                    totalWidth += gap
                 }
             })
             return totalWidth
@@ -415,13 +429,14 @@ export function buildTreeLayout(
                 // Center child at currentX + w/2
                 layoutSubtree(child.id, currentChildX + w / 2, y + NODE_HEIGHT + VERTICAL_GAP)
 
-                // Gap to next sibling - consider both siblings' spouses
+                // Gap to next sibling - based on subtree widths
                 if (idx < list.length - 1) {
-                    const thisChildSpouses = spouseMap.get(child.id)?.length ?? 0
                     const nextChild = list[idx + 1]
-                    const nextChildSpouses = spouseMap.get(nextChild.id)?.length ?? 0
-                    const hasComplexFamily = thisChildSpouses > 0 || nextChildSpouses > 0
-                    const gap = hasComplexFamily ? 150 : 30
+                    const nextW = getSubtreeWidth(nextChild.id, new Set())
+
+                    // Dynamic gap: prevent subtree overlap
+                    const minBuffer = 20
+                    const gap = Math.max(minBuffer, (w / 2) + (nextW / 2) - (NODE_WIDTH * 0.8))
                     currentChildX += w + gap
                 } else {
                     currentChildX += w

@@ -56,15 +56,17 @@ class SilsilahController extends Controller
             ->with(['husband:id,full_name,gender', 'wife:id,full_name,gender'])
             ->get();
 
-        // Get parent-child links
+        // Get parent-child links with birth_order for proper child ordering
         $parentChildLinks = \App\Models\ParentChild::whereIn('child_id', $personIds)
             ->with(['marriage:id,husband_id,wife_id'])
+            ->orderBy('birth_order')
             ->get()
             ->map(fn($pc) => [
                 'child_id' => $pc->child_id,
                 'marriage_id' => $pc->marriage_id,
                 'father_id' => $pc->marriage?->husband_id,
                 'mother_id' => $pc->marriage?->wife_id,
+                'birth_order' => $pc->birth_order,
             ]);
 
         // Collect spouse IDs from marriages that are NOT in this branch
