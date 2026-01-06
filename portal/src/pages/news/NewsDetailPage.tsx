@@ -58,8 +58,8 @@ export function NewsDetailPage() {
                 <PortalHeader />
                 <div className="flex-1 flex flex-col items-center justify-center">
                     <h2 className="text-2xl font-bold text-[#181112]">Berita tidak ditemukan</h2>
-                    <button onClick={() => navigate('/')} className="mt-4 text-[#ec1325] hover:underline">
-                        Kembali ke Beranda
+                    <button onClick={() => navigate(-1)} className="mt-4 text-[#ec1325] hover:underline">
+                        Kembali
                     </button>
                 </div>
             </div>
@@ -73,11 +73,11 @@ export function NewsDetailPage() {
             <div className="flex-1 max-w-4xl mx-auto w-full px-4 md:px-10 py-8 md:py-12">
                 {/* Breadcrumb / Back */}
                 <button
-                    onClick={() => navigate('/')}
+                    onClick={() => navigate(-1)}
                     className="mb-6 flex items-center gap-1 text-sm font-medium text-[#896165] hover:text-[#ec1325] transition-colors"
                 >
                     <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-                    Kembali ke Beranda
+                    Kembali
                 </button>
 
                 {/* News Header */}

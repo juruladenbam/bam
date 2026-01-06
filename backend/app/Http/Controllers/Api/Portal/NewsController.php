@@ -14,6 +14,13 @@ class NewsController extends Controller
     {
     }
 
+    public function index()
+    {
+        // TODO: Add filters if needed (e.g. only published)
+        $news = $this->contentService->getAllNews(['per_page' => 10]);
+        return $this->success($news);
+    }
+
     public function show($id)
     {
         $news = $this->contentService->getNews($id);

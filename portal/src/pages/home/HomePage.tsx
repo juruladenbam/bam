@@ -114,7 +114,7 @@ export function HomePage() {
                         <div className="lg:col-span-2">
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-2xl font-bold text-[#181112]">Berita Terkini</h2>
-                                {/* <span className="text-sm text-[#ec1325] font-medium cursor-pointer hover:underline">Lihat Semua</span> */}
+                                <Link to="/news" className="text-sm text-[#ec1325] font-medium cursor-pointer hover:underline">Lihat Semua</Link>
                             </div>
 
                             {/* News List */}

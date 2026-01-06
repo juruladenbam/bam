@@ -9,6 +9,7 @@ import { EventsPage } from './pages/events/EventsPage'
 import { EventDetailPage } from './pages/events/EventDetailPage'
 import { ArchivesPage } from './pages/archives/ArchivesPage'
 import { NewsDetailPage } from './pages/news/NewsDetailPage'
+import { NewsListPage } from './pages/news/NewsListPage'
 import { SubmissionsPage } from './pages/submissions/SubmissionsPage'
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
       <Route path="/submissions" element={<AuthGuard><SubmissionsPage /></AuthGuard>} />
       <Route path="/events" element={<AuthGuard><EventsPage /></AuthGuard>} />
       <Route path="/events/:id" element={<AuthGuard><EventDetailPage /></AuthGuard>} />
+      <Route path="/news" element={<AuthGuard><NewsListPage /></AuthGuard>} />
       <Route path="/news/:id" element={<AuthGuard><NewsDetailPage /></AuthGuard>} />
       <Route path="/archives" element={<AuthGuard><ArchivesPage /></AuthGuard>} />
 
