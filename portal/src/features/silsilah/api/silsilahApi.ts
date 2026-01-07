@@ -77,10 +77,19 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
     return data.data || data // Handle standard wrap or direct response
 }
 
+const getCsrfUrl = () => {
+    try {
+        const url = new URL(API_URL)
+        return `${url.origin}/sanctum/csrf-cookie`
+    } catch {
+        return `${API_URL.replace(/\/api\/?$/, '')}/sanctum/csrf-cookie`
+    }
+}
+
 export const silsilahApi = {
     login: async (email: string, password: string) => {
         // Get CSRF cookie first
-        await fetch(`${API_URL.replace('/api', '')}/sanctum/csrf-cookie`, {
+        await fetch(getCsrfUrl(), {
             credentials: 'include',
         })
 
@@ -93,7 +102,7 @@ export const silsilahApi = {
     // Register
     register: async (data: any) => {
         // Get CSRF cookie first (same as login)
-        await fetch(`${API_URL.replace('/api', '')}/sanctum/csrf-cookie`, {
+        await fetch(getCsrfUrl(), {
             credentials: 'include',
         })
 
