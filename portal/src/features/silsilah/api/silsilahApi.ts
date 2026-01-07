@@ -91,10 +91,17 @@ export const silsilahApi = {
     },
 
     // Register
-    register: (data: any) => fetchApi<{ user: any }>('/portal/register', {
-        method: 'POST',
-        body: JSON.stringify(data)
-    }),
+    register: async (data: any) => {
+        // Get CSRF cookie first (same as login)
+        await fetch(`${API_URL.replace('/api', '')}/sanctum/csrf-cookie`, {
+            credentials: 'include',
+        })
+
+        return fetchApi<{ user: any }>('/portal/register', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        })
+    },
 
     // Claim person profile
     claimPerson: (personId: number) => fetchApi<{ user: any, person: any }>('/portal/me/claim', {
