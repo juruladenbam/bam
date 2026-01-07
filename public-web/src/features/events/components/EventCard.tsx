@@ -27,9 +27,9 @@ export function EventCard({ event }: EventCardProps) {
             className="bg-white rounded-xl shadow-md overflow-hidden border border-[#e6dbdc] hover:shadow-lg transition-shadow group"
         >
             <div className={`bg-gradient-to-br ${gradient} h-32 flex items-center justify-center`}>
-                {event.thumbnail_url ? (
+                {event.thumbnail ? (
                     <img
-                        src={event.thumbnail_url}
+                        src={event.thumbnail}
                         alt={event.name}
                         className="w-full h-full object-cover"
                     />
@@ -51,13 +51,14 @@ export function EventCard({ event }: EventCardProps) {
                 <h3 className="text-xl font-bold text-[#181112] mb-2 group-hover:text-[#ec1325] transition-colors">
                     {event.name}
                 </h3>
-                <p className="text-[#896165] text-sm line-clamp-2">
-                    {event.description}
-                </p>
-                {event.location && (
+                <div
+                    className="text-[#896165] text-sm line-clamp-2 [&>p]:m-0"
+                    dangerouslySetInnerHTML={{ __html: event.description || '' }}
+                />
+                {event.location_name && (
                     <div className="flex items-center gap-1 text-xs text-[#896165] mt-3">
                         <span className="material-symbols-outlined text-sm">location_on</span>
-                        <span>{event.location}</span>
+                        <span>{event.location_name}</span>
                     </div>
                 )}
             </div>

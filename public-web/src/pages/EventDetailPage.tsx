@@ -40,8 +40,11 @@ export default function EventDetailPage() {
     }
 
     const event = data.data;
+
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('id-ID', {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '';
+        return date.toLocaleDateString('id-ID', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
@@ -49,18 +52,40 @@ export default function EventDetailPage() {
         });
     };
 
-    const formatTime = (timeString?: string) => {
+    const formatTime = (timeString?: string | null) => {
         if (!timeString) return '';
         return timeString.slice(0, 5); // HH:MM
     };
+
+    // Calculate date for schedule based on day_sequence
+    const getScheduleDate = (daySequence: number) => {
+        const startDate = new Date(event.start_date);
+        startDate.setDate(startDate.getDate() + daySequence - 1);
+        return startDate.toLocaleDateString('id-ID', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+        });
+    };
+
+    // Group schedules by day_sequence
+    const schedulesByDay = event.schedules?.reduce((acc, schedule) => {
+        const day = schedule.day_sequence;
+        if (!acc[day]) acc[day] = [];
+        acc[day].push(schedule);
+        return acc;
+    }, {} as Record<number, typeof event.schedules>);
+
+    // Strip HTML tags for SEO description
+    const plainDescription = event.description?.replace(/<[^>]*>/g, '').substring(0, 160);
 
     return (
         <div className="min-h-screen bg-[#f8f6f6]">
             <SEO
                 title={event.name}
-                description={event.description?.substring(0, 160) || `Acara ${event.name} - Bani Abdul Manan`}
+                description={plainDescription || `Acara ${event.name} - Bani Abdul Manan`}
                 url={`/acara/${event.slug}`}
-                image={event.thumbnail_url}
+                image={event.thumbnail || undefined}
             />
 
             {/* Hero */}
@@ -82,10 +107,16 @@ export default function EventDetailPage() {
                                 <span> - {formatDate(event.end_date)}</span>
                             )}
                         </div>
-                        {event.location && (
+                        {event.location_name && (
                             <div className="flex items-center gap-2">
                                 <span className="material-symbols-outlined text-sm">location_on</span>
-                                <span>{event.location}</span>
+                                {event.location_maps_url ? (
+                                    <a href={event.location_maps_url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                        {event.location_name}
+                                    </a>
+                                ) : (
+                                    <span>{event.location_name}</span>
+                                )}
                             </div>
                         )}
                     </div>
@@ -98,9 +129,9 @@ export default function EventDetailPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Main Content */}
                         <div className="lg:col-span-2">
-                            {event.thumbnail_url && (
+                            {event.thumbnail && (
                                 <img
-                                    src={event.thumbnail_url}
+                                    src={event.thumbnail}
                                     alt={event.name}
                                     className="w-full rounded-xl shadow-md mb-8"
                                 />
@@ -112,41 +143,63 @@ export default function EventDetailPage() {
                                     dangerouslySetInnerHTML={{ __html: event.description || '' }}
                                 />
                             </div>
+
+                            {/* Meta Data */}
+                            {event.meta_data && event.meta_data.length > 0 && (
+                                <div className="bg-white rounded-xl p-6 shadow-sm border border-[#e6dbdc] mt-6">
+                                    <h2 className="text-lg font-bold text-[#181112] mb-4">Informasi Tambahan</h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {event.meta_data.map((meta) => (
+                                            <div key={meta.id} className="flex gap-3 p-3 bg-[#f8f6f6] rounded-lg">
+                                                <span className="material-symbols-outlined text-[#ec1325]">{meta.icon}</span>
+                                                <div>
+                                                    <p className="font-semibold text-[#181112]">{meta.label}</p>
+                                                    <p className="text-sm text-[#896165]">{meta.value}</p>
+                                                    {meta.description && (
+                                                        <div
+                                                            className="text-xs text-[#896165] mt-1 [&>p]:m-0 [&_a]:text-[#ec1325] [&_a]:underline"
+                                                            dangerouslySetInnerHTML={{ __html: meta.description }}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Sidebar - Schedules */}
                         <div className="lg:col-span-1">
-                            {event.schedules && event.schedules.length > 0 && (
+                            {schedulesByDay && Object.keys(schedulesByDay).length > 0 && (
                                 <div className="bg-white rounded-xl p-6 shadow-sm border border-[#e6dbdc]">
                                     <h2 className="text-lg font-bold text-[#181112] mb-4 flex items-center gap-2">
                                         <span className="material-symbols-outlined text-[#ec1325]">schedule</span>
                                         Jadwal Acara
                                     </h2>
-                                    <div className="space-y-4">
-                                        {event.schedules.map((schedule) => (
-                                            <div
-                                                key={schedule.id}
-                                                className="border-l-4 border-[#ec1325] pl-4 py-2"
-                                            >
-                                                <p className="text-sm text-[#896165]">
-                                                    {formatDate(schedule.date)}
-                                                    {schedule.start_time && (
-                                                        <span className="ml-2">
-                                                            {formatTime(schedule.start_time)}
-                                                            {schedule.end_time && ` - ${formatTime(schedule.end_time)}`}
-                                                        </span>
-                                                    )}
-                                                </p>
-                                                <p className="font-semibold text-[#181112]">{schedule.title}</p>
-                                                {schedule.description && (
-                                                    <p className="text-sm text-[#896165] mt-1">{schedule.description}</p>
-                                                )}
-                                                {schedule.location && (
-                                                    <p className="text-xs text-[#896165] mt-1 flex items-center gap-1">
-                                                        <span className="material-symbols-outlined text-xs">location_on</span>
-                                                        {schedule.location}
-                                                    </p>
-                                                )}
+                                    <div className="space-y-6">
+                                        {Object.entries(schedulesByDay).map(([day, schedules]) => (
+                                            <div key={day}>
+                                                <h3 className="text-sm font-bold text-[#ec1325] mb-3 pb-2 border-b border-[#e6dbdc]">
+                                                    Hari {day}: {getScheduleDate(Number(day))}
+                                                </h3>
+                                                <div className="space-y-3">
+                                                    {schedules?.map((schedule) => (
+                                                        <div
+                                                            key={schedule.id}
+                                                            className="border-l-4 border-[#ec1325]/30 pl-3 py-1"
+                                                        >
+                                                            <p className="text-xs text-[#896165]">
+                                                                {formatTime(schedule.time_start)}
+                                                                {schedule.time_end && ` - ${formatTime(schedule.time_end)}`}
+                                                            </p>
+                                                            <p className="font-medium text-[#181112] text-sm">{schedule.title}</p>
+                                                            {schedule.description && (
+                                                                <p className="text-xs text-[#896165] mt-1">{schedule.description}</p>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -159,3 +212,4 @@ export default function EventDetailPage() {
         </div>
     );
 }
+
