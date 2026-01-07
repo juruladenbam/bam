@@ -1,3 +1,14 @@
+export interface EventSchedule {
+    id: number;
+    event_id: number;
+    title: string;
+    description?: string;
+    date: string;
+    start_time?: string;
+    end_time?: string;
+    location?: string;
+}
+
 export interface Event {
     id: number;
     name: string;
@@ -9,6 +20,7 @@ export interface Event {
     end_date?: string;
     location?: string;
     is_active: boolean;
+    schedules?: EventSchedule[];
 }
 
 export interface NewsItem {
@@ -19,7 +31,7 @@ export interface NewsItem {
     content: string;
     thumbnail_url?: string;
     category: string;
-    is_published: boolean;
+    is_public: boolean;
     published_at?: string;
     claps: number;
 }
@@ -48,3 +60,4 @@ export interface PaginatedResponse<T> {
         total: number;
     };
 }
+

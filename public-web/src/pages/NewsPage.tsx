@@ -1,5 +1,6 @@
 import { useNews, NewsCard } from '@/features/news';
 import { useState } from 'react';
+import SEO from '@/components/SEO';
 
 const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 
@@ -9,6 +10,11 @@ export default function NewsPage() {
 
     return (
         <div>
+            <SEO
+                title="Berita"
+                description="Berita, pengumuman, dan kabar terbaru keluarga besar Bani Abdul Manan. Dapatkan update informasi kegiatan dan acara keluarga."
+                url="/berita"
+            />
             {/* Header */}
             <section className="bg-gradient-to-br from-[#181112] to-[#3d2a2c] text-white py-16">
                 <div className="container mx-auto px-4 text-center">

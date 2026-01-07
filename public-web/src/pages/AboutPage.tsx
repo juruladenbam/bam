@@ -1,10 +1,15 @@
-
+import SEO from '@/components/SEO'
 
 const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 
 export default function AboutPage() {
     return (
         <div className="bg-[#f8f6f6]">
+            <SEO
+                title="Tentang Kami"
+                description="Sejarah dan profil keluarga besar Bani Abdul Manan. Lebih dari 500 anggota dari 5 generasi, bersatu dalam keimanan dan silaturahmi."
+                url="/tentang"
+            />
             {/* Header */}
             <section className="py-16 bg-white">
                 <div className="container mx-auto px-4 max-w-4xl text-center">

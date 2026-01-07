@@ -17,7 +17,7 @@ class NewsController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $news = NewsPost::where('is_published', true)
+        $news = NewsPost::where('is_public', true)
             ->latest('published_at')
             ->paginate($request->input('per_page', 10));
         
@@ -31,9 +31,10 @@ class NewsController extends Controller
     {
         $news = NewsPost::where('slug', $slug)
             ->orWhere('id', $slug)
-            ->where('is_published', true)
+            ->where('is_public', true)
             ->firstOrFail();
         
         return $this->success($news, 'Detail berita');
     }
 }
+

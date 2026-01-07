@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom'
+import SEO from '@/components/SEO'
 
 const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 
 export default function HomePage() {
     return (
         <div>
+            <SEO
+                title="Beranda"
+                description="Portal keluarga digital resmi Bani Abdul Manan. Menghubungkan generasi, melestarikan sejarah, dan merayakan masa depan bersama. Akses silsilah, acara, dan berita keluarga."
+                url="/"
+            />
             {/* Hero Section */}
             <section className="flex flex-1 justify-center py-5 px-4 sm:px-10 lg:px-40 bg-[#f8f6f6]">
                 <div className="flex flex-col max-w-[1200px] flex-1">

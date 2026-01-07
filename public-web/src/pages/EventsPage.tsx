@@ -1,4 +1,5 @@
 import { useEvents, EventCard } from '@/features/events';
+import SEO from '@/components/SEO';
 
 const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 
@@ -7,6 +8,11 @@ export default function EventsPage() {
 
     return (
         <div>
+            <SEO
+                title="Acara"
+                description="Jadwal acara keluarga besar Bani Abdul Manan. Festival BAM, Halal Bihalal, Merajut Cinta, dan kegiatan keluarga lainnya."
+                url="/acara"
+            />
             {/* Header */}
             <section className="bg-gradient-to-br from-[#ec1325] to-[#8b0a13] text-white py-16">
                 <div className="container mx-auto px-4 text-center">
