@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Admin\PersonController;
 use App\Http\Controllers\Api\Admin\MarriageController;
 use App\Http\Controllers\Api\Admin\BranchController;
+use App\Http\Controllers\Api\Admin\SiteSettingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -48,4 +49,11 @@ Route::get('/submissions', [\App\Http\Controllers\Api\Admin\SubmissionController
 Route::get('/submissions/{id}', [\App\Http\Controllers\Api\Admin\SubmissionController::class, 'show']);
 Route::post('/submissions/{id}/approve', [\App\Http\Controllers\Api\Admin\SubmissionController::class, 'approve']);
 Route::post('/submissions/{id}/reject', [\App\Http\Controllers\Api\Admin\SubmissionController::class, 'reject']);
+
+// Site Settings
+Route::get('/settings', [SiteSettingController::class, 'index']);
+Route::get('/settings/{prefix}', [SiteSettingController::class, 'show']);
+Route::put('/settings/{key}', [SiteSettingController::class, 'update']);
+Route::post('/settings/{prefix}/bulk', [SiteSettingController::class, 'bulkUpdate']);
+
 

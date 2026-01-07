@@ -18,6 +18,7 @@ const navItems: NavItem[] = [
     { label: 'Berita', path: '/news', icon: 'article' },
     { label: 'Arsip', path: '/media', icon: 'perm_media' },
     { label: 'Pengguna', path: '/users', icon: 'manage_accounts' },
+    { label: 'Pengaturan', path: '/settings', icon: 'settings' },
 ]
 
 interface AdminLayoutProps {

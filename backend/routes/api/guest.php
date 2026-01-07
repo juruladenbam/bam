@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\Guest\AuthController;
 use App\Http\Controllers\Api\Guest\EventController;
 use App\Http\Controllers\Api\Guest\NewsController;
 use App\Http\Controllers\Api\Guest\HomeController;
+use App\Http\Controllers\Api\Guest\AboutController;
+use App\Http\Controllers\Api\Guest\HomeContentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,6 +22,8 @@ Route::post('/register', [AuthController::class, 'register']);
 // Public Content
 Route::get('/home', [HomeController::class, 'index']);
 Route::get('/branches', [HomeController::class, 'branches']);
+Route::get('/about', [AboutController::class, 'index']);
+Route::get('/home-content', [HomeContentController::class, 'index']);
 
 // Events
 Route::get('/events', [EventController::class, 'index']);
@@ -28,4 +32,5 @@ Route::get('/events/{slug}', [EventController::class, 'show']);
 // News
 Route::get('/news', [NewsController::class, 'index']);
 Route::get('/news/{slug}', [NewsController::class, 'show']);
+
 

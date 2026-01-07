@@ -6,19 +6,23 @@ import EventDetailPage from '@/pages/EventDetailPage'
 import NewsPage from '@/pages/NewsPage'
 import NewsDetailPage from '@/pages/NewsDetailPage'
 import Layout from '@/components/Layout'
+import ScrollToTop from '@/components/ScrollToTop'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<HomePage />} />
-        <Route path="tentang" element={<AboutPage />} />
-        <Route path="acara" element={<EventsPage />} />
-        <Route path="acara/:slug" element={<EventDetailPage />} />
-        <Route path="berita" element={<NewsPage />} />
-        <Route path="berita/:slug" element={<NewsDetailPage />} />
-      </Route>
-    </Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="tentang" element={<AboutPage />} />
+          <Route path="acara" element={<EventsPage />} />
+          <Route path="acara/:slug" element={<EventDetailPage />} />
+          <Route path="berita" element={<NewsPage />} />
+          <Route path="berita/:slug" element={<NewsDetailPage />} />
+        </Route>
+      </Routes>
+    </>
   )
 }
 

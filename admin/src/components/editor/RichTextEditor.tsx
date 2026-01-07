@@ -12,7 +12,7 @@ import ToolbarPlugin from './plugins/ToolbarPlugin';
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { AutoLinkPlugin } from '@lexical/react/LexicalAutoLinkPlugin';
 import { LinkNode, AutoLinkNode } from '@lexical/link';
-import { useEffect, useRef, memo } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { ListNode, ListItemNode } from '@lexical/list';
@@ -36,14 +36,11 @@ function LoadInitialContentPlugin({ html }: { html?: string }) {
                 const root = $getRoot();
                 const parser = new DOMParser();
                 const dom = parser.parseFromString(html, 'text/html');
-                // If it's plain text, generateNodesFromHtml handles it fine usually?
-                // Let's wrap in try/catch to fallback to text insertion if needed
                 try {
                     const nodes = $generateNodesFromDOM(editor, dom);
                     root.clear();
                     $insertNodes(nodes);
                 } catch (e) {
-                    // Fallback
                     console.warn('Failed to parse HTML, falling back to text', e);
                 }
             });
@@ -75,15 +72,16 @@ interface RichTextEditorProps {
     variant?: 'default' | 'ghost';
 }
 
-function RichTextEditor({ value, onChange, placeholder = "Jelaskan detail acara...", variant = 'default' }: RichTextEditorProps) {
-    const initialConfig = {
-        namespace: 'MyEditor',
+export default function RichTextEditor({ value, onChange, placeholder = "Jelaskan detail acara...", variant = 'default' }: RichTextEditorProps) {
+    const initialConfig = useMemo(() => ({
+        namespace: 'RichTextEditor',
         theme: EditorTheme,
         nodes: [LinkNode, AutoLinkNode, HeadingNode, QuoteNode, ListNode, ListItemNode],
+        editorState: null, // Prevent autofocus
         onError(error: Error) {
             console.error(error);
         },
-    };
+    }), []);
 
     const containerClasses = variant === 'default'
         ? "relative border border-[#e6dbdc] rounded-lg overflow-hidden bg-white focus-within:ring-2 focus-within:ring-[#ec1325]/20 focus-within:border-[#ec1325] transition-all"
@@ -97,7 +95,10 @@ function RichTextEditor({ value, onChange, placeholder = "Jelaskan detail acara.
                 <div className="relative">
                     <RichTextPlugin
                         contentEditable={
-                            <ContentEditable className="min-h-[150px] p-4 outline-none prose prose-sm max-w-none" />
+                            <ContentEditable
+                                className="min-h-[150px] p-4 outline-none prose prose-sm max-w-none"
+                                tabIndex={-1}
+                            />
                         }
                         placeholder={<Placeholder text={placeholder} />}
                         ErrorBoundary={LexicalErrorBoundary}
@@ -124,4 +125,4 @@ function RichTextEditor({ value, onChange, placeholder = "Jelaskan detail acara.
         </div>
     );
 }
-export default memo(RichTextEditor);
+
