@@ -29,8 +29,18 @@ class Event extends Model
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'is_active' => 'boolean',
+        'is_active' => 'boolean',
         'meta_data' => 'array',
     ];
+
+    protected $appends = ['thumbnail_url'];
+
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        if (!$this->thumbnail) return null;
+        if (str_starts_with($this->thumbnail, 'http')) return $this->thumbnail;
+        return asset('storage/' . $this->thumbnail);
+    }
 
     public function schedules(): HasMany
     {

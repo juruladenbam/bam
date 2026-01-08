@@ -15,7 +15,7 @@ export interface Event {
     type: string;
     year: number;
     description: string;
-    thumbnail?: string | null;
+    thumbnail_url?: string | null;
     start_date: string;
     end_date?: string;
     location_name?: string;
