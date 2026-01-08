@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useReactFlow, ReactFlowProvider } from '@xyflow/react'
-import { useBranch, useMe, FamilyTree } from '../../features/silsilah'
+import { useBranch, useMe, FamilyTree, TreeListSidebar } from '../../features/silsilah'
 import { buildTreeLayout } from '../../features/silsilah/utils/treeLayout'
 import { PortalHeader } from '../../components/layout/PortalHeader'
 import { TreeControls } from '../../features/silsilah/components/TreeControls'
@@ -10,16 +10,37 @@ import { MemberSidebar } from '../../features/silsilah/components/MemberSidebar'
 import { MiniMap } from '../../features/silsilah/components/MiniMap'
 import type { Person } from '../../features/silsilah/types'
 
+// Hook for responsive detection
+function useIsMobile(breakpoint = 768) {
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < breakpoint)
+        checkMobile()
+        window.addEventListener('resize', checkMobile)
+        return () => window.removeEventListener('resize', checkMobile)
+    }, [breakpoint])
+
+    return isMobile
+}
+
 function BranchPageContent() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { data, isLoading, error } = useBranch(Number(id))
     const reactFlowInstance = useReactFlow()
+    const isMobile = useIsMobile()
 
     // UI State
     const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const [isTreeListOpen, setIsTreeListOpen] = useState(true) // Default open
     const [highlightLine, setHighlightLine] = useState(false)
+
+    // On mobile, default TreeList to closed
+    useEffect(() => {
+        setIsTreeListOpen(!isMobile)
+    }, [isMobile])
 
     // Data Processing
     const { branch, persons, parent_child, marriages } = data || {}
@@ -155,6 +176,26 @@ function BranchPageContent() {
         }
     }
 
+    const handlePersonClick = (personId: number) => {
+        const person = persons?.find(p => p.id === personId)
+        if (person) {
+            // Focus on node
+            handlePersonFocus(personId)
+            // Open member sidebar
+            setSelectedPerson(person)
+            setIsSidebarOpen(true)
+        }
+    }
+
+    const handlePersonFocus = (personId: number) => {
+        const targetNode = nodes.find(n => n.id === `person-${personId}`)
+        if (targetNode) {
+            const x = targetNode.position.x + 90
+            const y = targetNode.position.y + 45
+            reactFlowInstance.setCenter(x, y, { zoom: 1.5, duration: 800 })
+        }
+    }
+
     const handleZoomIn = () => reactFlowInstance.zoomIn()
     const handleZoomOut = () => reactFlowInstance.zoomOut()
     const handleFitView = () => reactFlowInstance.fitView({ padding: 0.2 })
@@ -180,8 +221,21 @@ function BranchPageContent() {
             <PortalHeader />
 
             <div className="flex-1 relative">
+                {/* Tree List Sidebar (Left) */}
+                <TreeListSidebar
+                    persons={persons || []}
+                    parentChildLinks={parent_child || []}
+                    marriages={marriages || []}
+                    branchId={branch?.id || 0}
+                    isOpen={isTreeListOpen}
+                    onToggle={() => setIsTreeListOpen(!isTreeListOpen)}
+                    onPersonClick={handlePersonClick}
+                    onPersonFocus={handlePersonFocus}
+                    isMobile={isMobile}
+                />
+
                 {/* Top Controls Overlay */}
-                <div className="absolute top-4 left-4 md:left-4 z-10 flex flex-col md:flex-row gap-3 items-start md:items-center">
+                <div className={`absolute top-4 left-0 right-0 z-10 flex flex-col md:flex-row gap-3 items-center justify-center`}>
                     {/* Back Button */}
                     <button
                         onClick={() => navigate('/silsilah')}
@@ -255,6 +309,7 @@ function BranchPageContent() {
                     person={selectedPerson}
                     isOpen={isSidebarOpen}
                     onClose={() => setIsSidebarOpen(false)}
+                    isMobile={isMobile}
                 />
             </div>
         </div>

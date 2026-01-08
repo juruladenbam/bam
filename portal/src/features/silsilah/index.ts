@@ -2,6 +2,7 @@
 export { PersonNode } from './components/PersonNode'
 export { FamilyTree } from './components/FamilyTree'
 export { GhostNodeBadge } from './components/GhostNodeBadge'
+export { TreeListSidebar } from './components/TreeListSidebar'
 
 // Hooks
 export {
