@@ -85,7 +85,7 @@ export default function EventDetailPage() {
                 title={event.name}
                 description={plainDescription || `Acara ${event.name} - Bani Abdul Manan`}
                 url={`/acara/${event.slug}`}
-                image={event.thumbnail || undefined}
+                image={event.thumbnail_url || undefined}
             />
 
             {/* Hero */}
@@ -129,9 +129,9 @@ export default function EventDetailPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Main Content */}
                         <div className="lg:col-span-2">
-                            {event.thumbnail && (
+                            {event.thumbnail_url && (
                                 <img
-                                    src={event.thumbnail}
+                                    src={event.thumbnail_url}
                                     alt={event.name}
                                     className="w-full rounded-xl shadow-md mb-8"
                                 />
