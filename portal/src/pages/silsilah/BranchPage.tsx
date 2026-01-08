@@ -1,6 +1,6 @@
 
 import { useState, useMemo, useEffect } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useReactFlow, ReactFlowProvider } from '@xyflow/react'
 import { useBranch, useMe, FamilyTree } from '../../features/silsilah'
 import { buildTreeLayout } from '../../features/silsilah/utils/treeLayout'
@@ -12,6 +12,7 @@ import type { Person } from '../../features/silsilah/types'
 
 function BranchPageContent() {
     const { id } = useParams<{ id: string }>()
+    const navigate = useNavigate()
     const { data, isLoading, error } = useBranch(Number(id))
     const reactFlowInstance = useReactFlow()
 
@@ -181,6 +182,15 @@ function BranchPageContent() {
             <div className="flex-1 relative">
                 {/* Top Controls Overlay */}
                 <div className="absolute top-4 left-4 md:left-4 z-10 flex flex-col md:flex-row gap-3 items-start md:items-center">
+                    {/* Back Button */}
+                    <button
+                        onClick={() => navigate('/silsilah')}
+                        className="bg-white/90 backdrop-blur size-10 flex items-center justify-center rounded-xl shadow-sm border border-[#e6dbdc] text-[#896165] hover:text-[#ec1325] hover:border-[#ec1325] transition-all"
+                        title="Kembali ke Daftar Qobilah"
+                    >
+                        <span className="material-symbols-outlined">arrow_back</span>
+                    </button>
+
                     {/* Branch Info */}
                     <div className="bg-white/90 backdrop-blur px-4 py-2.5 rounded-xl shadow-sm border border-[#e6dbdc]">
                         <h1 className="text-lg font-bold text-[#ec1325]">
