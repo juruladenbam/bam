@@ -58,9 +58,9 @@ export function EventCard({ event, variant = 'default' }: EventCardProps) {
             className={`block bg-white rounded-xl shadow-sm overflow-hidden border border-[#e6dbdc] hover:shadow-lg hover:border-[#ec1325]/30 transition-all group ${isPast ? 'opacity-75' : ''}`}
         >
             <div className={`bg-gradient-to-br ${gradient} h-32 flex items-center justify-center relative`}>
-                {event.thumbnail || (event as any).thumbnail_url ? (
+                {event.thumbnail ? (
                     <img
-                        src={event.thumbnail || (event as any).thumbnail_url}
+                        src={event.thumbnail}
                         alt={event.name}
                         className="w-full h-full object-cover"
                     />
