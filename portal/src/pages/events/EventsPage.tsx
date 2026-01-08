@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
 import { PortalHeader } from '../../components/layout/PortalHeader'
 import { contentApi } from '../../features/content/api/contentApi'
+import type { EventItem } from '../../features/content/api/contentApi'
+import { EventCard } from '../../features/events/components/EventCard'
 
 function formatDate(dateString: string): string {
     const date = new Date(dateString)
@@ -51,41 +52,8 @@ export function EventsPage() {
                         <div className="text-center py-8 text-gray-500">Memuat acara...</div>
                     ) : (upcomingEvents || []).length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {upcomingEvents?.map((event: any) => (
-                                <Link
-                                    to={`/events/${event.id}`}
-                                    key={event.id}
-                                    className="bg-white border border-[#e6dbdc] rounded-xl overflow-hidden hover:shadow-lg transition-all group cursor-pointer block"
-                                >
-                                    {/* Event Image Placeholder */}
-                                    <div className="h-40 bg-gradient-to-br from-[#ec1325]/10 to-[#ec1325]/5 flex items-center justify-center">
-                                        <span className="material-symbols-outlined text-6xl text-[#ec1325]/30">
-                                            celebration
-                                        </span>
-                                    </div>
-
-                                    <div className="p-5">
-                                        {/* Date Badge */}
-                                        <div className="flex items-center gap-2 text-sm text-[#ec1325] font-medium mb-3">
-                                            <span className="material-symbols-outlined text-[18px]">calendar_today</span>
-                                            {formatDate(event.start_date)}
-                                        </div>
-
-                                        <h3 className="font-bold text-lg text-[#181112] mb-2 group-hover:text-[#ec1325] transition-colors">
-                                            {event.name}
-                                        </h3>
-
-                                        <div className="flex items-center gap-2 text-sm text-[#896165] mb-3">
-                                            <span className="material-symbols-outlined text-[16px]">location_on</span>
-                                            {event.location_name}
-                                        </div>
-
-                                        <div
-                                            className="text-sm text-[#896165] line-clamp-2 prose prose-sm max-w-none [&>p]:mb-0"
-                                            dangerouslySetInnerHTML={{ __html: event.description }}
-                                        />
-                                    </div>
-                                </Link>
+                            {upcomingEvents?.map((event: EventItem) => (
+                                <EventCard key={event.id} event={event as any} />
                             ))}
                         </div>
                     ) : (

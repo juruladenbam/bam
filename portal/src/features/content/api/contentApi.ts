@@ -9,6 +9,7 @@ export interface NewsItem {
     published_at: string
     author: { name: string }
     thumbnail?: string
+    thumbnail_url?: string
     content?: string // HTML content
     claps?: number
 }
@@ -39,6 +40,8 @@ export interface EventItem {
     end_date: string
     location_name: string
     location_maps_url?: string
+    thumbnail?: string
+    thumbnail_url?: string
     description: string
     slug: string
     schedules?: EventSchedule[]

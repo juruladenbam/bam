@@ -6,11 +6,13 @@ import { contentApi } from '../../features/content/api/contentApi'
 export function EventDetailPage() {
     const { id } = useParams()
 
-    const { data: event, isLoading } = useQuery({
+    const { data: eventData, isLoading } = useQuery({
         queryKey: ['portal', 'event', id],
         queryFn: () => contentApi.getEvent(Number(id)),
         enabled: !!id
     })
+
+    const event = eventData as any
 
     if (isLoading) {
         return (
@@ -61,11 +63,17 @@ export function EventDetailPage() {
             <div className="flex-1 w-full max-w-[960px] mx-auto px-4 md:px-0 pb-20">
 
                 {/* Hero Section */}
-                <div className="mt-8 rounded-xl overflow-hidden shadow-lg relative bg-[#181112]">
+                <div
+                    className="mt-8 rounded-xl overflow-hidden shadow-lg relative bg-[#181112]"
+                    style={{
+                        backgroundImage: event.thumbnail_url ? `url(${event.thumbnail_url})` : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                >
                     <div className="min-h-[400px] flex flex-col gap-6 items-center justify-center p-8 text-center relative z-10">
-                        {/* Background Overlay or Image */}
+                        {/* Background Overlay */}
                         <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/80 z-[-1]" />
-                        {/* If we had an image URL, we'd put it here as bg-image on parent */}
 
                         <div className="flex flex-col gap-3">
                             <div className="inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 self-center">
