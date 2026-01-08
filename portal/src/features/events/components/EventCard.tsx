@@ -27,7 +27,7 @@ export function EventCard({ event, variant = 'default' }: EventCardProps) {
     if (variant === 'compact') {
         return (
             <Link
-                to={`/acara/${event.id}`}
+                to={`/events/${event.id}`}
                 className="flex items-center gap-4 p-4 bg-white rounded-xl border border-[#e6dbdc] hover:border-[#ec1325] hover:shadow-md transition-all group"
             >
                 <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0`}>
@@ -54,7 +54,7 @@ export function EventCard({ event, variant = 'default' }: EventCardProps) {
 
     return (
         <Link
-            to={`/acara/${event.id}`}
+            to={`/events/${event.id}`}
             className={`block bg-white rounded-xl shadow-sm overflow-hidden border border-[#e6dbdc] hover:shadow-lg hover:border-[#ec1325]/30 transition-all group ${isPast ? 'opacity-75' : ''}`}
         >
             <div className={`bg-gradient-to-br ${gradient} h-32 flex items-center justify-center relative`}>
@@ -91,7 +91,10 @@ export function EventCard({ event, variant = 'default' }: EventCardProps) {
                 <h3 className="text-lg font-bold text-[#181112] mb-2 group-hover:text-[#ec1325] transition-colors">
                     {event.name} {event.year}
                 </h3>
-                <p className="text-[#896165] text-sm line-clamp-2">{event.description}</p>
+                <div
+                    className="text-[#896165] text-sm line-clamp-2 [&>p]:m-0"
+                    dangerouslySetInnerHTML={{ __html: event.description || '' }}
+                />
                 {event.location_name && (
                     <div className="flex items-center gap-1 text-xs text-[#896165] mt-3">
                         <span className="material-symbols-outlined text-sm">location_on</span>
