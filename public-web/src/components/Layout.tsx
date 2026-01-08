@@ -1,8 +1,11 @@
 import { Outlet, Link } from 'react-router-dom'
 
 const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
+import { useState } from 'react'
 
 export default function Layout() {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
     return (
         <div className="relative flex min-h-screen w-full flex-col">
             {/* Header */}
@@ -38,10 +41,57 @@ export default function Layout() {
                 </div>
 
                 {/* Mobile Menu Icon */}
-                <button className="md:hidden flex items-center justify-center text-[#181112]">
-                    <span className="material-symbols-outlined">menu</span>
+                <button
+                    className="md:hidden flex items-center justify-center text-[#181112]"
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                >
+                    <span className="material-symbols-outlined">
+                        {isMobileMenuOpen ? 'close' : 'menu'}
+                    </span>
                 </button>
             </header>
+
+            {/* Mobile Menu Overlay */}
+            {isMobileMenuOpen && (
+                <div className="md:hidden fixed inset-x-0 top-[65px] bottom-0 z-40 bg-white p-4 animate-in slide-in-from-top-4 fade-in duration-200 border-t border-[#e6dbdc]">
+                    <nav className="flex flex-col gap-4">
+                        <Link
+                            to="/"
+                            className="text-[#181112] text-lg font-medium py-3 border-b border-gray-100 hover:text-[#ec1325] transition-colors"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Beranda
+                        </Link>
+                        <Link
+                            to="/tentang"
+                            className="text-[#181112] text-lg font-medium py-3 border-b border-gray-100 hover:text-[#ec1325] transition-colors"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Tentang
+                        </Link>
+                        <Link
+                            to="/acara"
+                            className="text-[#181112] text-lg font-medium py-3 border-b border-gray-100 hover:text-[#ec1325] transition-colors"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Acara
+                        </Link>
+                        <Link
+                            to="/berita"
+                            className="text-[#181112] text-lg font-medium py-3 border-b border-gray-100 hover:text-[#ec1325] transition-colors"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Berita
+                        </Link>
+                        <a
+                            href={`${PORTAL_URL}/login`}
+                            className="mt-4 flex w-full cursor-pointer items-center justify-center rounded-lg h-12 bg-[#ec1325] text-white text-base font-bold hover:bg-[#c91020] transition-colors"
+                        >
+                            Login
+                        </a>
+                    </nav>
+                </div>
+            )}
 
             {/* Main Content */}
             <main className="flex-1">
