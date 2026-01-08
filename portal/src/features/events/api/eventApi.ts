@@ -9,7 +9,7 @@ export interface Event {
     end_date: string
     location_name: string
     location_maps_url?: string
-    thumbnail_url?: string
+    thumbnail?: string
     description: string
     slug: string
     is_active: boolean

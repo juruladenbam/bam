@@ -32,6 +32,11 @@ export function EventCard({ event }: EventCardProps) {
                         src={event.thumbnail}
                         alt={event.name}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                            // Fallback if image fails to load
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.parentElement?.querySelector('.material-symbols-outlined')?.classList.remove('hidden');
+                        }}
                     />
                 ) : (
                     <span className="material-symbols-outlined text-white text-5xl group-hover:scale-110 transition-transform">
