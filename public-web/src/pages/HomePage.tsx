@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom'
 import SEO from '@/components/SEO'
 import { useHomeContent } from '@/hooks/useHomeContent'
+import { useAuthCheck } from '@/hooks/useAuthCheck'
 
 const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 
 export default function HomePage() {
     const { data } = useHomeContent();
+    const { isLoggedIn } = useAuthCheck();
 
     // Use data from backend or fallback to static
     const hero = data?.hero || {
@@ -70,10 +72,10 @@ export default function HomePage() {
                             <div className="p-6 bg-white border border-[#e6dbdc] rounded-xl shadow-sm max-w-[480px]">
                                 <h3 className="text-base font-bold text-[#181112] mb-4">Akses Cepat Member</h3>
                                 <a
-                                    href={`${PORTAL_URL}/login`}
+                                    href={isLoggedIn ? PORTAL_URL : `${PORTAL_URL}/login`}
                                     className="flex w-full cursor-pointer items-center justify-center rounded-lg h-12 px-6 bg-[#ec1325] text-white text-sm font-bold hover:bg-[#c91020] transition-colors"
                                 >
-                                    Login ke Portal
+                                    {isLoggedIn ? 'Buka Portal' : 'Login ke Portal'}
                                 </a>
                                 <div className="mt-3 flex justify-between text-xs">
                                     <span className="text-[#896165]">Belum punya akun?</span>
@@ -236,10 +238,10 @@ export default function HomePage() {
                         {cta.subtitle}
                     </p>
                     <a
-                        href={`${PORTAL_URL}/login`}
+                        href={isLoggedIn ? PORTAL_URL : `${PORTAL_URL}/login`}
                         className="bg-white text-[#ec1325] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition inline-block"
                     >
-                        Login Sekarang
+                        {isLoggedIn ? 'Buka Portal' : 'Login Sekarang'}
                     </a>
                 </div>
             </section>

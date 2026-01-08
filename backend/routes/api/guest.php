@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 // Authentication
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/check', [AuthController::class, 'check']);
 
 // Public Content
 Route::get('/home', [HomeController::class, 'index']);

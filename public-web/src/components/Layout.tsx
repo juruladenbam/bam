@@ -1,10 +1,19 @@
 import { Outlet, Link } from 'react-router-dom'
+import { useState } from 'react'
+import { useAuthCheck } from '@/hooks/useAuthCheck'
 
 const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
-import { useState } from 'react'
+
 
 export default function Layout() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const { isLoggedIn, isLoading } = useAuthCheck()
+
+    // Redirect to portal if already logged in and not loading
+    if (!isLoading && isLoggedIn) {
+        window.location.replace(PORTAL_URL)
+        return null // Stop rendering checking...
+    }
 
     return (
         <div className="relative flex min-h-screen w-full flex-col">
@@ -33,10 +42,10 @@ export default function Layout() {
                         </Link>
                     </nav>
                     <a
-                        href={`${PORTAL_URL}/login`}
+                        href={isLoggedIn ? PORTAL_URL : `${PORTAL_URL}/login`}
                         className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-[#ec1325] text-white text-sm font-bold hover:bg-[#c91020] transition-colors"
                     >
-                        Login
+                        {isLoggedIn ? 'Portal' : 'Login'}
                     </a>
                 </div>
 
@@ -84,10 +93,10 @@ export default function Layout() {
                             Berita
                         </Link>
                         <a
-                            href={`${PORTAL_URL}/login`}
+                            href={isLoggedIn ? PORTAL_URL : `${PORTAL_URL}/login`}
                             className="mt-4 flex w-full cursor-pointer items-center justify-center rounded-lg h-12 bg-[#ec1325] text-white text-base font-bold hover:bg-[#c91020] transition-colors"
                         >
-                            Login
+                            {isLoggedIn ? 'Portal' : 'Login'}
                         </a>
                     </nav>
                 </div>
@@ -114,7 +123,7 @@ export default function Layout() {
                     <div className="flex flex-wrap gap-12">
                         <div className="flex flex-col gap-3">
                             <h4 className="text-[#181112] font-bold text-sm">Portal</h4>
-                            <a href={`${PORTAL_URL}/login`} className="text-[#896165] text-sm hover:text-[#ec1325]">Login</a>
+                            <a href={isLoggedIn ? PORTAL_URL : `${PORTAL_URL}/login`} className="text-[#896165] text-sm hover:text-[#ec1325]">{isLoggedIn ? 'Portal' : 'Login'}</a>
                             <a href={`${PORTAL_URL}/register`} className="text-[#896165] text-sm hover:text-[#ec1325]">Daftar</a>
                         </div>
                         <div className="flex flex-col gap-3">

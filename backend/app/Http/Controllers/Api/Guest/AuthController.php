@@ -40,4 +40,15 @@ class AuthController extends Controller
             'user' => $user,
         ], 'Login berhasil');
     }
+
+    /**
+     * Check login status
+     */
+    public function check()
+    {
+        return $this->success([
+            'is_logged_in' => auth('sanctum')->check(),
+            'user' => auth('sanctum')->user(),
+        ]);
+    }
 }

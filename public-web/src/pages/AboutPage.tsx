@@ -1,10 +1,12 @@
 import SEO from '@/components/SEO'
 import { useAboutContent } from '@/hooks/useAboutContent'
+import { useAuthCheck } from '@/hooks/useAuthCheck'
 
 const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 
 export default function AboutPage() {
     const { data, isLoading } = useAboutContent();
+    const { isLoggedIn } = useAuthCheck();
 
     // Fallback values
     const title = data?.title || 'Bani Abdul Manan';
@@ -127,11 +129,11 @@ export default function AboutPage() {
                 <div className="container mx-auto px-4 text-center">
                     <p className="text-[#896165] mb-4">Ingin melihat silsilah lengkap?</p>
                     <a
-                        href={`${PORTAL_URL}/login`}
+                        href={isLoggedIn ? PORTAL_URL : `${PORTAL_URL}/login`}
                         className="inline-flex items-center gap-2 bg-[#ec1325] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#c91020] transition-colors"
                     >
-                        <span className="material-symbols-outlined">login</span>
-                        Login ke Portal
+                        <span className="material-symbols-outlined">{isLoggedIn ? 'dashboard' : 'login'}</span>
+                        {isLoggedIn ? 'Buka Portal' : 'Login ke Portal'}
                     </a>
                 </div>
             </section>
