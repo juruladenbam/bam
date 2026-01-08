@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { contentApi } from '../../features/content/api/contentApi'
 import type { CreateEventData, SidebarItem } from '../../features/content/api/contentApi'
 import RichTextEditor from '../../components/editor/RichTextEditor'
+import ImageUploader from '../../components/ImageUploader'
 import { EventScheduleManager } from './components/EventScheduleManager'
 import { EventSidebarManager } from './components/EventSidebarManager'
 
@@ -200,11 +201,17 @@ export function EventFormPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-[#181112] mb-1">Thumbnail Image (URL)</label>
-                                <input
-                                    {...register('thumbnail')}
-                                    className="w-full px-4 py-2 border border-[#e6dbdc] rounded-lg focus:outline-none focus:border-[#ec1325]/50"
-                                    placeholder="https://..."
+                                <Controller
+                                    name="thumbnail"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <ImageUploader
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            folder="events"
+                                            label="Thumbnail Image"
+                                        />
+                                    )}
                                 />
                             </div>
 

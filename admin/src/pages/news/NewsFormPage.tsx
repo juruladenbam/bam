@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { contentApi } from '../../features/content/api/contentApi'
 import type { CreateNewsData } from '../../features/content/api/contentApi'
 import RichTextEditor from '../../components/editor/RichTextEditor'
+import ImageUploader from '../../components/ImageUploader'
 
 export function NewsFormPage() {
     const { id } = useParams()
@@ -15,6 +16,7 @@ export function NewsFormPage() {
     const { register, control, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<CreateNewsData>({
         defaultValues: {
             is_public: true,
+            is_headline: false,
             category: 'umum',
         }
     })
@@ -137,16 +139,29 @@ export function NewsFormPage() {
                         <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">send</span>
                     </button>
 
-                    <div className="flex items-center gap-3 pt-2 border-t border-gray-50">
-                        <input
-                            type="checkbox"
-                            id="is_public"
-                            {...register('is_public')}
-                            className="w-4 h-4 text-[#181112] border-gray-300 rounded focus:ring-black"
-                        />
-                        <label htmlFor="is_public" className="text-sm text-gray-600 cursor-pointer select-none">
-                            Tampilkan ke Publik
-                        </label>
+                    <div className="flex flex-col gap-3 pt-2 border-t border-gray-50">
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="checkbox"
+                                id="is_public"
+                                {...register('is_public')}
+                                className="w-4 h-4 text-[#181112] border-gray-300 rounded focus:ring-black"
+                            />
+                            <label htmlFor="is_public" className="text-sm text-gray-600 cursor-pointer select-none">
+                                Tampilkan ke Publik
+                            </label>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="checkbox"
+                                id="is_headline"
+                                {...register('is_headline')}
+                                className="w-4 h-4 text-[#ec1325] border-gray-300 rounded focus:ring-[#ec1325]"
+                            />
+                            <label htmlFor="is_headline" className="text-sm text-gray-600 cursor-pointer select-none">
+                                Jadikan Headline
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -156,11 +171,17 @@ export function NewsFormPage() {
 
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase">Thumbnail Image (URL)</label>
-                            <input
-                                {...register('thumbnail')}
-                                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg text-sm text-[#181112] focus:outline-none focus:ring-2 focus:ring-gray-200 placeholder-gray-400"
-                                placeholder="https://..."
+                            <Controller
+                                name="thumbnail"
+                                control={control}
+                                render={({ field }) => (
+                                    <ImageUploader
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        folder="news"
+                                        label="Thumbnail Image"
+                                    />
+                                )}
                             />
                         </div>
 

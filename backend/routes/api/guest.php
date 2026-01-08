@@ -30,7 +30,9 @@ Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{slug}', [EventController::class, 'show']);
 
 // News
+Route::get('/news/headlines', [NewsController::class, 'headlines']);
 Route::get('/news', [NewsController::class, 'index']);
 Route::get('/news/{slug}', [NewsController::class, 'show']);
+Route::post('/news/{id}/clap', [NewsController::class, 'clap']);
 
 

@@ -1,5 +1,5 @@
 import apiClient from '@/lib/api';
-import type { NewsItem, PaginatedResponse } from '@/lib/types';
+import type { NewsItem, PaginatedResponse, ApiResponse } from '@/lib/types';
 
 export const newsApi = {
     /**
@@ -10,11 +10,21 @@ export const newsApi = {
         return response.data;
     },
 
+    getHeadlines: async (): Promise<ApiResponse<NewsItem[]>> => {
+        const response = await apiClient.get('/guest/news/headlines');
+        return response.data;
+    },
+
     /**
      * Get news detail by slug
      */
     getBySlug: async (slug: string): Promise<{ success: boolean; data: NewsItem }> => {
         const response = await apiClient.get(`/guest/news/${slug}`);
+        return response.data;
+    },
+
+    clap: async (id: number): Promise<any> => {
+        const response = await apiClient.post(`/guest/news/${id}/clap`);
         return response.data;
     },
 };

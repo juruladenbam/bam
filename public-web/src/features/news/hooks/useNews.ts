@@ -13,6 +13,16 @@ export function useNews(page: number = 1) {
 }
 
 /**
+ * Hook to fetch headlines
+ */
+export function useNewsHeadlines() {
+    return useQuery({
+        queryKey: ['news', 'headlines'],
+        queryFn: newsApi.getHeadlines,
+    });
+}
+
+/**
  * Hook to fetch single news by slug
  */
 export function useNewsItem(slug: string) {

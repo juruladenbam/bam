@@ -12,6 +12,10 @@ export default function HomePage() {
         badge: 'Portal Keluarga Resmi',
         title: 'Selamat Datang di Keluarga Digital Bani Abdul Manan',
         subtitle: 'Menghubungkan generasi, melestarikan sejarah, dan merayakan masa depan bersama. Akses warisan keluarga Anda hari ini.',
+        image: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&auto=format&fit=crop&q=60',
+        image_year: 'Sejak 1945',
+        image_caption: 'Pertemuan Akbar Keluarga',
+        image_location: 'Yogyakarta, Indonesia',
     };
 
     const featuresSection = data?.features || {
@@ -28,6 +32,7 @@ export default function HomePage() {
         title: 'Legasi Abdul Manan',
         content: '<p>Kisah kami bermula dari nilai-nilai yang ditanamkan oleh leluhur kami, Abdul Manan.</p>',
         quote: 'Keluarga adalah kompas yang membimbing kita.',
+        image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&auto=format&fit=crop&q=60',
     };
 
     const cta = data?.cta || {
@@ -85,15 +90,15 @@ export default function HomePage() {
                             <div
                                 className="w-full h-full bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-105"
                                 style={{
-                                    backgroundImage: `url("https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&auto=format&fit=crop&q=60")`,
+                                    backgroundImage: `url("${hero.image || 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&auto=format&fit=crop&q=60'}")`,
                                 }}
                             ></div>
                             <div className="absolute bottom-6 left-6 z-20 text-white">
-                                <p className="text-sm font-medium opacity-90 uppercase tracking-widest mb-1">Sejak 1945</p>
-                                <p className="text-2xl font-bold">Pertemuan Akbar Keluarga</p>
+                                <p className="text-sm font-medium opacity-90 uppercase tracking-widest mb-1">{hero.image_year}</p>
+                                <p className="text-2xl font-bold">{hero.image_caption}</p>
                                 <div className="flex items-center gap-1 text-xs opacity-80 mt-1">
                                     <span className="material-symbols-outlined text-sm">location_on</span>
-                                    <span>Yogyakarta, Indonesia</span>
+                                    <span>{hero.image_location}</span>
                                 </div>
                             </div>
                         </div>
@@ -210,7 +215,7 @@ export default function HomePage() {
                                 <img
                                     alt="Legacy Photo"
                                     className="w-full h-full object-cover sepia-[.3] hover:sepia-0 transition-all duration-500"
-                                    src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&auto=format&fit=crop&q=60"
+                                    src={legacy.image || 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&auto=format&fit=crop&q=60'}
                                 />
                                 <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white">
                                     <blockquote className="italic font-light">"{legacy.quote}"</blockquote>

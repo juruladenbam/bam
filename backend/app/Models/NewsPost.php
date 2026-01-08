@@ -19,13 +19,22 @@ class NewsPost extends Model
         'content',
         'category',
         'is_public',
+        'is_headline',
         'published_at',
     ];
 
     protected $casts = [
         'is_public' => 'boolean',
+        'is_headline' => 'boolean',
         'published_at' => 'datetime',
     ];
+
+    protected $appends = ['thumbnail_url'];
+
+    public function getThumbnailUrlAttribute()
+    {
+        return $this->thumbnail;
+    }
 
     public function author(): BelongsTo
     {

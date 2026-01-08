@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Admin\PersonController;
 use App\Http\Controllers\Api\Admin\MarriageController;
 use App\Http\Controllers\Api\Admin\BranchController;
 use App\Http\Controllers\Api\Admin\SiteSettingController;
+use App\Http\Controllers\Api\Admin\SettingImageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -56,4 +57,9 @@ Route::get('/settings/{prefix}', [SiteSettingController::class, 'show']);
 Route::put('/settings/{key}', [SiteSettingController::class, 'update']);
 Route::post('/settings/{prefix}/bulk', [SiteSettingController::class, 'bulkUpdate']);
 
+// Setting Images
+Route::post('/settings/image/upload', [SettingImageController::class, 'upload']);
+Route::delete('/settings/image', [SettingImageController::class, 'destroy']);
 
+// Generic Upload
+Route::post('/upload', [\App\Http\Controllers\Api\Admin\FileUploadController::class, 'upload']);

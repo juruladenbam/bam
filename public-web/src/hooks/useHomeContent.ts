@@ -12,6 +12,10 @@ interface HomeContent {
         badge: string;
         title: string;
         subtitle: string;
+        image: string;
+        image_year: string;
+        image_caption: string;
+        image_location: string;
     };
     features: {
         title: string;
@@ -22,6 +26,7 @@ interface HomeContent {
         title: string;
         content: string;
         quote: string;
+        image: string;
     };
     cta: {
         title: string;

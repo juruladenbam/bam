@@ -23,6 +23,10 @@ class HomeContentController extends Controller
                 'badge' => $settings['hero_badge'] ?? 'Portal Keluarga Resmi',
                 'title' => $settings['hero_title'] ?? '',
                 'subtitle' => $settings['hero_subtitle'] ?? '',
+                'image' => $settings['hero_image'] ?? '',
+                'image_year' => $settings['hero_image_year'] ?? 'Sejak 1945',
+                'image_caption' => $settings['hero_image_caption'] ?? 'Pertemuan Akbar Keluarga',
+                'image_location' => $settings['hero_image_location'] ?? 'Yogyakarta, Indonesia',
             ],
             'features' => [
                 'title' => $settings['features_title'] ?? '',
@@ -33,6 +37,7 @@ class HomeContentController extends Controller
                 'title' => $settings['legacy_title'] ?? '',
                 'content' => $settings['legacy_content'] ?? '',
                 'quote' => $settings['legacy_quote'] ?? '',
+                'image' => $settings['legacy_image'] ?? '',
             ],
             'cta' => [
                 'title' => $settings['cta_title'] ?? '',

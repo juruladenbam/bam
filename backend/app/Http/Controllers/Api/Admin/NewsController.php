@@ -41,6 +41,7 @@ class NewsController extends Controller
             'content' => 'required|string',
             'category' => ['required', Rule::in(['kelahiran', 'lelayu', 'prestasi', 'umum'])],
             'is_public' => 'boolean',
+            'is_headline' => 'boolean',
             'published_at' => 'nullable|date',
         ]);
 
@@ -59,6 +60,7 @@ class NewsController extends Controller
             'content' => 'string',
             'category' => [Rule::in(['kelahiran', 'lelayu', 'prestasi', 'umum'])],
             'is_public' => 'boolean',
+            'is_headline' => 'boolean',
             'published_at' => 'nullable|date',
         ]);
 

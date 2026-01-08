@@ -51,6 +51,7 @@ export interface NewsPost {
     content: string
     category: 'kelahiran' | 'lelayu' | 'prestasi' | 'umum'
     is_public: boolean
+    is_headline?: boolean
     published_at: string
     author?: {
         id: number

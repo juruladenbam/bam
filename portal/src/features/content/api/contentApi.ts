@@ -75,6 +75,8 @@ export const contentApi = {
         links: any
     }>(`/portal/news?page=${page}`),
 
+    getHeadlines: () => fetchApi<NewsItem[]>('/guest/news/headlines'),
+
     clapNews: (id: number) => fetchApi<{ claps: number }>(`/portal/news/${id}/clap`, {
         method: 'POST'
     }),

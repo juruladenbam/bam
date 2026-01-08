@@ -12,7 +12,7 @@ import ToolbarPlugin from './plugins/ToolbarPlugin';
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { AutoLinkPlugin } from '@lexical/react/LexicalAutoLinkPlugin';
 import { LinkNode, AutoLinkNode } from '@lexical/link';
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, memo } from 'react';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { ListNode, ListItemNode } from '@lexical/list';
@@ -72,7 +72,7 @@ interface RichTextEditorProps {
     variant?: 'default' | 'ghost';
 }
 
-export default function RichTextEditor({ value, onChange, placeholder = "Jelaskan detail acara...", variant = 'default' }: RichTextEditorProps) {
+const RichTextEditor = memo(function RichTextEditor({ value, onChange, placeholder = "Jelaskan detail acara...", variant = 'default' }: RichTextEditorProps) {
     const initialConfig = useMemo(() => ({
         namespace: 'RichTextEditor',
         theme: EditorTheme,
@@ -97,7 +97,6 @@ export default function RichTextEditor({ value, onChange, placeholder = "Jelaska
                         contentEditable={
                             <ContentEditable
                                 className="min-h-[150px] p-4 outline-none prose prose-sm max-w-none"
-                                tabIndex={-1}
                             />
                         }
                         placeholder={<Placeholder text={placeholder} />}
@@ -124,5 +123,7 @@ export default function RichTextEditor({ value, onChange, placeholder = "Jelaska
             </LexicalComposer>
         </div>
     );
-}
+});
+
+export default RichTextEditor;
 

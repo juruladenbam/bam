@@ -81,6 +81,26 @@ class SiteSettingSeeder extends Seeder
                 'value' => 'Menghubungkan generasi, melestarikan sejarah, dan merayakan masa depan bersama. Akses warisan keluarga Anda hari ini.',
                 'type' => 'text',
             ],
+            [
+                'key' => 'home.hero_image',
+                'value' => 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&auto=format&fit=crop&q=60',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'home.hero_image_year',
+                'value' => 'Sejak 1945',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'home.hero_image_caption',
+                'value' => 'Pertemuan Akbar Keluarga',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'home.hero_image_location',
+                'value' => 'Yogyakarta, Indonesia',
+                'type' => 'text',
+            ],
 
             // Home Page - Features
             [
@@ -129,6 +149,11 @@ class SiteSettingSeeder extends Seeder
             [
                 'key' => 'home.legacy_quote',
                 'value' => 'Keluarga adalah kompas yang membimbing kita.',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'home.legacy_image',
+                'value' => 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&auto=format&fit=crop&q=60',
                 'type' => 'text',
             ],
 

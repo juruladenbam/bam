@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import RichTextEditor from '../../components/editor/RichTextEditor';
+import ImageUploader from '../../components/ImageUploader';
 
 interface SettingItem {
     id: number;
@@ -23,6 +24,10 @@ export default function HomeSettingsPage() {
     const [heroBadge, setHeroBadge] = useState('');
     const [heroTitle, setHeroTitle] = useState('');
     const [heroSubtitle, setHeroSubtitle] = useState('');
+    const [heroImage, setHeroImage] = useState('');
+    const [heroImageYear, setHeroImageYear] = useState('');
+    const [heroImageCaption, setHeroImageCaption] = useState('');
+    const [heroImageLocation, setHeroImageLocation] = useState('');
 
     // Features
     const [featuresTitle, setFeaturesTitle] = useState('');
@@ -33,6 +38,7 @@ export default function HomeSettingsPage() {
     const [legacyTitle, setLegacyTitle] = useState('');
     const [legacyContent, setLegacyContent] = useState('');
     const [legacyQuote, setLegacyQuote] = useState('');
+    const [legacyImage, setLegacyImage] = useState('');
 
     // CTA
     const [ctaTitle, setCtaTitle] = useState('');
@@ -63,12 +69,17 @@ export default function HomeSettingsPage() {
                     case 'hero_badge': setHeroBadge(setting.value as string); break;
                     case 'hero_title': setHeroTitle(setting.value as string); break;
                     case 'hero_subtitle': setHeroSubtitle(setting.value as string); break;
+                    case 'hero_image': setHeroImage(setting.value as string); break;
+                    case 'hero_image_year': setHeroImageYear(setting.value as string); break;
+                    case 'hero_image_caption': setHeroImageCaption(setting.value as string); break;
+                    case 'hero_image_location': setHeroImageLocation(setting.value as string); break;
                     case 'features_title': setFeaturesTitle(setting.value as string); break;
                     case 'features_subtitle': setFeaturesSubtitle(setting.value as string); break;
                     case 'features': setFeatures(setting.value as FeatureItem[]); break;
                     case 'legacy_title': setLegacyTitle(setting.value as string); break;
                     case 'legacy_content': setLegacyContent(setting.value as string); break;
                     case 'legacy_quote': setLegacyQuote(setting.value as string); break;
+                    case 'legacy_image': setLegacyImage(setting.value as string); break;
                     case 'cta_title': setCtaTitle(setting.value as string); break;
                     case 'cta_subtitle': setCtaSubtitle(setting.value as string); break;
                 }
@@ -82,6 +93,9 @@ export default function HomeSettingsPage() {
                 { key: 'hero_badge', value: heroBadge, type: 'text' },
                 { key: 'hero_title', value: heroTitle, type: 'text' },
                 { key: 'hero_subtitle', value: heroSubtitle, type: 'text' },
+                { key: 'hero_image_year', value: heroImageYear, type: 'text' },
+                { key: 'hero_image_caption', value: heroImageCaption, type: 'text' },
+                { key: 'hero_image_location', value: heroImageLocation, type: 'text' },
                 { key: 'features_title', value: featuresTitle, type: 'text' },
                 { key: 'features_subtitle', value: featuresSubtitle, type: 'text' },
                 { key: 'features', value: features, type: 'json' },
@@ -179,6 +193,45 @@ export default function HomeSettingsPage() {
                             className="w-full px-4 py-2.5 border border-[#e6dbdc] rounded-xl focus:ring-2 focus:ring-[#ec1325]/20 focus:border-[#ec1325] transition-colors bg-white text-[#181112] resize-none"
                             placeholder="Deskripsi singkat..."
                         />
+                    </div>
+                    <ImageUploader
+                        settingKey="home.hero_image"
+                        value={heroImage}
+                        onChange={setHeroImage}
+                        label="Gambar Hero"
+                        aspectRatio="aspect-[4/3]"
+                    />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-[#e6dbdc] mt-4">
+                        <div>
+                            <label className="block text-sm font-medium text-[#181112] mb-1.5">Tahun (overlay)</label>
+                            <input
+                                type="text"
+                                value={heroImageYear}
+                                onChange={(e) => setHeroImageYear(e.target.value)}
+                                className="w-full px-4 py-2.5 border border-[#e6dbdc] rounded-xl focus:ring-2 focus:ring-[#ec1325]/20 focus:border-[#ec1325] transition-colors bg-white text-[#181112]"
+                                placeholder="Sejak 1945"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[#181112] mb-1.5">Caption (overlay)</label>
+                            <input
+                                type="text"
+                                value={heroImageCaption}
+                                onChange={(e) => setHeroImageCaption(e.target.value)}
+                                className="w-full px-4 py-2.5 border border-[#e6dbdc] rounded-xl focus:ring-2 focus:ring-[#ec1325]/20 focus:border-[#ec1325] transition-colors bg-white text-[#181112]"
+                                placeholder="Pertemuan Akbar Keluarga"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-[#181112] mb-1.5">Lokasi (overlay)</label>
+                            <input
+                                type="text"
+                                value={heroImageLocation}
+                                onChange={(e) => setHeroImageLocation(e.target.value)}
+                                className="w-full px-4 py-2.5 border border-[#e6dbdc] rounded-xl focus:ring-2 focus:ring-[#ec1325]/20 focus:border-[#ec1325] transition-colors bg-white text-[#181112]"
+                                placeholder="Yogyakarta, Indonesia"
+                            />
+                        </div>
                     </div>
                 </div>
             </section>
@@ -319,6 +372,13 @@ export default function HomeSettingsPage() {
                             placeholder="Kutipan inspiratif..."
                         />
                     </div>
+                    <ImageUploader
+                        settingKey="home.legacy_image"
+                        value={legacyImage}
+                        onChange={setLegacyImage}
+                        label="Gambar Legacy"
+                        aspectRatio="aspect-square"
+                    />
                 </div>
             </section>
 

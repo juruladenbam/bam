@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Enable Sanctum stateful API for SPA authentication
         $middleware->statefulApi();
+        
+        $middleware->validateCsrfTokens(except: [
+            'api/guest/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

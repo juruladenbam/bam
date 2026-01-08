@@ -1,4 +1,4 @@
-import { useNews, NewsCard } from '@/features/news';
+import { useNews, NewsCard, HeadlineSection } from '@/features/news';
 import { useState } from 'react';
 import SEO from '@/components/SEO';
 
@@ -24,6 +24,10 @@ export default function NewsPage() {
                     </p>
                 </div>
             </section>
+
+
+
+            <HeadlineSection />
 
             {/* News Grid */}
             <section className="py-16 bg-[#f8f6f6]">
@@ -96,6 +100,6 @@ export default function NewsPage() {
                     </a>
                 </div>
             </section>
-        </div>
+        </div >
     );
 }

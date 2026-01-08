@@ -12,6 +12,11 @@ export function NewsListPage() {
         queryFn: () => contentApi.getNews(page)
     })
 
+    const { data: headlines } = useQuery({
+        queryKey: ['portal', 'news', 'headlines'],
+        queryFn: contentApi.getHeadlines
+    })
+
     const newsList = (data as any)?.data as NewsItem[] || []
     const meta = (data as any)?.meta
 
@@ -31,6 +36,70 @@ export function NewsListPage() {
                         <p className="text-[#896165] mt-1">Kabar terbaru dan informasi kegiatan keluarga besar</p>
                     </div>
                 </div>
+
+                {/* Headlines */}
+                {headlines && headlines.length > 0 && (
+                    <div className="mb-12 border-b border-[#e6dbdc] pb-12">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-[#181112]">
+                            <span className="material-symbols-outlined text-[#ec1325]">breaking_news_alt_1</span>
+                            Headline
+                        </h2>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Main Headline */}
+                            <Link
+                                to={`/news/${headlines[0].id}`}
+                                className="lg:col-span-2 group relative h-[350px] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all block"
+                            >
+                                <img
+                                    src={headlines[0].thumbnail || 'https://placehold.co/800x400?text=No+Image'}
+                                    alt={headlines[0].title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 flex flex-col justify-end">
+                                    <span className="inline-block px-2.5 py-1 bg-[#ec1325] text-white text-[10px] font-bold rounded mb-2 w-fit uppercase tracking-wider">
+                                        {headlines[0].category}
+                                    </span>
+                                    <h3 className="text-2xl font-bold text-white mb-1 leading-tight group-hover:text-red-400 transition-colors">
+                                        {headlines[0].title}
+                                    </h3>
+                                    <p className="text-white/70 text-sm">
+                                        {new Date(headlines[0].published_at).toLocaleDateString('id-ID', { dateStyle: 'long' })}
+                                    </p>
+                                </div>
+                            </Link>
+
+                            {/* Side Headlines */}
+                            <div className="flex flex-col gap-4">
+                                {headlines.slice(1, 4).map((news: any) => (
+                                    <Link
+                                        key={news.id}
+                                        to={`/news/${news.id}`}
+                                        className="flex gap-3 p-3 bg-white rounded-xl border border-[#e6dbdc] hover:border-[#ec1325]/30 hover:shadow-sm transition-all group"
+                                    >
+                                        <div className="w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                                            <img
+                                                src={news.thumbnail || 'https://placehold.co/200x200?text=No+Image'}
+                                                alt={news.title}
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                            <span className="text-[10px] font-bold text-[#ec1325] uppercase tracking-wider mb-0.5">
+                                                {news.category}
+                                            </span>
+                                            <h4 className="font-bold text-[#181112] text-sm leading-snug line-clamp-2 group-hover:text-[#ec1325] transition-colors">
+                                                {news.title}
+                                            </h4>
+                                            <p className="text-[10px] text-[#896165] mt-1">
+                                                {new Date(news.published_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                            </p>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {isLoading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

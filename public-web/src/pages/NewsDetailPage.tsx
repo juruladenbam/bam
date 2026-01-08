@@ -1,10 +1,48 @@
 import { useParams, Link } from 'react-router-dom';
-import { useNewsItem } from '@/features/news';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNewsItem, newsApi } from '@/features/news';
 import SEO from '@/components/SEO';
+import { ClapButton } from '@/components/ui/ClapButton';
+
 
 export default function NewsDetailPage() {
     const { slug } = useParams<{ slug: string }>();
     const { data, isLoading, error } = useNewsItem(slug || '');
+
+    const queryClient = useQueryClient();
+
+    const clapMutation = useMutation({
+        mutationFn: () => {
+            if (!data?.data?.id) throw new Error("News ID not found");
+            return newsApi.clap(data.data.id);
+        },
+        onMutate: async () => {
+            const queryKey = ['news', 'public', slug];
+            await queryClient.cancelQueries({ queryKey });
+            const previousNews = queryClient.getQueryData(queryKey);
+
+            queryClient.setQueryData(queryKey, (old: any) => {
+                if (!old || !old.data) return old;
+                return {
+                    ...old,
+                    data: {
+                        ...old.data,
+                        claps: (old.data.claps || 0) + 1
+                    }
+                };
+            });
+
+            return { previousNews };
+        },
+        onError: (_err, _newTodo, context: any) => {
+            if (context?.previousNews) {
+                queryClient.setQueryData(['news', 'public', slug], context.previousNews);
+            }
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['news', 'public', slug] });
+        }
+    });
 
     if (isLoading) {
         return (
@@ -40,6 +78,7 @@ export default function NewsDetailPage() {
     }
 
     const news = data.data;
+
     const formatDate = (dateString?: string) => {
         if (!dateString) return '';
         return new Date(dateString).toLocaleDateString('id-ID', {
@@ -105,6 +144,14 @@ export default function NewsDetailPage() {
                             className="prose prose-lg max-w-none prose-headings:text-[#181112] prose-p:text-[#3d2a2c] prose-a:text-[#ec1325]"
                             dangerouslySetInnerHTML={{ __html: news.content }}
                         />
+
+                        <div className="mt-12 flex flex-col items-center justify-center gap-2 border-t border-[#e6dbdc] pt-8">
+                            <ClapButton
+                                totalClaps={news.claps || 0}
+                                onClap={() => clapMutation.mutate()}
+                            />
+                            <span className="text-sm text-gray-400 font-medium">Beri tepuk tangan (Like)</span>
+                        </div>
                     </article>
 
                     {/* Share */}

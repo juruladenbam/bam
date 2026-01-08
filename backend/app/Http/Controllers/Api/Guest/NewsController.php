@@ -24,6 +24,33 @@ class NewsController extends Controller
         return $this->paginated($news, 'Daftar berita publik');
     }
 
+    public function headlines(): JsonResponse
+    {
+        $headlines = NewsPost::where('is_public', true)
+            ->where('is_headline', true)
+            ->latest('published_at')
+            ->take(5)
+            ->get();
+
+        $count = $headlines->count();
+        
+        // Ensure at least 4 items for layout (1 main + 3 side)
+        if ($count < 4) {
+            $needed = 5 - $count; // Try to get up to 5 total
+            $excludeIds = $headlines->pluck('id')->toArray();
+            
+            $more = NewsPost::where('is_public', true)
+                ->whereNotIn('id', $excludeIds)
+                ->latest('published_at')
+                ->take($needed)
+                ->get();
+            
+            $headlines = $headlines->merge($more);
+        }
+
+        return $this->success($headlines, 'Berita Headline');
+    }
+
     /**
      * Show news detail by slug
      */
@@ -35,6 +62,17 @@ class NewsController extends Controller
             ->firstOrFail();
         
         return $this->success($news, 'Detail berita');
+    }
+
+    public function clap($id): JsonResponse
+    {
+        $news = NewsPost::where('id', $id)
+            ->where('is_public', true)
+            ->firstOrFail();
+
+        $news->increment('claps');
+        
+        return $this->success(['claps' => $news->claps], 'Clapped!');
     }
 }
 
