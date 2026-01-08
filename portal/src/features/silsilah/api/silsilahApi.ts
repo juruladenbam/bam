@@ -155,8 +155,8 @@ export const silsilahApi = {
     }>(`/portal/silsilah/tree${branchId ? `?branch_id=${branchId}` : ''}`),
 
     // Search persons
-    search: (query: string) => fetchApi<import('../types').Person[]>(
-        `/portal/silsilah/search?q=${encodeURIComponent(query)}`
+    search: (query: string, gender?: 'male' | 'female') => fetchApi<import('../types').Person[]>(
+        `/portal/silsilah/search?q=${encodeURIComponent(query)}${gender ? `&gender=${gender}` : ''}`
     ),
 
     // Get person detail

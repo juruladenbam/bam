@@ -155,7 +155,7 @@ class SilsilahController extends Controller
             return $this->success([], 'Minimal 2 karakter untuk pencarian');
         }
 
-        $results = $this->personService->searchPersons($query, $limit);
+        $results = $this->personService->searchPersons($query, $limit, 0, $request->query('gender'));
 
         return $this->success($results, 'Hasil pencarian');
     }

@@ -47,7 +47,28 @@ class SubmissionController extends Controller
             // Keep ID validation if provided
             'data.husband_id' => 'nullable|exists:persons,id',
             'data.wife_id' => 'nullable|exists:persons,id',
+            'data.father_id' => 'nullable|exists:persons,id',
+            'data.mother_id' => 'nullable|exists:persons,id',
             'data.birth_order' => 'nullable|integer|min:1',
+            'data.birth_place' => 'nullable|string',
+            'data.parent_marriage_id' => 'nullable|exists:marriages,id',
+            
+            // Marriage specific
+            'data.marriage_date' => 'nullable|date',
+            
+            // Death specific
+            'data.death_date' => 'nullable|date',
+            'data.death_place' => 'nullable|string',
+            'data.burial_place' => 'nullable|string',
+            
+            // Correction specific
+            'data.person_name' => 'nullable|string',
+            'data.field_select' => 'nullable|string',
+            'data.field' => 'nullable|string',
+            'data.correct_value' => 'nullable|string',
+            
+            // General
+            'data.notes' => 'nullable|string',
         ]);
         
         $submission = $this->submissionService->createSubmission(

@@ -10,6 +10,7 @@ interface PersonPickerProps {
     placeholder?: string
     required?: boolean
     error?: string
+    gender?: 'male' | 'female'
 }
 
 export function PersonPicker({
@@ -18,7 +19,8 @@ export function PersonPicker({
     label = "Pilih Anggota",
     placeholder = "Cari nama...",
     required = false,
-    error
+    error,
+    gender
 }: PersonPickerProps) {
     const [query, setQuery] = useState('')
     const [results, setResults] = useState<Person[]>([])
@@ -36,7 +38,7 @@ export function PersonPicker({
         const search = async () => {
             setIsSearching(true)
             try {
-                const data = await silsilahApi.search(debouncedQuery)
+                const data = await silsilahApi.search(debouncedQuery, gender)
                 setResults(data)
                 setShowResults(true)
             } catch (err) {

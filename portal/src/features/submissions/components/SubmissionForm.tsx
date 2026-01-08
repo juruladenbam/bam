@@ -23,7 +23,15 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
     const [error, setError] = useState<string | null>(null)
 
     // For Person Picker state
-    const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
+    const [selectedPerson, setSelectedPerson] = useState<Person | null>(null) // For correction/death
+    const [selectedFather, setSelectedFather] = useState<Person | null>(null) // For birth
+    const [selectedMother, setSelectedMother] = useState<Person | null>(null) // For birth
+
+    // For Marriage
+    const [husbandMode, setHusbandMode] = useState<'picker' | 'manual'>('picker')
+    const [wifeMode, setWifeMode] = useState<'picker' | 'manual'>('picker')
+    const [selectedHusband, setSelectedHusband] = useState<Person | null>(null)
+    const [selectedWife, setSelectedWife] = useState<Person | null>(null)
 
     const createMutation = useCreateSubmission()
 
@@ -31,6 +39,12 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
         setSelectedType(type)
         setFormData({})
         setSelectedPerson(null)
+        setSelectedFather(null)
+        setSelectedMother(null)
+        setSelectedHusband(null)
+        setSelectedWife(null)
+        setHusbandMode('picker')
+        setWifeMode('picker')
         setStep('form')
     }
 
@@ -55,6 +69,24 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
             if (!payload.person_name) payload.person_name = selectedPerson.full_name
         }
 
+        // Add parents for birth
+        if (selectedType === 'birth') {
+            if (selectedFather) payload.father_id = selectedFather.id
+            if (selectedMother) payload.mother_id = selectedMother.id
+        }
+
+        // Add spouses for marriage
+        if (selectedType === 'marriage') {
+            if (husbandMode === 'picker' && selectedHusband) {
+                payload.husband_id = selectedHusband.id
+                payload.husband_name = selectedHusband.full_name
+            }
+            if (wifeMode === 'picker' && selectedWife) {
+                payload.wife_id = selectedWife.id
+                payload.wife_name = selectedWife.full_name
+            }
+        }
+
         try {
             await createMutation.mutateAsync({
                 type: selectedType,
@@ -72,7 +104,7 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
                 return (
                     <>
                         <div className="bg-blue-50 p-4 rounded-lg mb-4 text-sm text-blue-800">
-                            Untuk kelahiran, silakan isi data bayi. Jika ingin menghubungkan dengan orang tua yang sudah ada di sistem, admin akan membantunya nanti.
+                            Silakan isi data bayi. Anda dapat memilih orang tua dari database jika sudah ada.
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -115,7 +147,27 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
                                 />
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+
+                        {/* Parent Pickers */}
+                        <div className="space-y-4 pt-2 border-t border-gray-100">
+                            <h4 className="text-sm font-semibold text-gray-900">Data Orang Tua (Opsional)</h4>
+                            <PersonPicker
+                                label="Cari Ayah (Jika ada di database)"
+                                value={selectedFather}
+                                onChange={setSelectedFather}
+                                placeholder="Ketik nama ayah..."
+                                gender="male"
+                            />
+                            <PersonPicker
+                                label="Cari Ibu (Jika ada di database)"
+                                value={selectedMother}
+                                onChange={setSelectedMother}
+                                placeholder="Ketik nama ibu..."
+                                gender="female"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gray-100">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Tempat Lahir
@@ -149,7 +201,7 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
                                 value={formData.notes || ''}
                                 onChange={(e) => handleInputChange('notes', e.target.value)}
                                 rows={3}
-                                placeholder="Tuliskan nama Ayah & Ibu di sini..."
+                                placeholder="Informasi lain..."
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
                             />
                         </div>
@@ -159,31 +211,107 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
             case 'marriage':
                 return (
                     <>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Nama Suami <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.husband_name || ''}
-                                onChange={(e) => handleInputChange('husband_name', e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
-                                required
-                            />
+                        {/* Husband Section */}
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Data Suami <span className="text-red-500">*</span>
+                                </label>
+                                <div className="flex text-xs bg-gray-100 rounded-lg p-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setHusbandMode('picker')
+                                            handleInputChange('husband_name', '')
+                                        }}
+                                        className={`px-3 py-1 rounded-md transition-all ${husbandMode === 'picker' ? 'bg-white shadow-sm text-gray-900 font-medium' : 'text-gray-500'}`}
+                                    >
+                                        Pilih Data
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setHusbandMode('manual')
+                                            setSelectedHusband(null)
+                                        }}
+                                        className={`px-3 py-1 rounded-md transition-all ${husbandMode === 'manual' ? 'bg-white shadow-sm text-gray-900 font-medium' : 'text-gray-500'}`}
+                                    >
+                                        Input Nama
+                                    </button>
+                                </div>
+                            </div>
+
+                            {husbandMode === 'picker' ? (
+                                <PersonPicker
+                                    value={selectedHusband}
+                                    onChange={setSelectedHusband}
+                                    required
+                                    placeholder="Cari nama suami..."
+                                    gender="male"
+                                />
+                            ) : (
+                                <input
+                                    type="text"
+                                    value={formData.husband_name || ''}
+                                    onChange={(e) => handleInputChange('husband_name', e.target.value)}
+                                    placeholder="Masukkan nama lengkap suami..."
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
+                                    required
+                                />
+                            )}
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Nama Istri <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.wife_name || ''}
-                                onChange={(e) => handleInputChange('wife_name', e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
-                                required
-                            />
+
+                        {/* Wife Section */}
+                        <div className="space-y-2 mt-4">
+                            <div className="flex justify-between items-center">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Data Istri <span className="text-red-500">*</span>
+                                </label>
+                                <div className="flex text-xs bg-gray-100 rounded-lg p-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setWifeMode('picker')
+                                            handleInputChange('wife_name', '')
+                                        }}
+                                        className={`px-3 py-1 rounded-md transition-all ${wifeMode === 'picker' ? 'bg-white shadow-sm text-gray-900 font-medium' : 'text-gray-500'}`}
+                                    >
+                                        Pilih Data
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setWifeMode('manual')
+                                            setSelectedWife(null)
+                                        }}
+                                        className={`px-3 py-1 rounded-md transition-all ${wifeMode === 'manual' ? 'bg-white shadow-sm text-gray-900 font-medium' : 'text-gray-500'}`}
+                                    >
+                                        Input Nama
+                                    </button>
+                                </div>
+                            </div>
+
+                            {wifeMode === 'picker' ? (
+                                <PersonPicker
+                                    value={selectedWife}
+                                    onChange={setSelectedWife}
+                                    required
+                                    placeholder="Cari nama istri..."
+                                    gender="female"
+                                />
+                            ) : (
+                                <input
+                                    type="text"
+                                    value={formData.wife_name || ''}
+                                    onChange={(e) => handleInputChange('wife_name', e.target.value)}
+                                    placeholder="Masukkan nama lengkap istri..."
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
+                                    required
+                                />
+                            )}
                         </div>
-                        <div>
+
+                        <div className="mt-4">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Tanggal Nikah
                             </label>
@@ -425,7 +553,15 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
                 </button>
                 <button
                     type="submit"
-                    disabled={createMutation.isPending || ((selectedType === 'death' || selectedType === 'correction') && !selectedPerson)}
+                    disabled={createMutation.isPending ||
+                        ((selectedType === 'death' || selectedType === 'correction') && !selectedPerson) ||
+                        (selectedType === 'marriage' && (
+                            (husbandMode === 'picker' && !selectedHusband) ||
+                            (husbandMode === 'manual' && !formData.husband_name) ||
+                            (wifeMode === 'picker' && !selectedWife) ||
+                            (wifeMode === 'manual' && !formData.wife_name)
+                        ))
+                    }
                     className="px-6 py-2 bg-[#ec1325] text-white rounded-lg hover:bg-[#c91020] transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
                     {createMutation.isPending && (

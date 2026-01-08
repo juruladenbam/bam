@@ -174,8 +174,48 @@ class SubmissionService
     protected function applyCorrectionSubmission(array $data): void
     {
         $personId = $data['person_id'];
-        unset($data['person_id']);
         
-        $this->personRepository->update($personId, $data);
+        // Field mapping from SubmissionForm labels to Database columns
+        $fieldMapping = [
+            'Nama Lengkap' => 'full_name',
+            'Nama Panggilan' => 'nickname',
+            'Jenis Kelamin' => 'gender',
+            'Tanggal Lahir' => 'birth_date',
+            'Tempat Lahir' => 'birth_place',
+            'Urutan Kelahiran' => 'birth_order',
+            'Tanggal Wafat' => 'death_date',
+            'Tempat Wafat' => 'death_place',
+            'Tempat Dimakamkan' => 'burial_place',
+        ];
+
+        // Determine which column to update
+        $fieldSelect = $data['field_select'] ?? null;
+        $customField = $data['field'] ?? null;
+        
+        // If "Lainnya" (other) or custom field provided, uses customField if mapped, 
+        // otherwise we can't auto-apply unknown fields safely.
+        $targetColumn = null;
+        
+        if ($fieldSelect && isset($fieldMapping[$fieldSelect])) {
+            $targetColumn = $fieldMapping[$fieldSelect];
+        } elseif ($customField && in_array($customField, array_values($fieldMapping))) {
+            // If they manually typed a valid column name
+            $targetColumn = $customField;
+        }
+
+        if ($targetColumn) {
+            $value = $data['correct_value'];
+
+            // Value transformation for specific fields
+            if ($targetColumn === 'gender') {
+                $value = strtolower($value);
+                if (in_array($value, ['laki-laki', 'pria', 'cowok', 'male', 'l'])) $value = 'male';
+                if (in_array($value, ['perempuan', 'wanita', 'cewek', 'female', 'p'])) $value = 'female';
+            }
+
+            $this->personRepository->update($personId, [
+                $targetColumn => $value
+            ]);
+        }
     }
 }

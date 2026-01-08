@@ -103,9 +103,9 @@ class PersonService
     /**
      * Search persons
      */
-    public function searchPersons(string $query, int $limit = 10, int $offset = 0): Collection
+    public function searchPersons(string $query, int $limit = 10, int $offset = 0, ?string $gender = null): Collection
     {
-        return $this->personRepository->search($query, $limit, $offset);
+        return $this->personRepository->search($query, $limit, $offset, $gender);
     }
 
     /**

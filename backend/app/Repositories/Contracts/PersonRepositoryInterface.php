@@ -46,7 +46,7 @@ interface PersonRepositoryInterface
     /**
      * Search persons by name
      */
-    public function search(string $query, int $limit = 10): Collection;
+    public function search(string $query, int $limit = 10, int $offset = 0, ?string $gender = null): Collection;
 
     /**
      * Get all ancestors of a person (for LCA)
