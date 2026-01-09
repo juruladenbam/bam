@@ -223,31 +223,35 @@ function BranchPageContent() {
                 />
 
                 {/* Top Controls Overlay */}
-                <div className={`absolute top-4 left-0 right-0 z-10 flex flex-col md:flex-row gap-3 items-center justify-center`}>
-                    {/* Back Button */}
-                    <button
-                        onClick={() => navigate('/silsilah')}
-                        className="bg-white/90 backdrop-blur size-10 flex items-center justify-center rounded-xl shadow-sm border border-[#e6dbdc] text-[#896165] hover:text-[#ec1325] hover:border-[#ec1325] transition-all"
-                        title="Kembali ke Daftar Qobilah"
-                    >
-                        <span className="material-symbols-outlined">arrow_back</span>
-                    </button>
-
-                    {/* Branch Info */}
-                    <div className="bg-white/90 backdrop-blur px-4 py-2.5 rounded-xl shadow-sm border border-[#e6dbdc]">
-                        <h1 className="text-lg font-bold text-[#ec1325]">
-                            {branch?.name || 'Silsilah Keluarga'}
-                        </h1>
-                        <div className="flex items-center gap-3 text-xs text-[#896165]">
-                            <span className="flex items-center gap-1">
-                                <span className="material-symbols-outlined text-[14px]">group</span>
-                                {persons?.length || 0} Members
-                            </span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                                <span className="material-symbols-outlined text-[14px]">hub</span>
-                                Branch {branch?.order}
-                            </span>
+                <div className={`
+                    absolute top-4 right-0 z-10 flex flex-col md:flex-row gap-3 items-center justify-center
+                    transition-all duration-300
+                    ${isMobile ? 'left-0' : isTreeListOpen ? 'left-[316px]' : 'left-0'}
+                `}>
+                    {/* Branch Info with Back Button */}
+                    <div className="bg-white/90 backdrop-blur pl-2.5 pr-4 py-2 rounded-xl shadow-sm border border-[#e6dbdc] flex items-center gap-3">
+                        <button
+                            onClick={() => navigate('/silsilah')}
+                            className="size-9 flex items-center justify-center rounded-lg text-[#896165] hover:text-[#ec1325] hover:bg-[#ec1325]/5 transition-all"
+                            title="Kembali ke Daftar Qobilah"
+                        >
+                            <span className="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <div className="border-l border-[#e6dbdc] pl-3">
+                            <h1 className="text-lg font-bold text-[#ec1325] leading-tight">
+                                {branch?.name || 'Silsilah Keluarga'}
+                            </h1>
+                            <div className="flex items-center gap-3 text-xs text-[#896165]">
+                                <span className="flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-[14px]">group</span>
+                                    {persons?.length || 0} Members
+                                </span>
+                                <span>•</span>
+                                <span className="flex items-center gap-1">
+                                    <span className="material-symbols-outlined text-[14px]">hub</span>
+                                    Branch {branch?.order}
+                                </span>
+                            </div>
                         </div>
                     </div>
 

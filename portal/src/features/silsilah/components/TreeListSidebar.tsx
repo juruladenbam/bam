@@ -198,7 +198,7 @@ export function TreeListSidebar({
             className={`
                 fixed z-20 bg-white shadow-lg border border-[#e6dbdc] rounded-xl size-10 flex items-center justify-center
                 hover:border-[#ec1325] hover:text-[#ec1325] transition-all
-                ${isMobile ? 'top-20 left-4' : 'top-20 left-4'}
+                ${isMobile ? 'top-4 left-4' : 'top-20 left-4'}
                 ${isOpen && !isMobile ? 'left-[308px]' : 'left-4'}
             `}
             title={isOpen ? 'Tutup Daftar' : 'Buka Daftar'}
@@ -216,7 +216,7 @@ export function TreeListSidebar({
                 {toggleButton}
                 <div
                     className={`
-                        fixed inset-0 top-16 z-40 bg-white transform transition-transform duration-300
+                        fixed inset-0 z-40 bg-white transform transition-transform duration-300 flex flex-col
                         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
                     `}
                 >
