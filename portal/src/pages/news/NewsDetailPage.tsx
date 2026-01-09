@@ -1,13 +1,15 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ClapButton } from '../../components/ui/ClapButton'
-import { PortalHeader } from '../../components/layout/PortalHeader'
+import { MobileLayout } from '../../components/layout/MobileLayout'
+import { useIsMobile } from '../../hooks/useIsMobile'
 import { contentApi } from '../../features/content/api/contentApi'
 
 export function NewsDetailPage() {
     const { id } = useParams()
     const navigate = useNavigate()
     const queryClient = useQueryClient()
+    const isMobile = useIsMobile()
 
     const { data: news, isLoading } = useQuery({
         queryKey: ['portal', 'news', id],
@@ -43,42 +45,56 @@ export function NewsDetailPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-[#f8f6f6] flex flex-col">
-                <PortalHeader />
+            <MobileLayout>
                 <div className="flex-1 flex items-center justify-center">
                     <div className="text-[#896165]">Memuat berita...</div>
                 </div>
-            </div>
+            </MobileLayout>
         )
     }
 
     if (!news) {
         return (
-            <div className="min-h-screen bg-[#f8f6f6] flex flex-col">
-                <PortalHeader />
+            <MobileLayout>
                 <div className="flex-1 flex flex-col items-center justify-center">
                     <h2 className="text-2xl font-bold text-[#181112]">Berita tidak ditemukan</h2>
                     <button onClick={() => navigate(-1)} className="mt-4 text-[#ec1325] hover:underline">
                         Kembali
                     </button>
                 </div>
-            </div>
+            </MobileLayout>
         )
     }
 
     return (
-        <div className="min-h-screen bg-[#f8f6f6] flex flex-col">
-            <PortalHeader />
+        <MobileLayout>
+            {/* Mobile back button - safe area aware */}
+            {isMobile && (
+                <div
+                    className="sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-[#e6dbdc]"
+                    style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+                >
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="flex items-center gap-1 px-4 py-3 text-sm font-medium text-[#896165] hover:text-[#ec1325] transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                        Kembali
+                    </button>
+                </div>
+            )}
 
             <div className="flex-1 max-w-4xl mx-auto w-full px-4 md:px-10 py-8 md:py-12">
-                {/* Breadcrumb / Back */}
-                <button
-                    onClick={() => navigate(-1)}
-                    className="mb-6 flex items-center gap-1 text-sm font-medium text-[#896165] hover:text-[#ec1325] transition-colors"
-                >
-                    <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-                    Kembali
-                </button>
+                {/* Desktop Breadcrumb / Back - hidden on mobile */}
+                {!isMobile && (
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="mb-6 flex items-center gap-1 text-sm font-medium text-[#896165] hover:text-[#ec1325] transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                        Kembali
+                    </button>
+                )}
 
                 {/* News Header */}
                 <div className="bg-white border border-[#e6dbdc] rounded-2xl p-8 mb-8 shadow-sm">
@@ -131,18 +147,19 @@ export function NewsDetailPage() {
                             totalClaps={news.claps || 0}
                             onClap={() => clapMutation.mutate()}
                         />
-                        <span className="text-sm text-gray-400 font-medium">Beri tepuk tangan (Like)</span>
+                        <span className="text-sm text-gray-400 font-medium">Beri tepuk tangan</span>
                     </div>
                 </div>
             </div>
 
-            <footer className="bg-[#181112] text-white py-8 mt-12">
+            {/* Footer - hidden on mobile */}
+            <footer className="hidden md:block bg-[#181112] text-white py-8 mt-12">
                 <div className="max-w-7xl mx-auto px-4 md:px-10 text-center">
                     <p className="text-white/50 text-sm">
                         © {new Date().getFullYear()} Bani Abdul Manan Family Portal
                     </p>
                 </div>
             </footer>
-        </div>
+        </MobileLayout>
     )
 }

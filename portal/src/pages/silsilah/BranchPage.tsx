@@ -8,21 +8,8 @@ import { PortalHeader } from '../../components/layout/PortalHeader'
 import { TreeControls } from '../../features/silsilah/components/TreeControls'
 import { MemberSidebar } from '../../features/silsilah/components/MemberSidebar'
 import { MiniMap } from '../../features/silsilah/components/MiniMap'
+import { useIsMobile } from '../../hooks/useIsMobile'
 import type { Person } from '../../features/silsilah/types'
-
-// Hook for responsive detection
-function useIsMobile(breakpoint = 768) {
-    const [isMobile, setIsMobile] = useState(false)
-
-    useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < breakpoint)
-        checkMobile()
-        window.addEventListener('resize', checkMobile)
-        return () => window.removeEventListener('resize', checkMobile)
-    }, [breakpoint])
-
-    return isMobile
-}
 
 function BranchPageContent() {
     const { id } = useParams<{ id: string }>()
@@ -218,7 +205,8 @@ function BranchPageContent() {
     // Main Render
     return (
         <div className="h-screen w-full bg-[#f8f6f6] flex flex-col overflow-hidden">
-            <PortalHeader />
+            {/* Desktop only - hide on mobile for focused tree view */}
+            {!isMobile && <PortalHeader />}
 
             <div className="flex-1 relative">
                 {/* Tree List Sidebar (Left) */}

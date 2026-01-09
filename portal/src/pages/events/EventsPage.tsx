@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { PortalHeader } from '../../components/layout/PortalHeader'
+import { MobileLayout } from '../../components/layout/MobileLayout'
 import { contentApi } from '../../features/content/api/contentApi'
 import type { EventItem } from '../../features/content/api/contentApi'
 import { EventCard } from '../../features/events/components/EventCard'
@@ -27,9 +27,7 @@ export function EventsPage() {
 
 
     return (
-        <div className="min-h-screen bg-[#f8f6f6] flex flex-col">
-            <PortalHeader />
-
+        <MobileLayout>
             <div className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-10 py-8">
                 {/* Hero Section */}
                 <div className="mb-8">
@@ -90,22 +88,7 @@ export function EventsPage() {
                     </div>
                 )}
 
-                {/* Coming Soon Notice */}
-                <div className="mt-12 bg-gradient-to-r from-[#ec1325]/5 to-transparent border border-[#ec1325]/10 rounded-xl p-6">
-                    <div className="flex items-start gap-4">
-                        <div className="size-12 rounded-full bg-[#ec1325]/10 flex items-center justify-center shrink-0">
-                            <span className="material-symbols-outlined text-[#ec1325]">construction</span>
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-[#181112] mb-1">Fitur Dalam Pengembangan</h3>
-                            <p className="text-sm text-[#896165]">
-                                Halaman ini masih dalam tahap pengembangan. Nantinya akan tersedia fitur pendaftaran acara,
-                                notifikasi pengingat, dan galeri dokumentasi kegiatan.
-                            </p>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </div>
+        </MobileLayout>
     )
 }

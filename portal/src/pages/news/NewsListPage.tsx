@@ -1,6 +1,6 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { PortalHeader } from '../../components/layout/PortalHeader'
+import { MobileLayout } from '../../components/layout/MobileLayout'
 import { contentApi, type NewsItem } from '../../features/content/api/contentApi'
 
 export function NewsListPage() {
@@ -26,9 +26,7 @@ export function NewsListPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#f8f6f6] flex flex-col">
-            <PortalHeader />
-
+        <MobileLayout>
             <div className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-10 py-8 md:py-12">
                 <div className="flex items-center justify-between mb-8">
                     <div>
@@ -193,13 +191,13 @@ export function NewsListPage() {
                 )}
             </div>
 
-            <footer className="bg-[#181112] text-white py-8 mt-auto">
+            <footer className="hidden md:block bg-[#181112] text-white py-8 mt-auto">
                 <div className="max-w-7xl mx-auto px-4 md:px-10 text-center">
                     <p className="text-white/50 text-sm">
                         © {new Date().getFullYear()} Bani Abdul Manan Family Portal
                     </p>
                 </div>
             </footer>
-        </div>
+        </MobileLayout>
     )
 }

@@ -13,6 +13,7 @@ import { ArchivesPage } from './pages/archives/ArchivesPage'
 import { NewsDetailPage } from './pages/news/NewsDetailPage'
 import { NewsListPage } from './pages/news/NewsListPage'
 import { SubmissionsPage } from './pages/submissions/SubmissionsPage'
+import { ProfilePage } from './pages/profile/ProfilePage'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
 
       {/* Protected Routes - require authentication */}
       <Route path="/" element={<AuthGuard><HomePage /></AuthGuard>} />
+      <Route path="/profile" element={<AuthGuard><ProfilePage /></AuthGuard>} />
       <Route path="/claim-profile" element={<AuthGuard><ClaimProfilePage /></AuthGuard>} />
       <Route path="/silsilah" element={<AuthGuard><SilsilahPage /></AuthGuard>} />
       <Route path="/silsilah/branch/:id" element={<AuthGuard><BranchPage /></AuthGuard>} />

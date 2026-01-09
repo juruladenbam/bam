@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { silsilahApi } from '../../features/silsilah/api/silsilahApi'
 import { useDebounce } from '../../hooks/useDebounce'
@@ -12,6 +12,10 @@ export function PortalHeader() {
     const [searchResults, setSearchResults] = useState<Person[]>([])
     const [isSearching, setIsSearching] = useState(false)
     const [showResults, setShowResults] = useState(false)
+
+    // Refs for click-outside handling
+    const userMenuRef = useRef<HTMLDivElement>(null)
+    const searchRef = useRef<HTMLDivElement>(null)
 
     const debouncedQuery = useDebounce(searchQuery, 400)
 
@@ -76,6 +80,23 @@ export function PortalHeader() {
             window.location.href = PUBLIC_WEB_URL
         }
     }
+
+    // Click outside handler for dropdowns
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            // Close user menu if clicked outside
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+                setIsUserMenuOpen(false)
+            }
+            // Close search results if clicked outside
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setShowResults(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
 
     // Close menus on navigation
     useEffect(() => {
@@ -143,7 +164,7 @@ export function PortalHeader() {
                 {/* Right Side Actions */}
                 <div className="flex flex-1 justify-end gap-4 md:gap-8 items-center">
                     {/* Search Bar (Desktop) */}
-                    <div className="hidden sm:flex flex-col relative min-w-40 max-w-64 w-full z-50">
+                    <div ref={searchRef} className="hidden sm:flex flex-col relative min-w-40 max-w-64 w-full z-50">
                         <div className="flex w-full items-stretch rounded-lg h-10 bg-[#f8f6f6] border border-transparent focus-within:border-[#ec1325]/20 focus-within:bg-white transition-all">
                             <div className="text-[#896165] flex border-none items-center justify-center pl-3">
                                 <span className="material-symbols-outlined text-[20px]">search</span>
@@ -219,7 +240,7 @@ export function PortalHeader() {
                     </button>
 
                     {/* User Avatar Dropdown */}
-                    <div className="relative hidden md:block">
+                    <div ref={userMenuRef} className="relative hidden md:block">
                         <button
                             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                             className="bg-gray-200 bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-[#ec1325]/10 cursor-pointer hover:ring-[#ec1325]/30 transition-all focus:outline-none"

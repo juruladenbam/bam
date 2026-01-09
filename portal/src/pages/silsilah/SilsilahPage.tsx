@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useBranches, type Branch } from '../../features/silsilah'
-import { PortalHeader } from '../../components/layout/PortalHeader'
+import { MobileLayout } from '../../components/layout/MobileLayout'
 
 export function SilsilahPage() {
     const navigate = useNavigate()
@@ -43,9 +43,7 @@ export function SilsilahPage() {
 
 
     return (
-        <div className="min-h-screen bg-[#f8f6f6] flex flex-col">
-            <PortalHeader />
-
+        <MobileLayout>
             <div className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-10 py-8">
                 {/* Hero / Header Section */}
                 <div className="mb-8">
@@ -142,6 +140,6 @@ export function SilsilahPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </MobileLayout>
     )
 }

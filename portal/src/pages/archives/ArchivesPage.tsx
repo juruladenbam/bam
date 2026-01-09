@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { PortalHeader } from '../../components/layout/PortalHeader'
+import { MobileLayout } from '../../components/layout/MobileLayout'
 import { contentApi } from '../../features/content/api/contentApi'
 import type { MediaItem } from '../../features/content/api/contentApi'
 
@@ -13,9 +13,7 @@ export function ArchivesPage() {
     })
 
     return (
-        <div className="min-h-screen bg-[#f8f6f6] flex flex-col">
-            <PortalHeader />
-
+        <MobileLayout>
             <div className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-10 py-8">
                 {/* Hero Section */}
                 <div className="mb-8">
@@ -143,6 +141,6 @@ export function ArchivesPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </MobileLayout>
     )
 }

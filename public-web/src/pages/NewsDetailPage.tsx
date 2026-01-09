@@ -150,7 +150,7 @@ export default function NewsDetailPage() {
                                 totalClaps={news.claps || 0}
                                 onClap={() => clapMutation.mutate()}
                             />
-                            <span className="text-sm text-gray-400 font-medium">Beri tepuk tangan (Like)</span>
+                            <span className="text-sm text-gray-400 font-medium">Beri tepuk tangan</span>
                         </div>
                     </article>
 

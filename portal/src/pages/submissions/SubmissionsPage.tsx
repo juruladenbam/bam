@@ -1,15 +1,13 @@
 import { useState } from 'react'
 import { useMySubmissions, SubmissionForm, SubmissionList } from '../../features/submissions'
-import { PortalHeader } from '../../components/layout/PortalHeader'
+import { MobileLayout } from '../../components/layout/MobileLayout'
 
 export function SubmissionsPage() {
     const [showForm, setShowForm] = useState(false)
     const { data: submissions, isLoading } = useMySubmissions()
 
     return (
-        <div className="min-h-screen bg-[#f8f6f6] flex flex-col">
-            <PortalHeader />
-
+        <MobileLayout>
             <div className="flex-1 max-w-4xl mx-auto w-full px-4 md:px-10 py-8">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
@@ -90,7 +88,7 @@ export function SubmissionsPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </MobileLayout>
     )
 }
 
