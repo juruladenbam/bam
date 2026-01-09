@@ -22,29 +22,29 @@ cd backend && cp .env.example .env && composer install
 php artisan key:generate && php artisan migrate && cd ..
 
 # Frontend (install all dependencies)
-npm install && npm run install:all
+pnpm install && pnpm run install:all
 ```
 
 ### Development
 ```bash
-npm run dev      # Run backend + all frontends
-npm run dev:fe   # Run all frontends only (if backend already running)
+pnpm run dev      # Run backend + all frontends
+pnpm run dev:fe   # Run all frontends only (if backend already running)
 ```
 
 ### Production Build
 ```bash
-npm run build              # Build all frontends
-npm run build:public-web   # Build public-web only
-npm run build:portal       # Build portal only
-npm run build:admin        # Build admin only
+pnpm run build              # Build all frontends
+pnpm run build:public-web   # Build public-web only
+pnpm run build:portal       # Build portal only
+pnpm run build:admin        # Build admin only
 ```
 
 ### Individual Services (if needed)
 ```bash
-npm run dev:backend     # Laravel only (port 8000)
-npm run dev:public-web  # public-web only (port 5173)
-npm run dev:portal      # portal only (port 5174)
-npm run dev:admin       # admin only (port 5175)
+pnpm run dev:backend     # Laravel only (port 8000)
+pnpm run dev:public-web  # public-web only (port 5173)
+pnpm run dev:portal      # portal only (port 5174)
+pnpm run dev:admin       # admin only (port 5175)
 ```
 
 ## 🔗 Domain Architecture
