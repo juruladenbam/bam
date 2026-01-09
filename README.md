@@ -15,27 +15,36 @@ bam/
 
 ## 🚀 Quick Start
 
-### Backend (Laravel)
+### First Time Setup
 ```bash
-cd backend
-cp .env.example .env
-composer install
-php artisan key:generate
-php artisan migrate
-php artisan serve
+# Backend
+cd backend && cp .env.example .env && composer install
+php artisan key:generate && php artisan migrate && cd ..
+
+# Frontend (install all dependencies)
+npm install && npm run install:all
 ```
 
-### Frontend (React)
+### Development
 ```bash
-# Install dependencies
-cd public-web && npm install && cd ..
-cd portal && npm install && cd ..
-cd admin && npm install && cd ..
+npm run dev      # Run backend + all frontends
+npm run dev:fe   # Run all frontends only (if backend already running)
+```
 
-# Run dev servers
-cd public-web && npm run dev  # Port 5173
-cd portal && npm run dev      # Port 5174
-cd admin && npm run dev       # Port 5175
+### Production Build
+```bash
+npm run build              # Build all frontends
+npm run build:public-web   # Build public-web only
+npm run build:portal       # Build portal only
+npm run build:admin        # Build admin only
+```
+
+### Individual Services (if needed)
+```bash
+npm run dev:backend     # Laravel only (port 8000)
+npm run dev:public-web  # public-web only (port 5173)
+npm run dev:portal      # portal only (port 5174)
+npm run dev:admin       # admin only (port 5175)
 ```
 
 ## 🔗 Domain Architecture

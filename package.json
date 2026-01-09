@@ -1,0 +1,20 @@
+{
+    "name": "bam-monorepo",
+    "private": true,
+    "scripts": {
+        "dev": "concurrently -n BE,PUB,PORT,ADM -c blue,green,yellow,magenta \"pnpm run dev:backend\" \"pnpm run dev:public-web\" \"pnpm run dev:portal\" \"pnpm run dev:admin\"",
+        "dev:fe": "concurrently -n PUB,PORT,ADM -c green,yellow,magenta \"pnpm run dev:public-web\" \"pnpm run dev:portal\" \"pnpm run dev:admin\"",
+        "dev:backend": "cd backend && php artisan serve",
+        "dev:public-web": "cd public-web && pnpm run dev",
+        "dev:portal": "cd portal && pnpm run dev",
+        "dev:admin": "cd admin && pnpm run dev",
+        "build": "pnpm run build:public-web && pnpm run build:portal && pnpm run build:admin",
+        "build:public-web": "cd public-web && pnpm run build",
+        "build:portal": "cd portal && pnpm run build",
+        "build:admin": "cd admin && pnpm run build",
+        "install:all": "cd public-web && pnpm install && cd ../portal && pnpm install && cd ../admin && pnpm install"
+    },
+    "devDependencies": {
+        "concurrently": "^9.1.2"
+    }
+}

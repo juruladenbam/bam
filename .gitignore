@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Lock files (optional - uncomment if you don't want to commit)
+package-lock.json
+pnpm-lock.yaml
