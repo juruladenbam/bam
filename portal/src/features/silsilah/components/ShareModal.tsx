@@ -30,7 +30,7 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
     }
 
     const handleSocialShare = async (platform: 'whatsapp' | 'facebook' | 'twitter' | 'native') => {
-        const text = `Lihat profil keluarga ${person.full_name} di Portal Bani Abdurrahman.`
+        const text = `Lihat profil keluarga ${person.full_name} di Portal Bani Abdul Manan.`
         const url = finalShareUrl
 
         let shareLink = ''
