@@ -1,16 +1,21 @@
 import { type ReactNode, useEffect, useState, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { silsilahApi } from '../features/silsilah/api/silsilahApi'
+import { SplashScreen } from './SplashScreen'
 
 interface AuthGuardProps {
     children: ReactNode
 }
+
+// Key to track if initial preload has been done
+const PRELOAD_DONE_KEY = 'bam_preload_done'
 
 export function AuthGuard({ children }: AuthGuardProps) {
     const navigate = useNavigate()
     const location = useLocation()
     const [isChecking, setIsChecking] = useState(true)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [showSplash, setShowSplash] = useState(false)
 
     const checkAuth = useCallback(async (silent = false) => {
         if (!silent) {
@@ -21,6 +26,17 @@ export function AuthGuard({ children }: AuthGuardProps) {
         try {
             await silsilahApi.getMe()
             setIsAuthenticated(true)
+
+            // Check if we have cached calendar data OR preload was done recently
+            const cacheExists = localStorage.getItem('bam-portal-cache')
+            const preloadDone = localStorage.getItem(PRELOAD_DONE_KEY)
+            const preloadTimestamp = preloadDone ? parseInt(preloadDone) : 0
+            const isPreloadFresh = Date.now() - preloadTimestamp < 24 * 60 * 60 * 1000 // 24 hours
+
+            // Show splash only if no cache exists AND preload wasn't done recently
+            if (!cacheExists && !isPreloadFresh && !silent) {
+                setShowSplash(true)
+            }
         } catch {
             // Not authenticated, redirect to login
             const returnUrl = encodeURIComponent(window.location.href)
@@ -55,6 +71,12 @@ export function AuthGuard({ children }: AuthGuardProps) {
         return () => window.removeEventListener('focus', handleFocus)
     }, [checkAuth])
 
+    // Handle splash completion
+    const handleSplashComplete = useCallback(() => {
+        setShowSplash(false)
+    }, [])
+
+    // Initial auth checking state
     if (isChecking) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#f8f6f6]">
@@ -68,6 +90,11 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
     if (!isAuthenticated) {
         return null
+    }
+
+    // Show splash screen with data preload
+    if (showSplash) {
+        return <SplashScreen onComplete={handleSplashComplete} />
     }
 
     return <>{children}</>
