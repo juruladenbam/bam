@@ -37,6 +37,7 @@ function App() {
       <Route path="/news/:id" element={<AuthGuard><NewsDetailPage /></AuthGuard>} />
       <Route path="/archives" element={<AuthGuard><ArchivesPage /></AuthGuard>} />
       <Route path="/calendar" element={<AuthGuard><CalendarPage /></AuthGuard>} />
+      <Route path="/calendar/:year/:month" element={<AuthGuard><CalendarPage /></AuthGuard>} />
 
       {/* 404 */}
       <Route path="*" element={

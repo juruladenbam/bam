@@ -32,10 +32,18 @@ export function AuthGuard({ children }: AuthGuardProps) {
         }
     }, [navigate])
 
-    // Check auth on mount and when pathname changes
+    // Check auth on mount
     useEffect(() => {
         checkAuth()
-    }, [checkAuth, location.pathname])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    // Re-check auth silently when pathname changes (if already authenticated)
+    useEffect(() => {
+        if (isAuthenticated) {
+            checkAuth(true) // Silent check - no loading shown
+        }
+    }, [location.pathname, isAuthenticated, checkAuth])
 
     // Also check auth when window gains focus (silent check)
     useEffect(() => {

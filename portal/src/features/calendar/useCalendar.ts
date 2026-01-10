@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useCallback, useEffect } from 'react'
 
 export interface CalendarDay {
     date: string
@@ -47,8 +48,9 @@ export interface CalendarData {
     }
 }
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+
 async function fetchCalendar(year: number, month: number): Promise<CalendarData> {
-    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
     const response = await fetch(
         `${API_BASE}/portal/calendar?year=${year}&month=${month}`,
         {
@@ -68,9 +70,42 @@ async function fetchCalendar(year: number, month: number): Promise<CalendarData>
     return json.data
 }
 
+// Helper to calculate adjacent months
+function getAdjacentMonth(year: number, month: number, direction: 'prev' | 'next'): { year: number; month: number } {
+    if (direction === 'prev') {
+        return month === 1 ? { year: year - 1, month: 12 } : { year, month: month - 1 }
+    }
+    return month === 12 ? { year: year + 1, month: 1 } : { year, month: month + 1 }
+}
+
 export function useCalendar(year: number, month: number) {
     return useQuery({
         queryKey: ['calendar', year, month],
         queryFn: () => fetchCalendar(year, month),
+        staleTime: 5 * 60 * 1000, // 5 minutes
     })
 }
+
+// Hook to prefetch adjacent months (prev and next)
+export function usePrefetchAdjacentMonths(year: number, month: number) {
+    const queryClient = useQueryClient()
+
+    const prefetchMonth = useCallback((targetYear: number, targetMonth: number) => {
+        queryClient.prefetchQuery({
+            queryKey: ['calendar', targetYear, targetMonth],
+            queryFn: () => fetchCalendar(targetYear, targetMonth),
+            staleTime: 5 * 60 * 1000,
+        })
+    }, [queryClient])
+
+    useEffect(() => {
+        // Prefetch previous month
+        const prev = getAdjacentMonth(year, month, 'prev')
+        prefetchMonth(prev.year, prev.month)
+
+        // Prefetch next month
+        const next = getAdjacentMonth(year, month, 'next')
+        prefetchMonth(next.year, next.month)
+    }, [year, month, prefetchMonth])
+}
+
