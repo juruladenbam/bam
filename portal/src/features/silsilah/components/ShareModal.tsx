@@ -234,59 +234,45 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
                     style={{
                         width: '1080px',
                         height: '1920px',
-                        backgroundColor: '#fff0f0',
+                        backgroundColor: '#fffcfc',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'relative',
                         overflow: 'hidden',
-                        padding: '64px'
+                        padding: '80px'
                     }}
                 >
-                    {/* Decorative Background Elements */}
+                    {/* Decorative Background Elements - Clean Gradients */}
                     <div
                         style={{
                             position: 'absolute',
                             top: 0,
                             left: 0,
                             width: '100%',
-                            height: '600px',
-                            background: 'linear-gradient(to bottom, rgba(236,19,37,0.12), rgba(255,255,255,0))'
-                        }}
-                    />
-                    <div
-                        style={{
-                            position: 'absolute',
-                            bottom: 0,
-                            right: 0,
-                            width: '800px',
                             height: '800px',
-                            borderRadius: '400px',
-                            backgroundColor: 'rgba(239, 68, 68, 0.05)',
-                            filter: 'blur(80px)',
-                            transform: 'translate(200px, 200px)'
+                            background: 'linear-gradient(to bottom, #fee2e2, rgba(255,252,252,0))'
                         }}
                     />
 
                     {/* Logo Area */}
-                    <div style={{ position: 'absolute', top: '100px', width: '100%', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <h1 style={{ fontSize: '42px', fontWeight: '900', letterSpacing: '0.25em', textTransform: 'uppercase', color: '#ec1325', margin: 0 }}>Bani Abdul Manan</h1>
-                        <p style={{ fontSize: '24px', fontWeight: '500', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#896165', marginTop: '12px', margin: 0 }}>Silsilah Keluarga</p>
+                    <div style={{ position: 'absolute', top: '120px', width: '100%', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <h1 style={{ fontSize: '48px', fontWeight: '900', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#ec1325', margin: 0 }}>Bani Abdul Manan</h1>
+                        <p style={{ fontSize: '26px', fontWeight: '600', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#896165', marginTop: '16px', margin: 0 }}>Silsilah Keluarga</p>
                     </div>
 
-                    {/* Main Card Content */}
+                    {/* Main Card Content - Border instead of Shadow for cleaner render */}
                     <div
                         style={{
                             backgroundColor: '#ffffff',
-                            borderRadius: '80px',
-                            width: '840px',
+                            borderRadius: '100px',
+                            width: '880px',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            padding: '80px 40px',
-                            boxShadow: '0 40px 80px -20px rgba(0,0,0,0.1)',
-                            border: '1px solid #fee2e2',
+                            padding: '100px 60px',
+                            border: '4px solid #fef2f2',
                             position: 'relative',
                             zIndex: 10
                         }}
@@ -294,17 +280,16 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
                         {/* Avatar Wrapper */}
                         <div
                             style={{
-                                width: '320px',
-                                height: '320px',
-                                borderRadius: '160px',
+                                width: '360px',
+                                height: '360px',
+                                borderRadius: '180px',
                                 overflow: 'hidden',
-                                marginBottom: '48px',
-                                border: '16px solid #f8f6f6',
-                                backgroundColor: '#f3f4f6',
+                                marginBottom: '60px',
+                                border: '20px solid #fff5f5',
+                                backgroundColor: '#f9fafb',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)'
+                                justifyContent: 'center'
                             }}
                         >
                             {person.photo_url ? (
@@ -322,10 +307,10 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        fontSize: '120px',
+                                        fontSize: '140px',
                                         fontWeight: 'bold',
-                                        backgroundColor: person.gender === 'male' ? '#dbeafe' : '#fce7f3',
-                                        color: person.gender === 'male' ? '#2563eb' : '#ec4899'
+                                        backgroundColor: person.gender === 'male' ? '#eff6ff' : '#fff1f2',
+                                        color: person.gender === 'male' ? '#2563eb' : '#db2777'
                                     }}
                                 >
                                     {person.full_name.charAt(0).toUpperCase()}
@@ -334,20 +319,25 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
                         </div>
 
                         {/* Text Content */}
-                        <h2 style={{ fontSize: '72px', fontWeight: '800', color: '#181112', marginBottom: '24px', textAlign: 'center', lineHeight: 1.1 }}>
+                        <h2 style={{ fontSize: '84px', fontWeight: '900', color: '#181112', marginBottom: '32px', textAlign: 'center', lineHeight: 1.1 }}>
                             {person.full_name}
                         </h2>
 
-                        <div style={{ backgroundColor: '#fff0f0', border: '1px solid #fee2e2', padding: '12px 32px', borderRadius: '100px', marginBottom: '64px' }}>
-                            <p style={{ fontSize: '32px', fontWeight: '700', color: '#ec1325', margin: 0 }}>Generasi ke-{person.generation}</p>
+                        <div style={{ backgroundColor: '#ec1325', padding: '16px 48px', borderRadius: '100px', marginBottom: '80px' }}>
+                            <p style={{ fontSize: '32px', fontWeight: '800', color: '#ffffff', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Generasi ke-{person.generation}</p>
                         </div>
 
-                        <div style={{ width: '80%', height: '2px', backgroundColor: '#f3f4f6', marginBottom: '64px' }} />
+                        <div style={{ width: '100%', height: '4px', backgroundColor: '#fef2f2', marginBottom: '80px' }} />
 
                         <div style={{ textAlign: 'center' }}>
-                            <p style={{ fontSize: '28px', fontWeight: '500', color: '#896165', marginBottom: '12px', margin: 0 }}>Lihat detail silsilah lengkap di</p>
-                            <p style={{ fontSize: '42px', fontWeight: '900', color: '#181112', margin: 0 }}>portal.bamseribuputu.my.id</p>
+                            <p style={{ fontSize: '28px', fontWeight: '600', color: '#896165', marginBottom: '16px', margin: 0 }}>Lihat detail silsilah lengkap di</p>
+                            <p style={{ fontSize: '48px', fontWeight: '900', color: '#181112', margin: 0 }}>portal.bamseribuputu.my.id</p>
                         </div>
+                    </div>
+
+                    {/* Footer attribution */}
+                    <div style={{ position: 'absolute', bottom: '80px', color: '#896165', fontSize: '24px', fontWeight: '500', opacity: 0.6 }}>
+                        © {new Date().getFullYear()} Bani Abdul Manan
                     </div>
                 </div>
             </div>
