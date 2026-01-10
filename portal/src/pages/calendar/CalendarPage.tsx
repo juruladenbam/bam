@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Virtual } from 'swiper/modules'
 import type { Swiper as SwiperType } from 'swiper'
@@ -200,17 +200,23 @@ function MonthGrid({
 
 export function CalendarPage() {
     const { year: yearParam, month: monthParam } = useParams<{ year?: string; month?: string }>()
-    const navigate = useNavigate()
     const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null)
     const [selectedDate, setSelectedDate] = useState<string | null>(null)
 
-    // Parse URL params or use current date
+    // Use internal state for current month (initialized from URL)
     const now = new Date()
-    const year = yearParam ? parseInt(yearParam) : now.getFullYear()
-    const month = monthParam ? parseInt(monthParam) : now.getMonth() + 1
+    const initialYear = yearParam ? parseInt(yearParam) : now.getFullYear()
+    const initialMonth = monthParam ? parseInt(monthParam) : now.getMonth() + 1
+
+    const [currentYear, setCurrentYear] = useState(initialYear)
+    const [currentMonth, setCurrentMonth] = useState(initialMonth)
 
     // Validate year/month
-    const isValidDate = year >= 1900 && year <= 2100 && month >= 1 && month <= 12
+    const isValidDate = currentYear >= 1900 && currentYear <= 2100 && currentMonth >= 1 && currentMonth <= 12
+
+    // Alias for clarity
+    const year = currentYear
+    const month = currentMonth
 
     // Current month data for header
     const { data } = useCalendar(year, month)
@@ -225,31 +231,59 @@ export function CalendarPage() {
         getAdjacentMonth(year, month, 1),
     ]
 
-    // Handle slide change → update URL
+    // Update URL silently without triggering React re-render
+    const updateUrlSilently = useCallback((targetYear: number, targetMonth: number) => {
+        const newUrl = `/calendar/${targetYear}/${targetMonth}`
+        window.history.replaceState(null, '', newUrl)
+    }, [])
+
+    // Handle slide change → update internal state and URL
     const handleSlideChange = useCallback((swiper: SwiperType) => {
         const activeIndex = swiper.activeIndex
         const targetMonth = slides[activeIndex]
 
-        // Navigate to new URL without adding to history stack for swipe
-        navigate(`/calendar/${targetMonth.year}/${targetMonth.month}`, { replace: true })
+        // Update internal state
+        setCurrentYear(targetMonth.year)
+        setCurrentMonth(targetMonth.month)
         setSelectedDate(null)
-    }, [navigate, slides])
+
+        // Update URL silently
+        updateUrlSilently(targetMonth.year, targetMonth.month)
+    }, [slides, updateUrlSilently])
 
     // Navigate to adjacent month via buttons
     const handleNavigate = (direction: 'prev' | 'next') => {
         const target = direction === 'prev'
             ? getAdjacentMonth(year, month, -1)
             : getAdjacentMonth(year, month, 1)
-        navigate(`/calendar/${target.year}/${target.month}`)
+
+        // Update internal state
+        setCurrentYear(target.year)
+        setCurrentMonth(target.month)
         setSelectedDate(null)
+
+        // Update URL silently
+        updateUrlSilently(target.year, target.month)
     }
 
-    // Reset swiper to center slide when URL changes
+    // Reset swiper to center slide when month changes
     useEffect(() => {
         if (swiperRef) {
             swiperRef.slideTo(1, 0) // Go to center slide instantly
         }
     }, [year, month, swiperRef])
+
+    // Sync internal state if URL params change externally (e.g., browser back/forward)
+    useEffect(() => {
+        if (yearParam && monthParam) {
+            const urlYear = parseInt(yearParam)
+            const urlMonth = parseInt(monthParam)
+            if (urlYear !== currentYear || urlMonth !== currentMonth) {
+                setCurrentYear(urlYear)
+                setCurrentMonth(urlMonth)
+            }
+        }
+    }, [yearParam, monthParam])
 
     if (!isValidDate) {
         return (

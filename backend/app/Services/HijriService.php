@@ -11,6 +11,11 @@ use Remls\HijriDate\HijriDate;
 class HijriService
 {
     /**
+     * Cached offset value (null = not loaded yet)
+     */
+    protected ?int $cachedOffset = null;
+
+    /**
      * Hijri month names in Indonesian
      */
     protected array $monthNames = [
@@ -30,11 +35,15 @@ class HijriService
 
     /**
      * Get current Hijri offset from settings (-3 to +3)
+     * Cached per request to avoid repeated database queries
      */
     public function getOffset(): int
     {
-        $offset = (int) SiteSetting::getValue('calendar.hijri_offset', 0);
-        return max(-3, min(3, $offset));
+        if ($this->cachedOffset === null) {
+            $offset = (int) SiteSetting::getValue('calendar.hijri_offset', 0);
+            $this->cachedOffset = max(-3, min(3, $offset));
+        }
+        return $this->cachedOffset;
     }
 
     /**

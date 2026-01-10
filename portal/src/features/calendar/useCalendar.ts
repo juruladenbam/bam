@@ -99,13 +99,13 @@ export function usePrefetchAdjacentMonths(year: number, month: number) {
     }, [queryClient])
 
     useEffect(() => {
-        // Prefetch previous month
-        const prev = getAdjacentMonth(year, month, 'prev')
-        prefetchMonth(prev.year, prev.month)
-
-        // Prefetch next month
+        // Prefetch next month first (more likely navigation direction)
         const next = getAdjacentMonth(year, month, 'next')
         prefetchMonth(next.year, next.month)
+
+        // Then prefetch previous month
+        const prev = getAdjacentMonth(year, month, 'prev')
+        prefetchMonth(prev.year, prev.month)
     }, [year, month, prefetchMonth])
 }
 
