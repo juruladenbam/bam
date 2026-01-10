@@ -74,6 +74,7 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
                 useCORS: true,
                 scale: 2,
                 backgroundColor: null,
+                logging: true,
             })
 
             const imageBlob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'))
@@ -239,7 +240,7 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
                         >
                             {person.photo_url ? (
                                 <img
-                                    src={person.photo_url}
+                                    src={`${person.photo_url}${person.photo_url.includes('?') ? '&' : '?'}t=${new Date().getTime()}`}
                                     alt={person.full_name}
                                     className="w-full h-full object-cover"
                                     crossOrigin="anonymous"
