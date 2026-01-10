@@ -147,12 +147,20 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                             <h2 className="text-lg font-bold text-center text-[#181112] mb-0.5">{person.full_name}</h2>
                             <p className="text-xs text-[#896165] mb-3">Generation {person.generation}</p>
 
-                            <button
-                                onClick={() => navigate(`/silsilah/person/${person.id}`)}
-                                className="w-full bg-[#ec1325] hover:bg-red-700 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition-colors"
-                            >
-                                View full Profile
-                            </button>
+                            <div className="flex gap-2 w-full">
+                                <button
+                                    onClick={() => navigate(`/silsilah/person/${person.id}`)}
+                                    className="flex-1 bg-[#ec1325] hover:bg-red-700 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition-colors"
+                                >
+                                    View full Profile
+                                </button>
+                                <button
+                                    onClick={() => setIsShareModalOpen(true)}
+                                    className="bg-[#f8f6f6] hover:bg-[#e6dbdc] text-[#181112] p-2.5 rounded-lg transition-colors border border-transparent"
+                                >
+                                    <span className="material-symbols-outlined text-[20px]">share</span>
+                                </button>
+                            </div>
                             <button
                                 onClick={() => navigate('/submissions', { state: { preselectedPerson: person } })}
                                 className="w-full mt-2 bg-white border border-[#ec1325] text-[#ec1325] hover:bg-red-50 font-medium py-2.5 px-4 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
