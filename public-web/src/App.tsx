@@ -5,6 +5,7 @@ import EventsPage from '@/pages/EventsPage'
 import EventDetailPage from '@/pages/EventDetailPage'
 import NewsPage from '@/pages/NewsPage'
 import NewsDetailPage from '@/pages/NewsDetailPage'
+import LayananPage from '@/pages/LayananPage'
 import Layout from '@/components/Layout'
 import ScrollToTop from '@/components/ScrollToTop'
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="acara/:slug" element={<EventDetailPage />} />
           <Route path="berita" element={<NewsPage />} />
           <Route path="berita/:slug" element={<NewsDetailPage />} />
+          <Route path="layanan" element={<LayananPage />} />
         </Route>
       </Routes>
     </>

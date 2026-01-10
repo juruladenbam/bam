@@ -261,7 +261,7 @@ export function HomePage() {
                     {/* 3. Quick Access (Mobile: 3rd, Desktop: 2nd/Full Width) */}
                     <div className="order-3 lg:order-2 lg:col-span-3">
                         <h2 className="text-lg font-bold text-[#181112] mb-4">Akses Cepat</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                             <Link
                                 to="/events"
                                 className="bg-white border border-[#e6dbdc] rounded-xl p-4 hover:shadow-md hover:border-[#ec1325]/30 transition-all group"
@@ -272,6 +272,7 @@ export function HomePage() {
                                 <h3 className="font-bold text-[#181112] text-sm group-hover:text-[#ec1325] transition-colors">Acara</h3>
                                 <p className="text-xs text-[#896165] mt-1">Jadwal kegiatan</p>
                             </Link>
+
                             <Link
                                 to="/archives"
                                 className="bg-white border border-[#e6dbdc] rounded-xl p-4 hover:shadow-md hover:border-[#ec1325]/30 transition-all group"
@@ -282,6 +283,7 @@ export function HomePage() {
                                 <h3 className="font-bold text-[#181112] text-sm group-hover:text-[#ec1325] transition-colors">Arsip Keluarga</h3>
                                 <p className="text-xs text-[#896165] mt-1">Foto, dokumen, video</p>
                             </Link>
+
                             <Link
                                 to="/submissions"
                                 className="bg-white border border-[#e6dbdc] rounded-xl p-4 hover:shadow-md hover:border-[#ec1325]/30 transition-all group"
@@ -292,6 +294,34 @@ export function HomePage() {
                                 <h3 className="font-bold text-[#181112] text-sm group-hover:text-[#ec1325] transition-colors">Lapor Data</h3>
                                 <p className="text-xs text-[#896165] mt-1">Kirim laporan data</p>
                             </Link>
+
+                            {/* Majmu' Card */}
+                            <a
+                                href="https://majmu.bamseribuputu.my.id"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-white border border-[#e6dbdc] rounded-xl p-4 hover:shadow-md hover:border-[#ec1325]/30 transition-all group"
+                            >
+                                <div className="size-10 rounded-lg bg-amber-50 flex items-center justify-center mb-3 group-hover:bg-amber-500 transition-colors">
+                                    <span className="material-symbols-outlined text-amber-500 group-hover:text-white transition-colors">auto_stories</span>
+                                </div>
+                                <h3 className="font-bold text-[#181112] text-sm group-hover:text-[#ec1325] transition-colors">Majmu'</h3>
+                                <p className="text-xs text-[#896165] mt-1">Bacaan amalan mbah-mbah</p>
+                            </a>
+
+                            {/* Store Card */}
+                            <a
+                                href="https://store.bamseribuputu.my.id"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-white border border-[#e6dbdc] rounded-xl p-4 hover:shadow-md hover:border-[#ec1325]/30 transition-all group"
+                            >
+                                <div className="size-10 rounded-lg bg-pink-50 flex items-center justify-center mb-3 group-hover:bg-pink-500 transition-colors">
+                                    <span className="material-symbols-outlined text-pink-500 group-hover:text-white transition-colors">storefront</span>
+                                </div>
+                                <h3 className="font-bold text-[#181112] text-sm group-hover:text-[#ec1325] transition-colors">Store</h3>
+                                <p className="text-xs text-[#896165] mt-1">Merchandise keluarga BAM</p>
+                            </a>
                         </div>
                     </div>
 

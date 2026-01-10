@@ -40,6 +40,9 @@ export default function Layout() {
                         <Link to="/berita" className="text-[#181112] text-sm font-medium hover:text-[#ec1325] transition-colors">
                             Berita
                         </Link>
+                        <Link to="/layanan" className="text-[#181112] text-sm font-medium hover:text-[#ec1325] transition-colors">
+                            Layanan
+                        </Link>
                     </nav>
                     <a
                         href={isLoggedIn ? PORTAL_URL : `${PORTAL_URL}/login`}
@@ -92,6 +95,13 @@ export default function Layout() {
                         >
                             Berita
                         </Link>
+                        <Link
+                            to="/layanan"
+                            className="text-[#181112] text-lg font-medium py-3 border-b border-gray-100 hover:text-[#ec1325] transition-colors"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Layanan
+                        </Link>
                         <a
                             href={isLoggedIn ? PORTAL_URL : `${PORTAL_URL}/login`}
                             className="mt-4 flex w-full cursor-pointer items-center justify-center rounded-lg h-12 bg-[#ec1325] text-white text-base font-bold hover:bg-[#c91020] transition-colors"
@@ -131,6 +141,12 @@ export default function Layout() {
                             <a href={PORTAL_URL} className="text-[#896165] text-sm hover:text-[#ec1325]">Silsilah</a>
                             <Link to="/acara" className="text-[#896165] text-sm hover:text-[#ec1325]">Acara</Link>
                             <Link to="/berita" className="text-[#896165] text-sm hover:text-[#ec1325]">Berita</Link>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                            <h4 className="text-[#181112] font-bold text-sm">Layanan</h4>
+                            <Link to="/layanan" className="text-[#896165] text-sm hover:text-[#ec1325]">Tentang Layanan</Link>
+                            <a href="https://majmu.bamseribuputu.my.id" target="_blank" rel="noopener noreferrer" className="text-[#896165] text-sm hover:text-[#ec1325]">Majmu'</a>
+                            <a href="https://store.bamseribuputu.my.id" target="_blank" rel="noopener noreferrer" className="text-[#896165] text-sm hover:text-[#ec1325]">BAM Store</a>
                         </div>
                     </div>
                 </div>

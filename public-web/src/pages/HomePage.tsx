@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import SEO from '@/components/SEO'
 import { useHomeContent } from '@/hooks/useHomeContent'
 import { useAuthCheck } from '@/hooks/useAuthCheck'
+import { ServiceCard } from '@/components/ui/ServiceCard'
 
 const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 
@@ -190,6 +191,41 @@ export default function HomePage() {
                                 </p>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Layanan Keluarga Section */}
+            <section id="layanan" className="flex flex-1 justify-center py-16 bg-white">
+                <div className="flex flex-col max-w-[1200px] flex-1 px-4 sm:px-10">
+                    <div className="flex flex-col gap-4 text-center items-center mb-12">
+                        <h2 className="text-[#ec1325] font-bold tracking-widest uppercase text-sm">Layanan Digital</h2>
+                        <h1 className="text-[#181112] text-3xl font-bold leading-tight md:text-4xl">
+                            Layanan Keluarga BAM
+                        </h1>
+                        <p className="text-[#896165] text-base font-normal leading-normal max-w-[600px]">
+                            Akses berbagai layanan digital yang disediakan untuk keluarga besar Bani Abdul Manan.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+                        <ServiceCard
+                            href="https://majmu.bamseribuputu.my.id"
+                            title="Majmu' Bacaan"
+                            description="Kumpulan bacaan amalan dan doa-doa dari mbah-mbah yang dapat diamalkan sehari-hari."
+                            icon="auto_stories"
+                            color="amber"
+                            variant="full"
+                        />
+
+                        <ServiceCard
+                            href="https://store.bamseribuputu.my.id"
+                            title="BAM Store"
+                            description="Merchandise dan produk resmi keluarga besar Bani Abdul Manan."
+                            icon="storefront"
+                            color="pink"
+                            variant="full"
+                        />
                     </div>
                 </div>
             </section>
