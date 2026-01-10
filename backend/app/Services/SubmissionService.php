@@ -117,6 +117,39 @@ class SubmissionService
      */
     protected function applyBirthSubmission(array $data): void
     {
+        // Calculate generation based on parents if not provided
+        $generation = $data['generation'] ?? null;
+        $branchId = $data['branch_id'] ?? null;
+        $parentMarriageId = null;
+        
+        // Try to get parent information to determine generation and branch
+        if (!empty($data['father_id'])) {
+            $father = Person::find($data['father_id']);
+            if ($father) {
+                $generation = $generation ?? ($father->generation + 1);
+                $branchId = $branchId ?? $father->branch_id;
+                
+                // Find parent marriage
+                $parentMarriageId = Marriage::where('husband_id', $father->id)->first()?->id;
+            }
+        }
+        
+        if (!empty($data['mother_id'])) {
+            $mother = Person::find($data['mother_id']);
+            if ($mother) {
+                $generation = $generation ?? ($mother->generation + 1);
+                $branchId = $branchId ?? $mother->branch_id;
+                
+                // If no father, try to find marriage via mother
+                if (!$parentMarriageId) {
+                    $parentMarriageId = Marriage::where('wife_id', $mother->id)->first()?->id;
+                }
+            }
+        }
+        
+        // Fallback to 1 if no generation can be determined
+        $generation = $generation ?? 1;
+        
         $personData = [
             'full_name' => $data['full_name'],
             'nickname' => $data['nickname'] ?? null,
@@ -124,16 +157,17 @@ class SubmissionService
             'birth_date' => $data['birth_date'] ?? null,
             'birth_place' => $data['birth_place'] ?? null,
             'is_alive' => true,
-            'branch_id' => $data['branch_id'] ?? null,
-            'generation' => $data['generation'] ?? null,
+            'branch_id' => $branchId,
+            'generation' => $generation,
         ];
         
         $person = $this->personRepository->create($personData);
         
-        // Link to parent marriage if provided
-        if (!empty($data['parent_marriage_id'])) {
+        // Link to parent marriage if found or provided
+        $parentMarriageId = $data['parent_marriage_id'] ?? $parentMarriageId;
+        if ($parentMarriageId) {
             DB::table('parent_child')->insert([
-                'marriage_id' => $data['parent_marriage_id'],
+                'marriage_id' => $parentMarriageId,
                 'child_id' => $person->id,
                 'birth_order' => $data['birth_order'] ?? null,
                 'created_at' => now(),
