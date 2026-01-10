@@ -16,8 +16,8 @@ interface MobileLayoutProps {
 export function MobileLayout({ children, className = '' }: MobileLayoutProps) {
     return (
         <div className="min-h-screen bg-[#f8f6f6] flex flex-col">
-            {/* Desktop Header - hidden on mobile */}
-            <div className="hidden md:block">
+            {/* Desktop Header - hidden on mobile, sticky at top */}
+            <div className="hidden md:block sticky top-0 z-50">
                 <PortalHeader />
             </div>
 
