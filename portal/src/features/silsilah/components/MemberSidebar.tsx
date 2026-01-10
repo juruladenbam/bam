@@ -136,6 +136,13 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                             >
                                 View full Profile
                             </button>
+                            <button
+                                onClick={() => navigate('/submissions', { state: { preselectedPerson: person } })}
+                                className="w-full mt-2 bg-white border border-[#ec1325] text-[#ec1325] hover:bg-red-50 font-medium py-2.5 px-4 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">edit_note</span>
+                                Lapor Data
+                            </button>
                         </div>
 
                         {/* Relationship Info */}
@@ -157,6 +164,7 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                                 </div>
                             </div>
                         )}
+
 
                         {/* Vital Info */}
                         <div>
@@ -234,15 +242,24 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                             Generation {person.generation}
                         </p>
 
-                        <div className="flex gap-2 w-full">
+                        <div className="flex flex-col gap-2 w-full">
+                            <div className="flex gap-2 w-full">
+                                <button
+                                    onClick={() => navigate(`/silsilah/person/${person.id}`)}
+                                    className="flex-1 bg-[#ec1325] hover:bg-red-700 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm"
+                                >
+                                    View full Profile
+                                </button>
+                                <button className="bg-[#f8f6f6] hover:bg-[#e6dbdc] text-[#181112] p-2.5 rounded-lg transition-colors border border-transparent">
+                                    <span className="material-symbols-outlined text-[20px]">share</span>
+                                </button>
+                            </div>
                             <button
-                                onClick={() => navigate(`/silsilah/person/${person.id}`)}
-                                className="flex-1 bg-[#ec1325] hover:bg-red-700 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm"
+                                onClick={() => navigate('/submissions', { state: { preselectedPerson: person } })}
+                                className="w-full bg-white border border-[#ec1325] text-[#ec1325] hover:bg-red-50 font-medium py-2 px-4 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
                             >
-                                View full Profile
-                            </button>
-                            <button className="bg-[#f8f6f6] hover:bg-[#e6dbdc] text-[#181112] p-2.5 rounded-lg transition-colors border border-transparent">
-                                <span className="material-symbols-outlined text-[20px]">share</span>
+                                <span className="material-symbols-outlined text-[18px]">edit_note</span>
+                                Lapor Data (Kelahiran/Pernikahan/dll)
                             </button>
                         </div>
                     </div>

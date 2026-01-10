@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useCreateSubmission } from '../hooks/useSubmissions'
 import { PersonPicker } from '../../../components/ui/PersonPicker'
 import type { CreateSubmissionData } from '../api/submissionApi'
@@ -17,6 +18,9 @@ const typeOptions = [
 ]
 
 export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
+    const location = useLocation()
+    const preselectedPerson = location.state?.preselectedPerson as Person | undefined
+
     const [step, setStep] = useState<'type' | 'form'>('type')
     const [selectedType, setSelectedType] = useState<CreateSubmissionData['type'] | null>(null)
     const [formData, setFormData] = useState<Record<string, any>>({})
@@ -45,8 +49,34 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
         setSelectedWife(null)
         setHusbandMode('picker')
         setWifeMode('picker')
+
+        // Pre-fill logic based on preselectedPerson (from "Lapor Data" button)
+        if (preselectedPerson) {
+            if (type === 'birth') {
+                if (preselectedPerson.gender === 'male') {
+                    setSelectedFather(preselectedPerson)
+                } else if (preselectedPerson.gender === 'female') {
+                    setSelectedMother(preselectedPerson)
+                }
+            } else if (type === 'marriage') {
+                if (preselectedPerson.gender === 'male') {
+                    setSelectedHusband(preselectedPerson)
+                } else if (preselectedPerson.gender === 'female') {
+                    setSelectedWife(preselectedPerson)
+                }
+            } else if (type === 'death' || type === 'correction') {
+                setSelectedPerson(preselectedPerson)
+                if (type === 'correction') {
+                    handleInputChange('person_name', preselectedPerson.full_name)
+                } else {
+                    handleInputChange('full_name', preselectedPerson.full_name)
+                }
+            }
+        }
+
         setStep('form')
     }
+
 
     const handleInputChange = (field: string, value: any) => {
         setFormData((prev) => ({ ...prev, [field]: value }))

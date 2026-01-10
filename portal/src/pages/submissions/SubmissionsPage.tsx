@@ -1,10 +1,32 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useMySubmissions, SubmissionForm, SubmissionList } from '../../features/submissions'
 import { MobileLayout } from '../../components/layout/MobileLayout'
 
 export function SubmissionsPage() {
+    const location = useLocation()
+    const navigate = useNavigate()
     const [showForm, setShowForm] = useState(false)
     const { data: submissions, isLoading } = useMySubmissions()
+
+    // Check if we came from Silsilah (has preselectedPerson)
+    const fromSilsilah = !!location.state?.preselectedPerson
+
+    useEffect(() => {
+        if (fromSilsilah) {
+            setShowForm(true)
+        }
+    }, [fromSilsilah])
+
+    const handleCancel = () => {
+        if (fromSilsilah) {
+            navigate(-1) // Go back to Silsilah
+        } else {
+            setShowForm(false)
+        }
+    }
+
+
 
     return (
         <MobileLayout>
@@ -12,7 +34,18 @@ export function SubmissionsPage() {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Laporan Data</h1>
+                        <div className="flex items-center gap-3">
+                            {fromSilsilah && (
+                                <button
+                                    onClick={() => navigate(-1)}
+                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors -ml-2"
+                                    title="Kembali ke Silsilah"
+                                >
+                                    <span className="material-symbols-outlined">arrow_back</span>
+                                </button>
+                            )}
+                            <h1 className="text-2xl font-bold text-gray-900">Laporan Data</h1>
+                        </div>
                         <p className="text-gray-500 mt-1">
                             Kirim laporan kelahiran, pernikahan, kematian, atau koreksi data
                         </p>
@@ -33,7 +66,7 @@ export function SubmissionsPage() {
                     <div className="bg-white rounded-xl border border-gray-200 p-6">
                         <SubmissionForm
                             onSuccess={() => setShowForm(false)}
-                            onCancel={() => setShowForm(false)}
+                            onCancel={handleCancel}
                         />
                     </div>
                 ) : (
