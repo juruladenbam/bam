@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d3c16cb86c42230c6c023d9a5d9bcf42",
+    "content-hash": "2a20bfd96444042f2c5b18df04b1e4c9",
     "packages": [
         {
             "name": "brick/math",
@@ -1051,6 +1051,46 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
+        },
+        {
+            "name": "irsyadulibad/weton",
+            "version": "v0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/irsyadulibad/javanese-weton.git",
+                "reference": "0a2d8cfb5e483bcd16ba288e1efc7c9eb10c0dc9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/irsyadulibad/javanese-weton/zipball/0a2d8cfb5e483bcd16ba288e1efc7c9eb10c0dc9",
+                "reference": "0a2d8cfb5e483bcd16ba288e1efc7c9eb10c0dc9",
+                "shasum": ""
+            },
+            "require-dev": {
+                "pestphp/pest": "^1.21"
+            },
+            "type": "project",
+            "autoload": {
+                "psr-4": {
+                    "Irsyadulibad\\Weton\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "irsyadulibad",
+                    "email": "ahmadirsyadulibad7@gmail.com"
+                }
+            ],
+            "description": "Library to calculate and output the Javanese Weton",
+            "support": {
+                "issues": "https://github.com/irsyadulibad/javanese-weton/issues",
+                "source": "https://github.com/irsyadulibad/javanese-weton/tree/v0.3"
+            },
+            "time": "2022-10-02T12:23:55+00:00"
         },
         {
             "name": "laravel/framework",
@@ -3352,6 +3392,58 @@
                 "source": "https://github.com/ramsey/uuid/tree/4.9.2"
             },
             "time": "2025-12-14T04:43:48+00:00"
+        },
+        {
+            "name": "remls/hijri-date",
+            "version": "v2.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Remls/hijri-date.git",
+                "reference": "a71f1485d8c727712861d738db4233379aa4f811"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Remls/hijri-date/zipball/a71f1485d8c727712861d738db4233379aa4f811",
+                "reference": "a71f1485d8c727712861d738db4233379aa4f811",
+                "shasum": ""
+            },
+            "require": {
+                "ext-intl": "*",
+                "laravel/framework": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
+                "php": ">=8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Remls\\HijriDate\\HijriDateServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Remls\\HijriDate\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Adam Raaif Nasheed",
+                    "email": "adam.raaif.nasheed7@gmail.com"
+                }
+            ],
+            "description": "Laravel helper package for Hijri dates.",
+            "support": {
+                "issues": "https://github.com/Remls/hijri-date/issues",
+                "source": "https://github.com/Remls/hijri-date/tree/v2.3.1"
+            },
+            "time": "2025-03-19T15:05:03+00:00"
         },
         {
             "name": "symfony/clock",

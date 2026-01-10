@@ -10,7 +10,7 @@ interface NavItem {
 const navItems: NavItem[] = [
     { icon: 'home', label: 'Beranda', path: '/' },
     { icon: 'account_tree', label: 'Silsilah', path: '/silsilah' },
-    { icon: 'event', label: 'Acara', path: '/events' },
+    { icon: 'calendar_month', label: 'Kalender', path: '/calendar' },
     { icon: 'newspaper', label: 'Berita', path: '/news' },
     { icon: 'person', label: 'Akun', path: '/profile' },
 ]
@@ -41,8 +41,8 @@ export function BottomNavbar() {
                             key={item.path}
                             to={item.path}
                             className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${active
-                                    ? 'text-[#ec1325]'
-                                    : 'text-[#896165] hover:text-[#181112]'
+                                ? 'text-[#ec1325]'
+                                : 'text-[#896165] hover:text-[#181112]'
                                 }`}
                         >
                             <span

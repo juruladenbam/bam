@@ -13,9 +13,11 @@ use App\Repositories\BranchRepository;
 use App\Repositories\Contracts\EventRepositoryInterface;
 use App\Repositories\Contracts\NewsPostRepositoryInterface;
 use App\Repositories\Contracts\MediaGalleryRepositoryInterface;
+use App\Repositories\Contracts\IslamicHolidayRepositoryInterface;
 use App\Repositories\EventRepository;
 use App\Repositories\NewsPostRepository;
 use App\Repositories\MediaGalleryRepository;
+use App\Repositories\IslamicHolidayRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -33,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(EventRepositoryInterface::class, EventRepository::class);
         $this->app->bind(NewsPostRepositoryInterface::class, NewsPostRepository::class);
         $this->app->bind(MediaGalleryRepositoryInterface::class, MediaGalleryRepository::class);
+        $this->app->bind(IslamicHolidayRepositoryInterface::class, IslamicHolidayRepository::class);
     }
 
     /**

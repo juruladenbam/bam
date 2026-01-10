@@ -48,6 +48,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/news/{id}/clap', [\App\Http\Controllers\Api\Portal\NewsController::class, 'clap']);
     Route::get('/archives', [\App\Http\Controllers\Api\Portal\ArchiveController::class, 'index']);
 
+    // Calendar
+    Route::get('/calendar', [\App\Http\Controllers\Api\Portal\CalendarController::class, 'index']);
+
     // Submissions (Member Data Approval)
     Route::get('/submissions', [\App\Http\Controllers\Api\Portal\SubmissionController::class, 'index']);
     Route::post('/submissions', [\App\Http\Controllers\Api\Portal\SubmissionController::class, 'store']);

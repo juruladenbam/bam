@@ -14,6 +14,7 @@ import { NewsDetailPage } from './pages/news/NewsDetailPage'
 import { NewsListPage } from './pages/news/NewsListPage'
 import { SubmissionsPage } from './pages/submissions/SubmissionsPage'
 import { ProfilePage } from './pages/profile/ProfilePage'
+import { CalendarPage } from './pages/calendar/CalendarPage'
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
       <Route path="/news" element={<AuthGuard><NewsListPage /></AuthGuard>} />
       <Route path="/news/:id" element={<AuthGuard><NewsDetailPage /></AuthGuard>} />
       <Route path="/archives" element={<AuthGuard><ArchivesPage /></AuthGuard>} />
+      <Route path="/calendar" element={<AuthGuard><CalendarPage /></AuthGuard>} />
 
       {/* 404 */}
       <Route path="*" element={

@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 const tabs = [
     { label: 'Beranda', path: '/settings/home', icon: 'home' },
     { label: 'Tentang', path: '/settings/about', icon: 'info' },
+    { label: 'Kalender', path: '/settings/calendar', icon: 'calendar_month' },
 ];
 
 export default function SettingsLayout() {
