@@ -4,8 +4,62 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2a20bfd96444042f2c5b18df04b1e4c9",
+    "content-hash": "71af23ba898297aed298300ea8f553e6",
     "packages": [
+        {
+            "name": "biladina/hijridatetime",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biladina/hijridatetime.git",
+                "reference": "ab89dc7382d7d68854b36c57c15126934a8eaf51"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biladina/hijridatetime/zipball/ab89dc7382d7d68854b36c57c15126934a8eaf51",
+                "reference": "ab89dc7382d7d68854b36c57c15126934a8eaf51",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "biladina\\hijridatetime\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Abdulrhman Alkhodiry",
+                    "email": "zeroows@gmail.com",
+                    "homepage": "http://7in.org"
+                },
+                {
+                    "name": "Abdul-Aziz Al-Oraij",
+                    "email": "aziz@oraij.com",
+                    "homepage": "http://aziz.oraij.com"
+                },
+                {
+                    "name": "Nabil Munawar",
+                    "email": "nabil_munawar@protonmail.ch",
+                    "homepage": "http://nabilmunawar.wordpress.com"
+                }
+            ],
+            "description": "Hijri Date Time - Library for using Hijri date time, compatible with 'Umm al-Qura' formal calendar in Saudi Arabia and the Muslim world",
+            "keywords": [
+                "hijri",
+                "hijridatetime",
+                "hijriyah",
+                "library"
+            ],
+            "support": {
+                "issues": "https://github.com/biladina/hijridatetime/issues",
+                "source": "https://github.com/biladina/hijridatetime/tree/1.0.3"
+            },
+            "time": "2024-07-31T07:58:13+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.14.1",

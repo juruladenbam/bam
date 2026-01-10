@@ -4,9 +4,10 @@ namespace App\Services;
 
 use App\Models\IslamicHoliday;
 use App\Models\SiteSetting;
+use biladina\hijridatetime\HijriDateTime;
+use Remls\HijriDate\HijriDate;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Remls\HijriDate\HijriDate;
 
 class HijriService
 {
@@ -14,6 +15,11 @@ class HijriService
      * Cached offset value (null = not loaded yet)
      */
     protected ?int $cachedOffset = null;
+
+    /**
+     * HijriDateTime instance (Umm al-Qura calendar - accurate for G2H)
+     */
+    protected HijriDateTime $hijri;
 
     /**
      * Hijri month names in Indonesian
@@ -33,6 +39,11 @@ class HijriService
         12 => 'Dzulhijjah',
     ];
 
+    public function __construct()
+    {
+        $this->hijri = new HijriDateTime();
+    }
+
     /**
      * Get current Hijri offset from settings (-3 to +3)
      * Cached per request to avoid repeated database queries
@@ -48,40 +59,75 @@ class HijriService
 
     /**
      * Convert Gregorian date to Hijri with offset applied
+     * Uses Umm al-Qura calendar via biladina/hijridatetime (more accurate)
      */
     public function toHijri(Carbon $date): array
     {
-        $hijri = HijriDate::createFromGregorian($date);
-        
         // Apply offset
         $offset = $this->getOffset();
+        $adjustedDate = $date->copy();
         if ($offset !== 0) {
-            $hijri = $hijri->addDays($offset);
+            $adjustedDate = $adjustedDate->addDays($offset);
         }
 
+        // Use GeToHijr method directly to avoid language lookup issues
+        $result = $this->hijri->GeToHijr(
+            $adjustedDate->day,
+            $adjustedDate->month,
+            $adjustedDate->year
+        );
+
         return [
-            'year' => $hijri->getYear(),
-            'month' => $hijri->getMonth(),
-            'day' => $hijri->getDay(),
-            'month_name' => $this->monthNames[$hijri->getMonth()] ?? '',
+            'year' => (int) $result['year'],
+            'month' => (int) $result['month'],
+            'day' => (int) $result['day'],
+            'month_name' => $this->monthNames[(int) $result['month']] ?? '',
         ];
     }
 
     /**
      * Convert Hijri date to Gregorian (with offset reversed)
+     * Uses brute-force search to find matching date using biladina library
+     * This ensures consistency with toHijri conversion
      */
     public function toGregorian(int $year, int $month, int $day): Carbon
     {
+        // Start with an approximate date from remls library
         $hijri = new HijriDate($year, $month, $day);
-        $gregorian = $hijri->getGregorianDate();
+        $approxDate = Carbon::parse($hijri->getGregorianDate());
         
-        // Reverse the offset
-        $offset = $this->getOffset();
-        if ($offset !== 0) {
-            $gregorian = $gregorian->subDays($offset);
+        // Search around this date to find exact match using biladina
+        // Check ±5 days to account for library differences
+        for ($offset = -5; $offset <= 5; $offset++) {
+            $testDate = $approxDate->copy()->addDays($offset);
+            $result = $this->hijri->GeToHijr(
+                $testDate->day,
+                $testDate->month,
+                $testDate->year
+            );
+            
+            if ((int) $result['year'] === $year && 
+                (int) $result['month'] === $month && 
+                (int) $result['day'] === $day) {
+                
+                // Apply hijri offset in reverse
+                $hijriOffset = $this->getOffset();
+                if ($hijriOffset !== 0) {
+                    $testDate = $testDate->subDays($hijriOffset);
+                }
+                
+                // Create fresh Carbon instance to avoid timezone issues
+                return Carbon::createFromFormat('Y-m-d', $testDate->toDateString())->startOfDay();
+            }
         }
-
-        return Carbon::parse($gregorian);
+        
+        // Fallback to remls if not found (shouldn't happen normally)
+        $hijriOffset = $this->getOffset();
+        if ($hijriOffset !== 0) {
+            $approxDate = $approxDate->subDays($hijriOffset);
+        }
+        
+        return $approxDate->startOfDay();
     }
 
     /**

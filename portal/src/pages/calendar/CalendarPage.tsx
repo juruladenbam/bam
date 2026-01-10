@@ -317,9 +317,45 @@ export function CalendarPage() {
                                 <h1 className="text-2xl font-bold text-gray-900">
                                     {MONTH_NAMES[month - 1]} {year}
                                 </h1>
-                                {data && (
+                                {data && data.hijri_month && (
                                     <p className="text-sm text-gray-600">
-                                        {data.hijri_month.month_name} {data.hijri_month.year} H
+                                        {/* Check for new structure with start/end */}
+                                        {data.hijri_month.start ? (
+                                            data.hijri_month.same_month ? (
+                                                // Same month - single display
+                                                <span className="font-medium text-[#ec1325]">
+                                                    {data.hijri_month.start.month_name} {data.hijri_month.start.year} H
+                                                </span>
+                                            ) : (
+                                                // Different months - range display with highlight
+                                                <>
+                                                    <span className={
+                                                        selectedDate && data.days.find(d => d.date === selectedDate)?.hijri.month === data.hijri_month.start.month
+                                                            ? 'font-bold text-[#ec1325]'
+                                                            : ''
+                                                    }>
+                                                        {data.hijri_month.start.month_name}
+                                                    </span>
+                                                    {data.hijri_month.start.year !== data.hijri_month.end.year && (
+                                                        <span className="text-gray-400"> {data.hijri_month.start.year}</span>
+                                                    )}
+                                                    <span className="text-gray-400"> — </span>
+                                                    <span className={
+                                                        selectedDate && data.days.find(d => d.date === selectedDate)?.hijri.month === data.hijri_month.end.month
+                                                            ? 'font-bold text-[#ec1325]'
+                                                            : ''
+                                                    }>
+                                                        {data.hijri_month.end.month_name}
+                                                    </span>
+                                                    <span className="text-gray-400"> {data.hijri_month.end.year} H</span>
+                                                </>
+                                            )
+                                        ) : (
+                                            // Fallback for old cached data structure
+                                            <span className="font-medium text-[#ec1325]">
+                                                {(data.hijri_month as any).month_name} {(data.hijri_month as any).year} H
+                                            </span>
+                                        )}
                                     </p>
                                 )}
                             </div>

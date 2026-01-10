@@ -36,9 +36,17 @@ export interface CalendarData {
     month: number
     hijri_offset: number
     hijri_month: {
-        year: number
-        month: number
-        month_name: string
+        start: {
+            year: number
+            month: number
+            month_name: string
+        }
+        end: {
+            year: number
+            month: number
+            month_name: string
+        }
+        same_month: boolean
     }
     days: CalendarDay[]
     events: {

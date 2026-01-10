@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "biladina/hijridatetime": "^1.0",
         "irsyadulibad/weton": "^0.3.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",

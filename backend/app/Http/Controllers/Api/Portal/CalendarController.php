@@ -67,17 +67,29 @@ class CalendarController extends Controller
         // Get commemorations (7, 40, 100, 1000 days + haul)
         $commemorations = $this->commemorationService->getUpcoming($startDate, $endDate);
 
-        // Get current Hijri month info
-        $midMonthHijri = $this->hijriService->toHijri($startDate->copy()->addDays(14));
+        // Get Hijri month range (start and end of Gregorian month)
+        $startHijri = $this->hijriService->toHijri($startDate);
+        $endHijri = $this->hijriService->toHijri($endDate);
+        
+        // Determine if the month spans two different Hijri months
+        $sameMonth = $startHijri['month'] === $endHijri['month'] && $startHijri['year'] === $endHijri['year'];
 
         return $this->success([
             'year' => $year,
             'month' => $month,
             'hijri_offset' => $this->hijriService->getOffset(),
             'hijri_month' => [
-                'year' => $midMonthHijri['year'],
-                'month' => $midMonthHijri['month'],
-                'month_name' => $midMonthHijri['month_name'],
+                'start' => [
+                    'year' => $startHijri['year'],
+                    'month' => $startHijri['month'],
+                    'month_name' => $startHijri['month_name'],
+                ],
+                'end' => [
+                    'year' => $endHijri['year'],
+                    'month' => $endHijri['month'],
+                    'month_name' => $endHijri['month_name'],
+                ],
+                'same_month' => $sameMonth,
             ],
             'days' => $days,
             'events' => [
