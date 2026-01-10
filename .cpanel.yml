@@ -1,0 +1,24 @@
+---
+deployment:
+  tasks:
+    # Path Home Directory berdasarkan screenshot File Manager Anda
+    - export HOME_DIR=/home/bamb3276
+    
+    # Folder tujuan untuk masing-masing subdomain
+    # PERHATIAN: Pastikan nama folder ini sesuai dengan yang ada di cPanel (Domains -> Document Root)
+    - export API_PATH=$HOME_DIR/api.bamseribuputu.my.id
+    - export PORTAL_PATH=$HOME_DIR/portal.bamseribuputu.my.id
+    - export PUBLIC_PATH=$HOME_DIR/public_html
+    
+    # 1. Deploy Backend (Laravel)
+    # Kita copy folder public backend ke api subdomain
+    - /bin/cp -rf backend/public/* $API_PATH/
+    - /bin/cp -rf backend/public/.htaccess $API_PATH/
+    
+    # 2. Deploy Portal (React)
+    # Kita copy isi folder portal/dist hasil build ke portal subdomain
+    - /bin/cp -rf portal/dist/* $PORTAL_PATH/
+    - /bin/cp -rf portal/public/.htaccess $PORTAL_PATH/
+    
+    # 3. Deploy Public Web (jika ada) ke root domain
+    # - /bin/cp -rf public-web/dist/* $PUBLIC_PATH/
