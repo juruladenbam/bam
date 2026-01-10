@@ -82,7 +82,7 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
             if (navigator.canShare && navigator.canShare({ files: [new File([imageBlob], 'story.png', { type: 'image/png' })] })) {
                 await navigator.share({
                     files: [new File([imageBlob], 'story.png', { type: 'image/png' })],
-                    title: 'Bani Abdurrahman Share',
+                    title: 'Bani Abdul Manan Share',
                 })
             } else {
                 const link = document.createElement('a')
@@ -240,7 +240,7 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
 
                     {/* Logo Area */}
                     <div style={{ position: 'absolute', top: '100px', width: '100%', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <h1 style={{ fontSize: '42px', fontWeight: '900', letterSpacing: '0.25em', textTransform: 'uppercase', color: '#ec1325', margin: 0 }}>Bani Abdurrahman</h1>
+                        <h1 style={{ fontSize: '42px', fontWeight: '900', letterSpacing: '0.25em', textTransform: 'uppercase', color: '#ec1325', margin: 0 }}>Bani Abdul Manan</h1>
                         <p style={{ fontSize: '24px', fontWeight: '500', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#896165', marginTop: '12px', margin: 0 }}>Silsilah Keluarga</p>
                     </div>
 
