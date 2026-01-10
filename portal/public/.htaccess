@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. INTERCEPT SOCIAL MEDIA BOTS
+  # Detect common crawlers (Facebook, Twitter, WhatsApp, etc.)
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|twitterbot|whatsapp|linkedinbot|embedly|quora\ link\ preview|showyoubot|outbrain|pinterest\/0\.|bingbot|msnbot|googlebot|DuckDuckBot|TelegramBot) [NC]
+  
+  # Forward bots for member profile to the backend to serve OG tags
+  # We use a 302 redirect here as Proxy [P] is often disabled on shared hosting.
+  # Bots will follow this redirect and parse the meta tags from the backend response.
+  RewriteRule ^silsilah/person/([0-9]+)$ https://api.bamseribuputu.my.id/share/member/$1 [R=302,L]
+
+  # 2. STANDARD REACT SPA ROUTING
+  # If the requested resource is not a file or directory, serve index.html
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>

@@ -11,9 +11,12 @@ interface MemberSidebarProps {
     isMobile?: boolean
 }
 
+import { ShareModal } from './ShareModal'
+
 export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: MemberSidebarProps) {
     const navigate = useNavigate()
     const { data: rel } = useRelationship(person ? person.id : 0)
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false)
 
     // Helper for date formatting
     const formatDate = (dateString: string | null | undefined) => {
@@ -204,6 +207,11 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                         </div>
                     </div>
                 </div>
+                <ShareModal
+                    person={person}
+                    isOpen={isShareModalOpen}
+                    onClose={() => setIsShareModalOpen(false)}
+                />
             </>
         )
     }
@@ -264,7 +272,10 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                                 >
                                     View full Profile
                                 </button>
-                                <button className="bg-[#f8f6f6] hover:bg-[#e6dbdc] text-[#181112] p-2.5 rounded-lg transition-colors border border-transparent">
+                                <button
+                                    onClick={() => setIsShareModalOpen(true)}
+                                    className="bg-[#f8f6f6] hover:bg-[#e6dbdc] text-[#181112] p-2.5 rounded-lg transition-colors border border-transparent"
+                                >
                                     <span className="material-symbols-outlined text-[20px]">share</span>
                                 </button>
                             </div>
@@ -356,6 +367,15 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                     </div>
                 </div>
             </div>
+            {
+                person && (
+                    <ShareModal
+                        person={person}
+                        isOpen={isShareModalOpen}
+                        onClose={() => setIsShareModalOpen(false)}
+                    />
+                )
+            }
         </aside>
     )
 }
