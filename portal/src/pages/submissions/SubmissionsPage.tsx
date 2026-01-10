@@ -20,7 +20,10 @@ export function SubmissionsPage() {
 
     const handleCancel = () => {
         if (fromSilsilah) {
-            navigate(-1) // Go back to Silsilah
+            // Navigate back to the specific branch and person
+            const person = location.state.preselectedPerson
+            const branchId = person.branch_id
+            navigate(`/silsilah/branch/${branchId}?focus=${person.id}`)
         } else {
             setShowForm(false)
         }
@@ -37,7 +40,11 @@ export function SubmissionsPage() {
                         <div className="flex items-center gap-3">
                             {fromSilsilah && (
                                 <button
-                                    onClick={() => navigate(-1)}
+                                    onClick={() => {
+                                        const person = location.state.preselectedPerson
+                                        const branchId = person.branch_id
+                                        navigate(`/silsilah/branch/${branchId}?focus=${person.id}`)
+                                    }}
                                     className="p-2 hover:bg-gray-100 rounded-full transition-colors -ml-2"
                                     title="Kembali ke Silsilah"
                                 >

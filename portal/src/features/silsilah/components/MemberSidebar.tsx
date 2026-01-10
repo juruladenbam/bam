@@ -15,6 +15,20 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
     const navigate = useNavigate()
     const { data: rel } = useRelationship(person ? person.id : 0)
 
+    // Helper for date formatting
+    const formatDate = (dateString: string | null | undefined) => {
+        if (!dateString) return 'Unknown'
+        try {
+            return new Date(dateString).toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            })
+        } catch (e) {
+            return dateString
+        }
+    }
+
     // Bottom sheet state for mobile
     const [sheetHeight, setSheetHeight] = useState(40) // percentage of screen
     const [isDragging, setIsDragging] = useState(false)
@@ -174,7 +188,7 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                                     <span className="material-symbols-outlined text-[#896165] text-[18px]">cake</span>
                                     <div>
                                         <p className="text-xs text-[#896165]">Birth</p>
-                                        <p className="text-sm font-medium text-[#181112]">{person.birth_date || 'Unknown'}</p>
+                                        <p className="text-sm font-medium text-[#181112]">{formatDate(person.birth_date)}</p>
                                     </div>
                                 </div>
                                 {isDeceased && (
@@ -182,7 +196,7 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                                         <span className="material-symbols-outlined text-[#896165] text-[18px]">church</span>
                                         <div>
                                             <p className="text-xs text-[#896165]">Death</p>
-                                            <p className="text-sm font-medium text-[#181112]">{person.death_date || 'Unknown'}</p>
+                                            <p className="text-sm font-medium text-[#181112]">{formatDate(person.death_date)}</p>
                                         </div>
                                     </div>
                                 )}
@@ -310,8 +324,8 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                                     <span className="material-symbols-outlined text-[#896165] text-[20px] mt-0.5">cake</span>
                                     <div>
                                         <p className="text-xs text-[#896165]">Birth</p>
-                                        <p className="text-sm font-medium text-[#181112]">
-                                            {person.birth_date || 'Unknown'}
+                                        <p className="text-js font-medium text-[#181112]">
+                                            {formatDate(person.birth_date)}
                                         </p>
                                     </div>
                                 </div>
@@ -322,7 +336,7 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                                         <div>
                                             <p className="text-xs text-[#896165]">Death</p>
                                             <p className="text-sm font-medium text-[#181112]">
-                                                {person.death_date || 'Unknown'}
+                                                {formatDate(person.death_date)}
                                             </p>
                                         </div>
                                     </div>

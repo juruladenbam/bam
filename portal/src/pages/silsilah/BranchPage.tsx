@@ -125,7 +125,15 @@ function BranchPageContent() {
             // Priority 0: URL Search Param (?focus=ID)
             if (focusId) {
                 targetNode = nodes.find(n => n.id === `person-${focusId}`)
-                if (targetNode) zoomLevel = 1.5
+                if (targetNode) {
+                    zoomLevel = 1.5
+                    // Also open sidebar if person exists
+                    const person = persons?.find(p => p.id === Number(focusId))
+                    if (person) {
+                        setSelectedPerson(person)
+                        setIsSidebarOpen(true)
+                    }
+                }
             }
 
             // Priority 1: Logged-in User

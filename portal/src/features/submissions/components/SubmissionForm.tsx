@@ -483,13 +483,54 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Data Seharusnya (Yang Benar) <span className="text-red-500">*</span>
                             </label>
-                            <input
-                                type="text"
-                                value={formData.correct_value || ''}
-                                onChange={(e) => handleInputChange('correct_value', e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
-                                required
-                            />
+                            {(() => {
+                                const fieldSelect = formData.field_select
+                                if (fieldSelect === 'Tanggal Lahir' || fieldSelect === 'Tanggal Wafat') {
+                                    return (
+                                        <input
+                                            type="date"
+                                            value={formData.correct_value || ''}
+                                            onChange={(e) => handleInputChange('correct_value', e.target.value)}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
+                                            required
+                                        />
+                                    )
+                                } else if (fieldSelect === 'Jenis Kelamin') {
+                                    return (
+                                        <select
+                                            value={formData.correct_value || ''}
+                                            onChange={(e) => handleInputChange('correct_value', e.target.value)}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
+                                            required
+                                        >
+                                            <option value="">Pilih...</option>
+                                            <option value="male">Laki-laki</option>
+                                            <option value="female">Perempuan</option>
+                                        </select>
+                                    )
+                                } else if (fieldSelect === 'Urutan Kelahiran') {
+                                    return (
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            value={formData.correct_value || ''}
+                                            onChange={(e) => handleInputChange('correct_value', e.target.value)}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
+                                            required
+                                        />
+                                    )
+                                } else {
+                                    return (
+                                        <input
+                                            type="text"
+                                            value={formData.correct_value || ''}
+                                            onChange={(e) => handleInputChange('correct_value', e.target.value)}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
+                                            required
+                                        />
+                                    )
+                                }
+                            })()}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
