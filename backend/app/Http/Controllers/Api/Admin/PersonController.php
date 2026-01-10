@@ -43,11 +43,15 @@ class PersonController extends Controller
         $person = $this->personService->getPersonWithRelationships($id);
         $familyData = $this->personService->getFamilyData($id);
 
+        // Append parents accessor for the detail view
+        $person->append('parents');
+
         return $this->success([
             'person' => $person,
             'family' => $familyData,
         ], 'Detail person berhasil dimuat');
     }
+
 
     /**
      * Create new person

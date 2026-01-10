@@ -40,6 +40,10 @@ class Person extends Model
         'is_root' => 'boolean',
     ];
 
+    protected $appends = [
+        'parent_marriage_id',
+    ];
+
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);

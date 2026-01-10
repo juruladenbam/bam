@@ -81,8 +81,52 @@ class PersonService
      */
     public function updatePerson(int $id, array $data): Person
     {
+        $person = $this->personRepository->findOrFail($id);
+        
+        // Handle parent_marriage_id changes
+        if (array_key_exists('parent_marriage_id', $data)) {
+            $newParentMarriageId = $data['parent_marriage_id'];
+            $currentParentMarriageId = $person->parent_marriage_id;
+            
+            // If parent marriage changed
+            if ($newParentMarriageId !== $currentParentMarriageId) {
+                // Remove old parent relationship if exists
+                if ($currentParentMarriageId) {
+                    \DB::table('parent_child')
+                        ->where('child_id', $id)
+                        ->delete();
+                }
+                
+                // Add new parent relationship if provided
+                if ($newParentMarriageId) {
+                    // Auto-calculate generation
+                    $data['generation'] = $this->calculateGeneration($newParentMarriageId);
+                    
+                    // Auto-detect branch if not explicitly provided
+                    if (!isset($data['branch_id']) || $data['branch_id'] === null) {
+                        $detectedBranch = $this->detectBranchFromParent($newParentMarriageId);
+                        if ($detectedBranch) {
+                            $data['branch_id'] = $detectedBranch;
+                        }
+                    }
+                    
+                    // Create parent_child relationship
+                    $birthOrder = $data['birth_order'] ?? $person->birth_order ?? 1;
+                    $this->marriageRepository->addChild(
+                        $newParentMarriageId,
+                        $id,
+                        $birthOrder
+                    );
+                }
+            }
+            
+            // Remove parent_marriage_id from data as it's not a column in persons table
+            unset($data['parent_marriage_id']);
+        }
+        
         return $this->personRepository->update($id, $data);
     }
+
 
     /**
      * Delete person

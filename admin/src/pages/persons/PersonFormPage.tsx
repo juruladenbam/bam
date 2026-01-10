@@ -54,6 +54,13 @@ export function PersonFormPage() {
         subLabel: m.marriage_date ? `Menikah: ${m.marriage_date.substring(0, 4)}` : undefined
     })) || []
 
+    // Helper to format ISO date string to YYYY-MM-DD for input[type="date"]
+    const formatDateForInput = (dateStr: string | null | undefined): string => {
+        if (!dateStr) return ''
+        // Handle ISO format like "2016-02-04T00:00:00.000000Z" or "2016-02-04"
+        return dateStr.substring(0, 10)
+    }
+
     // Populate form when editing
     useEffect(() => {
         if (person) {
@@ -62,8 +69,8 @@ export function PersonFormPage() {
                 nickname: person.nickname || '',
                 gender: person.gender,
                 branch_id: person.branch_id,
-                birth_date: person.birth_date || '',
-                death_date: person.death_date || '',
+                birth_date: formatDateForInput(person.birth_date),
+                death_date: formatDateForInput(person.death_date),
                 is_alive: person.is_alive,
                 generation: person.generation,
                 birth_order: person.birth_order,
@@ -71,6 +78,7 @@ export function PersonFormPage() {
             })
         }
     }, [person])
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target

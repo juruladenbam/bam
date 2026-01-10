@@ -173,7 +173,10 @@ class PersonRepository implements PersonRepositoryInterface
                 'marriagesAsHusband.children.child',
                 'marriagesAsWife.husband',
                 'marriagesAsWife.children.child',
+                'parentChild.marriage.husband',
+                'parentChild.marriage.wife',
             ])
             ->findOrFail($id);
     }
+
 }

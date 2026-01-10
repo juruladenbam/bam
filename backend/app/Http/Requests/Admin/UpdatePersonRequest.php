@@ -23,10 +23,13 @@ class UpdatePersonRequest extends FormRequest
             'is_alive' => ['sometimes', 'boolean'],
             'photo_url' => ['nullable', 'url'],
             'bio' => ['nullable', 'string'],
-            'branch_id' => ['sometimes', 'exists:branches,id'],
+            'branch_id' => ['nullable', 'exists:branches,id'],
             'generation' => ['nullable', 'integer', 'min:1'],
+            'parent_marriage_id' => ['nullable', 'exists:marriages,id'],
+            'birth_order' => ['nullable', 'integer', 'min:1'],
         ];
     }
+
 
     public function messages(): array
     {
