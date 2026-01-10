@@ -66,46 +66,74 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
         setIsGenerating(true)
 
         try {
-            // Give a tiny moment for content to be ready
-            await new Promise(r => setTimeout(r, 100));
+            console.log('Starting image generation...');
+
+            // Wait for any potential layout shifts or image loads
+            await new Promise(r => setTimeout(r, 300));
 
             const canvas = await html2canvas(cardRef.current, {
                 useCORS: true,
-                scale: 1.5,
+                scale: 1, // Start with scale 1 for maximum compatibility
                 backgroundColor: '#fff0f0',
-                logging: true,
+                logging: false,
                 width: 1080,
-                height: 1920
-            })
+                height: 1920,
+                onclone: (doc) => {
+                    const el = doc.getElementById('share-card-content') as HTMLElement;
+                    if (el) {
+                        el.style.left = '0';
+                        el.style.visibility = 'visible';
+                    }
+                }
+            });
 
-            const imageBlob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'))
+            if (!canvas) throw new Error("Canvas generation failed");
+            console.log('Canvas created successfully');
 
-            if (!imageBlob) throw new Error("Failed to generate image")
+            let imageBlob: Blob | null = null;
+            if (canvas.toBlob) {
+                imageBlob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
+            } else {
+                const dataUrl = canvas.toDataURL('image/png');
+                const response = await fetch(dataUrl);
+                imageBlob = await response.blob();
+            }
+
+            if (!imageBlob) throw new Error("Blob generation failed");
+            console.log('Blob created successfully, size:', imageBlob.size);
 
             const file = new File([imageBlob], `silsilah-${person.id}.png`, { type: 'image/png' });
 
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
+                    console.log('Attempting native share...');
                     await navigator.share({
                         files: [file],
                         title: 'Bani Abdul Manan Share',
                         text: `Lihat profil keluarga ${person.full_name} di Portal Bani Abdul Manan.`
-                    })
+                    });
+                    console.log('Share successful');
                 } catch (shareError: any) {
-                    if (shareError.name === 'AbortError') return;
+                    if (shareError.name === 'AbortError') {
+                        console.log('User cancelled share');
+                        return;
+                    }
+                    console.error('Navigator share failed:', shareError);
                     throw shareError;
                 }
             } else {
-                const link = document.createElement('a')
-                link.download = `silsilah-${person.id}.png`
-                link.href = canvas.toDataURL('image/png')
-                link.click()
-                alert('Gambar silsilah telah didownload. Silakan bagi ke Instagram Story Anda secara manual.')
+                console.log('Native sharing unsupported, falling back to download');
+                const link = document.createElement('a');
+                link.download = `silsilah-${person.id}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                alert('Gambar silsilah telah didownload. Silakan bagi ke Instagram Story Anda secara manual.');
             }
 
         } catch (e: any) {
-            console.error('Sharing Error:', e)
-            alert('Gagal membuat gambar sharing. Pastikan koneksi internet stabil dan foto profil dapat diakses.')
+            const errorInfo = e?.message || String(e);
+            console.error('Sharing detailed error:', e);
+            alert(`Gagal membuat gambar: ${errorInfo}. Coba gunakan browser lain atau screenshot manual.`);
         } finally {
             setIsGenerating(false)
         }
@@ -211,6 +239,7 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
             <div className="absolute left-[-9999px] top-0" style={{ pointerEvents: 'none' }}>
                 <div
                     ref={cardRef}
+                    id="share-card-content"
                     style={{
                         width: '1080px',
                         height: '1920px',
