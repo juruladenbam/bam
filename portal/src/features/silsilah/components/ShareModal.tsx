@@ -67,13 +67,11 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
 
         try {
             console.log('Starting image generation...');
-
-            // Wait for any potential layout shifts or image loads
-            await new Promise(r => setTimeout(r, 300));
+            await new Promise(r => setTimeout(r, 400));
 
             const canvas = await html2canvas(cardRef.current, {
                 useCORS: true,
-                scale: 1, // Start with scale 1 for maximum compatibility
+                scale: 1,
                 backgroundColor: '#fff0f0',
                 logging: false,
                 width: 1080,
@@ -88,52 +86,45 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
             });
 
             if (!canvas) throw new Error("Canvas generation failed");
-            console.log('Canvas created successfully');
 
-            let imageBlob: Blob | null = null;
-            if (canvas.toBlob) {
-                imageBlob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
-            } else {
-                const dataUrl = canvas.toDataURL('image/png');
-                const response = await fetch(dataUrl);
-                imageBlob = await response.blob();
-            }
-
+            const imageBlob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
             if (!imageBlob) throw new Error("Blob generation failed");
-            console.log('Blob created successfully, size:', imageBlob.size);
 
-            const file = new File([imageBlob], `silsilah-${person.id}.png`, { type: 'image/png' });
+            const fileName = `silsilah-${person.id}.png`;
+            const file = new File([imageBlob], fileName, { type: 'image/png' });
 
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
                     console.log('Attempting native share...');
                     await navigator.share({
                         files: [file],
-                        title: 'Bani Abdul Manan Share',
-                        text: `Lihat profil keluarga ${person.full_name} di Portal Bani Abdul Manan.`
+                        title: 'Silsilah Keluarga'
                     });
                     console.log('Share successful');
+                    return;
                 } catch (shareError: any) {
                     if (shareError.name === 'AbortError') {
                         console.log('User cancelled share');
                         return;
                     }
-                    console.error('Navigator share failed:', shareError);
-                    throw shareError;
+                    console.error('Share API failed, trying download fallback...', shareError);
                 }
-            } else {
-                console.log('Native sharing unsupported, falling back to download');
-                const link = document.createElement('a');
-                link.download = `silsilah-${person.id}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                alert('Gambar silsilah telah didownload. Silakan bagi ke Instagram Story Anda secara manual.');
             }
 
+            console.log('Executing download fallback');
+            const dataUrl = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert('Gambar silsilah telah didownload ke galeri Anda. Silakan bagikan ke Instagram Story Anda secara manual.');
+
         } catch (e: any) {
-            const errorInfo = e?.message || String(e);
-            console.error('Sharing detailed error:', e);
-            alert(`Gagal membuat gambar: ${errorInfo}. Coba gunakan browser lain atau screenshot manual.`);
+            console.error('Final sharing error:', e);
+            alert(`Gagal membuat gambar sharing. Silakan gunakan browser lain atau screenshot manual.`);
         } finally {
             setIsGenerating(false)
         }
