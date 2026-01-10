@@ -66,11 +66,14 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
         setIsGenerating(true)
 
         try {
+            // Give a tiny moment for content to be ready
+            await new Promise(r => setTimeout(r, 100));
+
             const canvas = await html2canvas(cardRef.current, {
                 useCORS: true,
-                scale: 2,
+                scale: 1.5,
                 backgroundColor: '#fff0f0',
-                logging: false,
+                logging: true,
                 width: 1080,
                 height: 1920
             })
@@ -79,22 +82,30 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
 
             if (!imageBlob) throw new Error("Failed to generate image")
 
-            if (navigator.canShare && navigator.canShare({ files: [new File([imageBlob], 'story.png', { type: 'image/png' })] })) {
-                await navigator.share({
-                    files: [new File([imageBlob], 'story.png', { type: 'image/png' })],
-                    title: 'Bani Abdul Manan Share',
-                })
+            const file = new File([imageBlob], `silsilah-${person.id}.png`, { type: 'image/png' });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Bani Abdul Manan Share',
+                        text: `Lihat profil keluarga ${person.full_name} di Portal Bani Abdul Manan.`
+                    })
+                } catch (shareError: any) {
+                    if (shareError.name === 'AbortError') return;
+                    throw shareError;
+                }
             } else {
                 const link = document.createElement('a')
                 link.download = `silsilah-${person.id}.png`
                 link.href = canvas.toDataURL('image/png')
                 link.click()
-                alert('Gambar silsilah telah didownload. Silakan bagi ke Instagram Story Anda.')
+                alert('Gambar silsilah telah didownload. Silakan bagi ke Instagram Story Anda secara manual.')
             }
 
-        } catch (e) {
-            console.error(e)
-            alert('Gagal membuat gambar sharing. Pastikan foto profil dapat diakses.')
+        } catch (e: any) {
+            console.error('Sharing Error:', e)
+            alert('Gagal membuat gambar sharing. Pastikan koneksi internet stabil dan foto profil dapat diakses.')
         } finally {
             setIsGenerating(false)
         }
