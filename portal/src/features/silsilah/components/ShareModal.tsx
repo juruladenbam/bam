@@ -50,11 +50,8 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
                         await navigator.share({ title: 'Silsilah Keluarga', text, url })
                         return
                     } catch (e: any) {
-                        if (e.name === 'AbortError') {
-                            return // User cancelled - do nothing and don't fallback
-                        }
+                        if (e.name === 'AbortError') return
                         console.log('Native share failed', e)
-                        // Fallback to copy link if it fails for other reasons
                     }
                 }
                 handleCopyLink()
@@ -69,12 +66,13 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
         setIsGenerating(true)
 
         try {
-            // Generate Image
             const canvas = await html2canvas(cardRef.current, {
                 useCORS: true,
                 scale: 2,
-                backgroundColor: null,
-                logging: true,
+                backgroundColor: '#fff0f0',
+                logging: false,
+                width: 1080,
+                height: 1920
             })
 
             const imageBlob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'))
@@ -198,57 +196,103 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
                 </div>
             </div>
 
-            {/* Hidden Card for Generation (Inline Styles for html2canvas compatibility) */}
-            <div className="absolute left-[-9999px] top-0">
+            {/* Hidden Card for Generation (Strict Inline Styles for html2canvas compatibility) */}
+            <div className="absolute left-[-9999px] top-0" style={{ pointerEvents: 'none' }}>
                 <div
                     ref={cardRef}
-                    className="w-[1080px] h-[1920px] p-16 flex flex-col items-center justify-center relative overflow-hidden"
-                    style={{ backgroundColor: '#fff0f0', display: 'flex' }}
+                    style={{
+                        width: '1080px',
+                        height: '1920px',
+                        backgroundColor: '#fff0f0',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        padding: '64px'
+                    }}
                 >
                     {/* Decorative Background Elements */}
                     <div
-                        className="absolute top-0 left-0 w-full h-[600px]"
-                        style={{ background: 'linear-gradient(to bottom, rgba(236,19,37,0.12), rgba(255,255,255,0))' }}
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '600px',
+                            background: 'linear-gradient(to bottom, rgba(236,19,37,0.12), rgba(255,255,255,0))'
+                        }}
                     />
                     <div
-                        className="absolute bottom-0 right-0 size-[800px] rounded-full translate-x-1/2 translate-y-1/2"
-                        style={{ backgroundColor: 'rgba(239, 68, 68, 0.05)', filter: 'blur(80px)' }}
+                        style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            right: 0,
+                            width: '800px',
+                            height: '800px',
+                            borderRadius: '400px',
+                            backgroundColor: 'rgba(239, 68, 68, 0.05)',
+                            filter: 'blur(80px)',
+                            transform: 'translate(200px, 200px)'
+                        }}
                     />
 
-                    {/* Logo */}
-                    <div className="absolute top-20 left-1/2 -translate-x-1/2 text-center">
-                        <h1 className="text-4xl font-bold tracking-[0.2em] uppercase" style={{ color: '#ec1325', margin: 0 }}>Bani Abdurrahman</h1>
-                        <p className="text-xl font-medium tracking-[0.1em] text-[#896165] mt-2 uppercase">Silsilah Keluarga</p>
+                    {/* Logo Area */}
+                    <div style={{ position: 'absolute', top: '100px', width: '100%', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <h1 style={{ fontSize: '42px', fontWeight: '900', letterSpacing: '0.25em', textTransform: 'uppercase', color: '#ec1325', margin: 0 }}>Bani Abdurrahman</h1>
+                        <p style={{ fontSize: '24px', fontWeight: '500', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#896165', marginTop: '12px', margin: 0 }}>Silsilah Keluarga</p>
                     </div>
 
-                    {/* Profile Card */}
+                    {/* Main Card Content */}
                     <div
-                        className="relative p-16 rounded-[80px] flex flex-col items-center w-[840px] text-center"
                         style={{
                             backgroundColor: '#ffffff',
+                            borderRadius: '80px',
+                            width: '840px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            padding: '80px 40px',
+                            boxShadow: '0 40px 80px -20px rgba(0,0,0,0.1)',
                             border: '1px solid #fee2e2',
-                            boxShadow: '0 50px 100px -20px rgba(0, 0, 0, 0.15)'
+                            position: 'relative',
+                            zIndex: 10
                         }}
                     >
-                        {/* Avatar */}
+                        {/* Avatar Wrapper */}
                         <div
-                            className="size-[320px] rounded-full overflow-hidden mb-12 shadow-2xl shrink-0 mx-auto"
                             style={{
+                                width: '320px',
+                                height: '320px',
+                                borderRadius: '160px',
+                                overflow: 'hidden',
+                                marginBottom: '48px',
                                 border: '16px solid #f8f6f6',
-                                backgroundColor: '#f3f4f6'
+                                backgroundColor: '#f3f4f6',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)'
                             }}
                         >
                             {person.photo_url ? (
                                 <img
                                     src={`${person.photo_url}${person.photo_url.includes('?') ? '&' : '?'}t=${new Date().getTime()}`}
                                     alt={person.full_name}
-                                    className="w-full h-full object-cover"
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                     crossOrigin="anonymous"
                                 />
                             ) : (
                                 <div
-                                    className="w-full h-full flex items-center justify-center text-[120px] font-bold"
                                     style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '120px',
+                                        fontWeight: 'bold',
                                         backgroundColor: person.gender === 'male' ? '#dbeafe' : '#fce7f3',
                                         color: person.gender === 'male' ? '#2563eb' : '#ec4899'
                                     }}
@@ -258,19 +302,20 @@ export function ShareModal({ person, isOpen, onClose }: ShareModalProps) {
                             )}
                         </div>
 
-                        <h2 className="text-7xl font-bold mb-4 leading-tight" style={{ color: '#181112' }}>{person.full_name}</h2>
-                        <div
-                            className="px-8 py-2 rounded-full inline-block mb-12"
-                            style={{ backgroundColor: '#fff0f0', border: '1px solid #fee2e2' }}
-                        >
-                            <p className="text-3xl font-bold" style={{ color: '#ec1325' }}>Generasi ke-{person.generation}</p>
+                        {/* Text Content */}
+                        <h2 style={{ fontSize: '72px', fontWeight: '800', color: '#181112', marginBottom: '24px', textAlign: 'center', lineHeight: 1.1 }}>
+                            {person.full_name}
+                        </h2>
+
+                        <div style={{ backgroundColor: '#fff0f0', border: '1px solid #fee2e2', padding: '12px 32px', borderRadius: '100px', marginBottom: '64px' }}>
+                            <p style={{ fontSize: '32px', fontWeight: '700', color: '#ec1325', margin: 0 }}>Generasi ke-{person.generation}</p>
                         </div>
 
-                        <div className="w-full h-[2px] mb-12" style={{ backgroundColor: '#f3f4f6' }} />
+                        <div style={{ width: '80%', height: '2px', backgroundColor: '#f3f4f6', marginBottom: '64px' }} />
 
-                        <div className="space-y-4">
-                            <p className="text-3xl font-medium" style={{ color: '#896165' }}>Kunjungi portal kami untuk detail lengkap</p>
-                            <p className="text-4xl font-black" style={{ color: '#181112' }}>portal.bamseribuputu.my.id</p>
+                        <div style={{ textAlign: 'center' }}>
+                            <p style={{ fontSize: '28px', fontWeight: '500', color: '#896165', marginBottom: '12px', margin: 0 }}>Lihat detail silsilah lengkap di</p>
+                            <p style={{ fontSize: '42px', fontWeight: '900', color: '#181112', margin: 0 }}>portal.bamseribuputu.my.id</p>
                         </div>
                     </div>
                 </div>
