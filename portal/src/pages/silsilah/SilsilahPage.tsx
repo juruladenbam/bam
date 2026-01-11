@@ -38,7 +38,8 @@ export function SilsilahPage() {
         total_descendants: 0,
         total_spouses: 0,
         total_living_descendants: 0,
-        total_living_spouses: 0
+        total_living_spouses: 0,
+        total_kk_utuh: 0
     }
 
 
@@ -56,15 +57,15 @@ export function SilsilahPage() {
                 </div>
 
                 {/* Stats Overview */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
                     <div className="bg-white rounded-xl p-5 border border-[#e6dbdc] shadow-sm flex items-center gap-4">
                         <div className="size-12 rounded-full bg-[#ec1325]/10 flex items-center justify-center text-[#ec1325]">
                             <span className="material-symbols-outlined text-2xl">group</span>
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-[#181112]">{stats.total_persons}</p>
-                            <p className="text-sm text-[#896165] font-medium">Total Anggota</p>
-                            <p className="text-xs text-gray-400 mt-0.5">
+                            <p className="text-2xl font-bold text-[#181112] font-mono">{stats.total_persons}</p>
+                            <p className="text-sm text-[#896165] font-medium leading-tight">Total Anggota</p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">
                                 {stats.total_descendants || 0} Keturunan + {stats.total_spouses || 0} Menantu
                             </p>
                         </div>
@@ -74,10 +75,22 @@ export function SilsilahPage() {
                             <span className="material-symbols-outlined text-2xl">favorite</span>
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-[#181112]">{stats.total_living}</p>
-                            <p className="text-sm text-[#896165] font-medium">Masih Hidup</p>
-                            <p className="text-xs text-gray-400 mt-0.5">
+                            <p className="text-2xl font-bold text-[#181112] font-mono">{stats.total_living}</p>
+                            <p className="text-sm text-[#896165] font-medium leading-tight">Masih Hidup</p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">
                                 {stats.total_living_descendants || 0} Keturunan + {stats.total_living_spouses || 0} Menantu
+                            </p>
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-xl p-5 border border-[#e6dbdc] shadow-sm flex items-center gap-4">
+                        <div className="size-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
+                            <span className="material-symbols-outlined text-2xl">home</span>
+                        </div>
+                        <div>
+                            <p className="text-2xl font-bold text-[#181112] font-mono">{stats.total_kk_utuh || 0}</p>
+                            <p className="text-sm text-[#896165] font-medium leading-tight">KK Utuh</p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">
+                                Keluarga Lengkap
                             </p>
                         </div>
                     </div>
@@ -86,8 +99,8 @@ export function SilsilahPage() {
                             <span className="material-symbols-outlined text-2xl">account_tree</span>
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-[#181112]">{branches.length}</p>
-                            <p className="text-sm text-[#896165] font-medium">Total Qobilah</p>
+                            <p className="text-2xl font-bold text-[#181112] font-mono">{branches.length}</p>
+                            <p className="text-sm text-[#896165] font-medium leading-tight">Total Qobilah</p>
                         </div>
                     </div>
                 </div>
@@ -122,17 +135,21 @@ export function SilsilahPage() {
                                     Keturunan dari {branch.name.replace('Qobilah ', '')} {branch.root_gender === 'female' ? 'binti' : 'bin'} Abdul Manan
                                 </p>
 
-                                <div className="mt-auto pt-4 border-t border-[#f4f0f0] flex items-center gap-4 text-xs font-medium text-[#896165]">
-                                    <span className="flex items-center gap-1 bg-[#f8f6f6] px-2 py-1 rounded">
+                                <div className="mt-auto pt-4 border-t border-[#f4f0f0] flex flex-nowrap items-center gap-2 text-[11px] font-medium text-[#896165]">
+                                    <span className="flex items-center gap-1 bg-[#f8f6f6] px-1.5 py-1 rounded shrink-0" title="Total Anggota">
                                         <span className="material-symbols-outlined text-[14px]">group</span>
-                                        <span className="font-semibold">{branch.persons_count || 0}</span>
-                                        <span className="text-[10px] text-gray-500 ml-1">
-                                            (+{branch.spouse_count || 0} menantu)
+                                        <span className="font-bold">{branch.persons_count || 0}</span>
+                                        <span className="text-[10px] text-gray-400">
+                                            ({branch.spouse_count || 0})
                                         </span>
                                     </span>
-                                    <span className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded">
+                                    <span className="flex items-center gap-1 bg-green-50 text-green-700 px-1.5 py-1 rounded shrink-0" title="Masih Hidup">
                                         <span className="material-symbols-outlined text-[14px]">favorite</span>
-                                        {branch.living_count || 0}
+                                        <span className="font-bold">{branch.living_count || 0}</span>
+                                    </span>
+                                    <span className="flex items-center gap-1 bg-orange-50 text-orange-700 px-1.5 py-1 rounded shrink-0" title="KK Utuh">
+                                        <span className="material-symbols-outlined text-[14px]">home</span>
+                                        <span className="font-bold">{branch.kk_utuh_count || 0}</span>
                                     </span>
                                 </div>
                             </button>

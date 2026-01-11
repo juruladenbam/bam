@@ -104,6 +104,17 @@ class BranchRepository implements BranchRepositoryInterface
 
             $branch->spouse_count = $spouseTotal;
             $branch->spouse_living_count = $spouseLiving;
+
+            // 3. KK Utuh Logic (Intact Family) - Both spouses alive and active marriage
+            $branch->kk_utuh_count = \App\Models\Marriage::where(function($q) use ($personIds) {
+                    $q->whereIn('husband_id', $personIds)
+                      ->orWhereIn('wife_id', $personIds);
+                })
+                ->where('is_active', true)
+                ->whereHas('husband', function($q) { $q->where('is_alive', true); })
+                ->whereHas('wife', function($q) { $q->where('is_alive', true); })
+                ->distinct('husband_id') // Ensure unique heads if polygamy exists
+                ->count();
         }
 
         return $branches;

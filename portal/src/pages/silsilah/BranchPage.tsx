@@ -36,6 +36,29 @@ function BranchPageContent() {
     // Data Processing
     const { branch, persons, parent_child, marriages } = data || {}
 
+    // Statistics Calculation
+    const stats = useMemo(() => {
+        if (!persons) return { living: 0, kkUtuh: 0 }
+
+        const personMap = new Map(persons.map(p => [p.id, p]))
+        const living = persons.filter(p => p.is_alive).length
+
+        // KK Utuh: Both husband and wife alive & active marriage
+        const livingHeadIds = new Set<number>()
+        marriages?.forEach(m => {
+            const h = personMap.get(m.husband_id)
+            const w = personMap.get(m.wife_id)
+            if (m.is_active && h?.is_alive && w?.is_alive) {
+                livingHeadIds.add(m.husband_id)
+            }
+        })
+
+        return {
+            living,
+            kkUtuh: livingHeadIds.size
+        }
+    }, [persons, marriages])
+
     // Build tree layout - memoized
     const { nodes: rawNodes, edges: rawEdges } = useMemo(() =>
         buildTreeLayout(persons || [], parent_child || [], marriages || [], branch?.id),
@@ -278,12 +301,22 @@ function BranchPageContent() {
                                 {branch?.name || 'Silsilah Keluarga'}
                             </h1>
                             <div className="flex items-center gap-3 text-xs text-[#896165]">
-                                <span className="flex items-center gap-1">
+                                <span className="flex items-center gap-1" title="Total Anggota">
                                     <span className="material-symbols-outlined text-[14px]">group</span>
-                                    {persons?.length || 0} Members
+                                    {persons?.length || 0}
                                 </span>
                                 <span>•</span>
-                                <span className="flex items-center gap-1">
+                                <span className="flex items-center gap-1 text-green-600 font-medium" title="Masih Hidup">
+                                    <span className="material-symbols-outlined text-[14px]">favorite</span>
+                                    {stats.living}
+                                </span>
+                                <span>•</span>
+                                <span className="flex items-center gap-1 text-orange-600 font-medium" title="Keluarga Utuh (KK)">
+                                    <span className="material-symbols-outlined text-[14px]">home</span>
+                                    {stats.kkUtuh}
+                                </span>
+                                <span className="hidden md:inline">•</span>
+                                <span className="hidden md:flex items-center gap-1" title="Urutan Cabang">
                                     <span className="material-symbols-outlined text-[14px]">hub</span>
                                     Branch {branch?.order}
                                 </span>

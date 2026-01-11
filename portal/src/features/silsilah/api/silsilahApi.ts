@@ -128,6 +128,7 @@ export const silsilahApi = {
             total_spouses: number
             total_living_descendants: number
             total_living_spouses: number
+            total_kk_utuh: number
         }
     }>('/portal/silsilah'),
 
@@ -145,6 +146,7 @@ export const silsilahApi = {
             id: number
             husband_id: number
             wife_id: number
+            is_active: boolean
         }>
     }>(`/portal/silsilah/branch/${id}`),
 

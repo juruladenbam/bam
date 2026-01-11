@@ -22,8 +22,10 @@ export interface Branch {
     description?: string
     persons_count?: number
     living_count?: number
-    root_gender?: 'male' | 'female'
     spouse_count?: number
+    spouse_living_count?: number
+    kk_utuh_count?: number
+    root_gender?: 'male' | 'female'
 }
 
 export interface Marriage {

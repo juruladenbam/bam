@@ -60,6 +60,7 @@ class BranchService
             'total_living_spouses' => $branches->where('order', 99)->sum('living_count'),
             'total_persons' => $branches->sum('persons_count'),
             'total_living' => $branches->sum('living_count'),
+            'total_kk_utuh' => $branches->sum('kk_utuh_count'),
         ];
     }
 }
