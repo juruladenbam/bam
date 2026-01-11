@@ -8,6 +8,7 @@ export function RegisterPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [passwordConfirmation, setPasswordConfirmation] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -36,7 +37,11 @@ export function RegisterPage() {
             // For now, redirect to login
             navigate('/login?registered=true')
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Registrasi gagal. Silahkan coba lagi.')
+            let message = err instanceof Error ? err.message : 'Registrasi gagal. Silahkan coba lagi.'
+            if (message === 'validation.unique') {
+                message = 'Email sudah terdaftar. Silahkan gunakan email lain atau login.'
+            }
+            setError(message)
         } finally {
             setLoading(false)
         }
@@ -116,15 +121,24 @@ export function RegisterPage() {
                                 <span className="material-symbols-outlined text-[#896165] text-lg">key</span>
                             </div>
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 id="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 border border-[#e6dbdc] rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-transparent bg-[#f8f6f6] text-[#181112] placeholder:text-[#896165]"
+                                className="w-full pl-10 pr-12 py-3 border border-[#e6dbdc] rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-transparent bg-[#f8f6f6] text-[#181112] placeholder:text-[#896165]"
                                 placeholder="Minimal 8 karakter"
                                 minLength={8}
                                 required
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#896165] hover:text-[#ec1325] transition-colors"
+                            >
+                                <span className="material-symbols-outlined text-lg">
+                                    {showPassword ? 'visibility_off' : 'visibility'}
+                                </span>
+                            </button>
                         </div>
                     </div>
 
@@ -137,11 +151,11 @@ export function RegisterPage() {
                                 <span className="material-symbols-outlined text-[#896165] text-lg">lock_reset</span>
                             </div>
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 id="password_confirmation"
                                 value={passwordConfirmation}
                                 onChange={(e) => setPasswordConfirmation(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 border border-[#e6dbdc] rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-transparent bg-[#f8f6f6] text-[#181112] placeholder:text-[#896165]"
+                                className="w-full pl-10 pr-12 py-3 border border-[#e6dbdc] rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-transparent bg-[#f8f6f6] text-[#181112] placeholder:text-[#896165]"
                                 placeholder="Ulangi password"
                                 required
                             />

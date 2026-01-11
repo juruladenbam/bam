@@ -1,6 +1,5 @@
-
 import { useState, useMemo, useEffect } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom'
 import { useReactFlow, ReactFlowProvider } from '@xyflow/react'
 import { useBranch, useMe, FamilyTree, TreeListSidebar } from '../../features/silsilah'
 import { buildTreeLayout } from '../../features/silsilah/utils/treeLayout'
@@ -14,9 +13,14 @@ import type { Person } from '../../features/silsilah/types'
 function BranchPageContent() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
-    const { data, isLoading, error } = useBranch(Number(id))
+    const { data, isLoading: branchLoading, error } = useBranch(Number(id))
+    const { data: userData, isLoading: userLoading } = useMe()
     const reactFlowInstance = useReactFlow()
     const isMobile = useIsMobile()
+
+    const isLoading = branchLoading || userLoading
+    const user = userData?.user
+    const isUnlinked = user && !user.person_id
 
     // UI State
     const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
@@ -44,7 +48,7 @@ function BranchPageContent() {
         const ids = new Set<string>()
         if (!branch?.id) return ids
 
-        rawNodes.forEach(node => {
+        rawNodes.forEach((node: any) => {
             if (node.type === 'personNode') {
                 const p = node.data as Person
                 if (p.branch_id === branch.id) {
@@ -59,7 +63,7 @@ function BranchPageContent() {
     const nodes = useMemo(() => {
         if (!highlightLine || !branch?.id) return rawNodes
 
-        return rawNodes.map(node => {
+        return rawNodes.map((node: any) => {
             if (node.type === 'personNode') {
                 const isDirectLine = directLineNodeIds.has(node.id)
 
@@ -81,7 +85,7 @@ function BranchPageContent() {
     const edges = useMemo(() => {
         if (!highlightLine || !branch?.id) return rawEdges
 
-        return rawEdges.map(edge => {
+        return rawEdges.map((edge: any) => {
             // Logic: An edge is "Direct Line" if the Person connected to it is Direct Line.
             // Edges are usually Person -> MarriageNode OR MarriageNode -> Person.
             // So we check if EITHER source or target is a Direct Line Person Node.
@@ -110,21 +114,18 @@ function BranchPageContent() {
         })
     }, [rawEdges, highlightLine, branch?.id, directLineNodeIds])
 
-    // Auth User
-    const { data: me } = useMe()
-
     const [searchParams] = useSearchParams()
     const focusId = searchParams.get('focus')
 
     // Auto-focus Logic
     useEffect(() => {
-        if (nodes.length > 0) {
+        if (nodes.length > 0 && !isUnlinked) {
             let targetNode = null
             let zoomLevel = 1.2
 
             // Priority 0: URL Search Param (?focus=ID)
             if (focusId) {
-                targetNode = nodes.find(n => n.id === `person-${focusId}`)
+                targetNode = nodes.find((n: any) => n.id === `person-${focusId}`)
                 if (targetNode) {
                     zoomLevel = 1.5
                     // Also open sidebar if person exists
@@ -137,14 +138,14 @@ function BranchPageContent() {
             }
 
             // Priority 1: Logged-in User
-            if (!targetNode && me?.person) {
-                targetNode = nodes.find(n => n.id === `person-${me.person.id}`)
+            if (!targetNode && userData?.person) {
+                targetNode = nodes.find((n: any) => n.id === `person-${userData.person.id}`)
                 if (targetNode) zoomLevel = 1.5
             }
 
             // Priority 2: Root (Gen 1)
             if (!targetNode) {
-                targetNode = nodes.find(n => n.type === 'personNode' && (n.data as any)?.generation === 1)
+                targetNode = nodes.find((n: any) => n.type === 'personNode' && (n.data as any)?.generation === 1)
             }
 
             if (targetNode) {
@@ -160,7 +161,7 @@ function BranchPageContent() {
                 }, 100)
             }
         }
-    }, [nodes, reactFlowInstance, me, focusId])
+    }, [nodes, reactFlowInstance, userData, focusId, isUnlinked])
 
     // Handlers
     const handleNodeClick = (personId: number) => {
@@ -183,7 +184,7 @@ function BranchPageContent() {
     }
 
     const handlePersonFocus = (personId: number) => {
-        const targetNode = nodes.find(n => n.id === `person-${personId}`)
+        const targetNode = nodes.find((n: any) => n.id === `person-${personId}`)
         if (targetNode) {
             const x = targetNode.position.x + 90
             const y = targetNode.position.y + 45
@@ -217,6 +218,33 @@ function BranchPageContent() {
             {!isMobile && <PortalHeader />}
 
             <div className="flex-1 relative">
+                {/* Overlay Blur for Unlinked Users */}
+                {isUnlinked && (
+                    <div className="absolute inset-0 z-[100] backdrop-blur-md bg-white/30 flex items-center justify-center px-6">
+                        <div className="bg-white rounded-2xl shadow-2xl border border-[#e6dbdc] p-8 max-w-sm w-full text-center animate-in fade-in zoom-in duration-300">
+                            <div className="size-16 rounded-full bg-[#ec1325]/10 flex items-center justify-center mx-auto mb-6 text-[#ec1325]">
+                                <span className="material-symbols-outlined text-4xl">link_off</span>
+                            </div>
+                            <h2 className="text-xl font-bold text-[#181112] mb-3">Akses Terbatas</h2>
+                            <p className="text-[#896165] text-sm mb-8 leading-relaxed">
+                                Mohon maaf, fitur silsilah hanya dapat diakses oleh anggota yang sudah menautkan akun dengan data keluarga.
+                            </p>
+                            <Link
+                                to="/claim-profile"
+                                className="block w-full bg-[#ec1325] text-white font-bold py-3 rounded-xl hover:bg-red-600 transition-colors shadow-lg shadow-red-200"
+                            >
+                                Tautkan Akun Sekarang
+                            </Link>
+                            <Link
+                                to="/silsilah"
+                                className="block w-full text-[#896165] text-sm font-medium mt-4 hover:text-[#181112] transition-colors"
+                            >
+                                Kembali ke Daftar Qobilah
+                            </Link>
+                        </div>
+                    </div>
+                )}
+
                 {/* Tree List Sidebar (Left) */}
                 <TreeListSidebar
                     persons={persons || []}
