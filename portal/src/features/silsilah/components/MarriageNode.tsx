@@ -13,6 +13,13 @@ function MarriageNodeComponent() {
                 style={{ left: 0 }}
             />
             <Handle
+                type="target"
+                position={Position.Top}
+                id="top"
+                className="!bg-transparent !border-none !w-1 !h-1"
+                style={{ top: 0 }}
+            />
+            <Handle
                 type="source"
                 position={Position.Right}
                 id="right"
@@ -21,6 +28,13 @@ function MarriageNodeComponent() {
             />
 
             {/* Handle for children */}
+            <Handle
+                type="target"
+                position={Position.Bottom}
+                id="bottom-target"
+                className="!bg-transparent !border-none !w-1 !h-1"
+                style={{ bottom: 0 }}
+            />
             <Handle
                 type="source"
                 position={Position.Bottom}

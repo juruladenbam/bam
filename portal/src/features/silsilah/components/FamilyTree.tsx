@@ -1,4 +1,4 @@
-import { useCallback, type MouseEvent } from 'react'
+import { useCallback, useEffect, type MouseEvent } from 'react'
 import {
     ReactFlow,
     Background,
@@ -16,6 +16,7 @@ interface FamilyTreeProps {
     nodes: TreeNode[]
     edges: TreeEdge[]
     onNodeClick?: (personId: number) => void
+    nodesDraggable?: boolean
 }
 
 type PersonNodeData = Person & { isGhost?: boolean; originalBranchId?: number }
@@ -25,8 +26,8 @@ const nodeTypes: NodeTypes = {
     marriageNode: MarriageNode as unknown as NodeTypes[string],
 }
 
-export function FamilyTree({ nodes: initialNodes, edges: initialEdges, onNodeClick }: FamilyTreeProps) {
-    const [nodes, , onNodesChange] = useNodesState<Node>(
+export function FamilyTree({ nodes: initialNodes, edges: initialEdges, onNodeClick, nodesDraggable = false }: FamilyTreeProps) {
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node>(
         initialNodes.map((n) => ({
             id: n.id,
             type: n.type,
@@ -35,7 +36,7 @@ export function FamilyTree({ nodes: initialNodes, edges: initialEdges, onNodeCli
         }))
     )
 
-    const [edges, , onEdgesChange] = useEdgesState<Edge>(
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(
         initialEdges.map((e) => ({
             id: e.id,
             source: e.source,
@@ -47,6 +48,31 @@ export function FamilyTree({ nodes: initialNodes, edges: initialEdges, onNodeCli
             style: e.style || { stroke: '#896165', strokeWidth: 2 },
         }))
     )
+
+    // Sync state with props
+    useEffect(() => {
+        setNodes(
+            initialNodes.map((n) => ({
+                id: n.id,
+                type: n.type,
+                position: n.position,
+                data: n.data as unknown as Record<string, unknown>,
+            }))
+        )
+
+        setEdges(
+            initialEdges.map((e) => ({
+                id: e.id,
+                source: e.source,
+                target: e.target,
+                sourceHandle: e.sourceHandle,
+                targetHandle: e.targetHandle,
+                type: e.type,
+                animated: false,
+                style: e.style || { stroke: '#896165', strokeWidth: 2 },
+            }))
+        )
+    }, [initialNodes, initialEdges, setNodes, setEdges])
 
     const handleNodeClick = useCallback(
         (_: MouseEvent, node: Node) => {
@@ -60,7 +86,7 @@ export function FamilyTree({ nodes: initialNodes, edges: initialEdges, onNodeCli
 
 
     return (
-        <div className="w-full h-full">
+        <div className="w-full h-full" style={{ touchAction: 'none' }}>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -72,8 +98,12 @@ export function FamilyTree({ nodes: initialNodes, edges: initialEdges, onNodeCli
                 fitViewOptions={{ padding: 0.2 }}
                 minZoom={0.1}
                 maxZoom={2}
+                panOnScroll={true}
+                panOnDrag={[0, 1, 2]}
+                selectionOnDrag={false}
+                nodesDraggable={nodesDraggable}
+                nodesConnectable={false}
             >
-                <Background color="#e6dbdc" gap={20} />
                 <Background color="#e6dbdc" gap={20} />
             </ReactFlow>
         </div>

@@ -11,6 +11,7 @@ interface PersonNodeData extends Person {
     originalBranchName?: string
     isDimmed?: boolean
     customStyle?: string
+    layoutMode?: 'vertical' | 'horizontal'
 }
 
 interface PersonNodeProps {
@@ -20,6 +21,9 @@ interface PersonNodeProps {
 function PersonNodeComponent({ data }: PersonNodeProps) {
     const isMale = data.gender === 'male'
     const isDeceased = !data.is_alive
+
+    // Dynamic width based on layout
+    const widthClass = data.layoutMode === 'horizontal' ? 'w-[280px]' : 'w-[180px]'
 
 
     // Handle navigation to original person node
@@ -36,7 +40,7 @@ function PersonNodeComponent({ data }: PersonNodeProps) {
     return (
         <div
             className={`
-        relative px-4 py-3 rounded-xl shadow-sm border w-[180px] min-h-[90px] flex flex-col justify-center z-10 transition-all duration-200 group
+        relative px-4 py-3 rounded-xl shadow-sm border ${widthClass} min-h-[90px] flex flex-col justify-center z-10 transition-all duration-200 group
         bg-white border-[#e6dbdc]
         ${isDeceased ? 'opacity-75 grayscale' : ''}
         ${data.isGhost ? 'border-dashed opacity-60' : ''}
@@ -53,6 +57,15 @@ function PersonNodeComponent({ data }: PersonNodeProps) {
                 position={Position.Top}
                 id="top"
                 className="!bg-gray-400 !w-3 !h-3"
+            />
+
+            {/* Top handle for spouse upward connection */}
+            <Handle
+                type="source"
+                position={Position.Top}
+                id="top-source"
+                className="!bg-transparent !border-none !w-1 !h-1"
+                style={{ top: 0 }}
             />
 
             {/* Side handles for marriage */}

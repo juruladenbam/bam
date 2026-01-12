@@ -19,7 +19,7 @@ interface TreeNode {
     id: string
     type: 'personNode' | 'marriageNode'
     position: { x: number; y: number }
-    data: Person | { id: string }
+    data: (Person & { layoutMode?: string }) | { id: string }
 }
 
 interface TreeEdge {
@@ -471,7 +471,7 @@ export function buildTreeLayout(
                 id: `person-${personId}`,
                 type: 'personNode',
                 position: pos,
-                data: person,
+                data: { ...person, layoutMode: 'vertical' },
             })
         }
     })

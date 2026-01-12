@@ -94,7 +94,7 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                     className={`
                         fixed left-0 right-0 bottom-0 bg-white rounded-t-3xl shadow-2xl z-50
                         transform transition-transform duration-300 ease-out
-                        ${isOpen ? 'translate-y-0' : 'translate-y-full'}
+                        ${isOpen ? 'translate-y-0' : 'translate-y-full pointer-events-none'}
                     `}
                     style={{ height: `${sheetHeight}vh` }}
                 >

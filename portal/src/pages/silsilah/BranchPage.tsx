@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom'
 import { useReactFlow, ReactFlowProvider } from '@xyflow/react'
 import { useBranch, useMe, FamilyTree, TreeListSidebar } from '../../features/silsilah'
-import { buildTreeLayout } from '../../features/silsilah/utils/treeLayout'
+import { buildHorizontalTreeLayout } from '../../features/silsilah/utils/horizontalTreeLayout'
 import { PortalHeader } from '../../components/layout/PortalHeader'
 import { TreeControls } from '../../features/silsilah/components/TreeControls'
 import { MemberSidebar } from '../../features/silsilah/components/MemberSidebar'
@@ -27,6 +27,7 @@ function BranchPageContent() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const [isTreeListOpen, setIsTreeListOpen] = useState(true) // Default open
     const [highlightLine, setHighlightLine] = useState(false)
+
 
     // On mobile, default TreeList to closed
     useEffect(() => {
@@ -60,10 +61,9 @@ function BranchPageContent() {
     }, [persons, marriages])
 
     // Build tree layout - memoized
-    const { nodes: rawNodes, edges: rawEdges } = useMemo(() =>
-        buildTreeLayout(persons || [], parent_child || [], marriages || [], branch?.id),
-        [persons, parent_child, marriages, branch?.id]
-    )
+    const { nodes: rawNodes, edges: rawEdges } = useMemo(() => {
+        return buildHorizontalTreeLayout(persons || [], parent_child || [], marriages || [], branch?.id)
+    }, [persons, parent_child, marriages, branch?.id])
 
     // Helper: Map of Node ID -> Is Direct Line
     // Used for coloring edges efficiently
@@ -315,14 +315,12 @@ function BranchPageContent() {
                                     <span className="material-symbols-outlined text-[14px]">home</span>
                                     {stats.kkUtuh}
                                 </span>
-                                <span className="hidden md:inline">•</span>
-                                <span className="hidden md:flex items-center gap-1" title="Urutan Cabang">
-                                    <span className="material-symbols-outlined text-[14px]">hub</span>
-                                    Branch {branch?.order}
-                                </span>
+
                             </div>
                         </div>
                     </div>
+
+
 
                     {/* Highlight Toggle Node */}
                     <button
@@ -355,6 +353,7 @@ function BranchPageContent() {
                     nodes={nodes}
                     edges={edges}
                     onNodeClick={handleNodeClick}
+                    nodesDraggable={false}
                 />
 
                 <MiniMap />
