@@ -183,7 +183,7 @@ class PersonService
             'person' => $person,
             'spouses' => $spouses->unique('id'),
             'children' => $children->unique('id'),
-            'parents' => $this->getParents($personId),
+            'parents' => $person->parents,
         ];
     }
 
@@ -192,11 +192,8 @@ class PersonService
      */
     public function getParents(int $personId): Collection
     {
-        $ancestors = $this->personRepository->getAncestors($personId);
-        
-        // Filter to only direct parents (first level)
-        // This is simplified - actual implementation would check parent_child table
-        return $ancestors->take(2);
+        $person = $this->personRepository->getWithRelationships($personId);
+        return $person->parents;
     }
 
     /**
