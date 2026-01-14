@@ -71,9 +71,75 @@ class PersonService
                 $person->id,
                 $birthOrder
             );
+            
+            // Auto-generate NIB for bloodline member (child)
+            $nib = $this->generateNibForChild($data['parent_marriage_id'], $birthOrder);
+            if ($nib) {
+                $person->nib = $nib;
+                $person->save();
+            }
         }
 
         return $person;
+    }
+
+    /**
+     * Generate NIB for a new child based on parent marriage and birth order
+     */
+    protected function generateNibForChild(int $parentMarriageId, int $birthOrder): ?string
+    {
+        $marriage = $this->marriageRepository->find($parentMarriageId);
+        
+        if (!$marriage) {
+            return null;
+        }
+
+        // Get the BAM member parent (the one with nib ending in 000)
+        $husband = $this->personRepository->find($marriage->husband_id);
+        $wife = $this->personRepository->find($marriage->wife_id);
+
+        $bamParent = null;
+        if ($husband && $husband->nib && str_ends_with($husband->nib, '000')) {
+            $bamParent = $husband;
+        } elseif ($wife && $wife->nib && str_ends_with($wife->nib, '000')) {
+            $bamParent = $wife;
+        }
+
+        if (!$bamParent) {
+            return null;
+        }
+
+        // Parent base NIB = Parent NIB without last 3 digits (000)
+        $parentBaseNib = substr($bamParent->nib, 0, -3);
+        
+        // Child NIB = ParentBase + BirthOrder (2-digit padded) + 000
+        $birthOrderPadded = str_pad((string) $birthOrder, 2, '0', STR_PAD_LEFT);
+        return $parentBaseNib . $birthOrderPadded . '000';
+    }
+
+    /**
+     * Generate NIB for a spouse
+     */
+    public function generateNibForSpouse(int $partnerId): ?string
+    {
+        $partner = $this->personRepository->find($partnerId);
+        
+        if (!$partner || !$partner->nib || !str_ends_with($partner->nib, '000')) {
+            return null;
+        }
+
+        // Partner base NIB = Partner NIB without last 3 digits
+        $partnerBaseNib = substr($partner->nib, 0, -3);
+
+        // Count existing spouses to determine next index
+        $existingSpouseCount = Person::where('nib', 'like', $partnerBaseNib . '%')
+            ->where('id', '!=', $partnerId)
+            ->whereRaw("nib NOT LIKE '%000'") // Exclude bloodline members
+            ->count();
+
+        $spouseIndex = $existingSpouseCount + 1;
+        
+        return $partnerBaseNib . str_pad((string) $spouseIndex, 3, '0', STR_PAD_LEFT);
     }
 
     /**
