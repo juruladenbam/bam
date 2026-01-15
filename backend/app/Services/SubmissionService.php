@@ -17,10 +17,11 @@ class SubmissionService
     /**
      * Create a new submission
      */
-    public function createSubmission(array $data, int $userId): Submission
+    public function createSubmission(array $data, ?int $userId = null, ?int $personId = null): Submission
     {
         return Submission::create([
             'user_id' => $userId,
+            'submitter_person_id' => $personId,
             'type' => $data['type'],
             'data' => $data['data'],
             'status' => 'pending',
@@ -33,18 +34,26 @@ class SubmissionService
     public function getPendingSubmissions(int $perPage = 15)
     {
         return Submission::pending()
-            ->with('user:id,name,email')
+            ->with(['user:id,name,email', 'submitter:id,full_name'])
+            ->latest()
+            ->paginate($perPage);
+    }
+
+    public function getUserSubmissions(int $userId, int $perPage = 15)
+    {
+        return Submission::where('user_id', $userId)
+            ->with(['reviewer:id,name', 'submitter:id,full_name'])
             ->latest()
             ->paginate($perPage);
     }
 
     /**
-     * Get submissions for a specific user
+     * Get submissions for a specific person (NIB-linked)
      */
-    public function getUserSubmissions(int $userId, int $perPage = 15)
+    public function getPersonSubmissions(int $personId, int $perPage = 15)
     {
-        return Submission::where('user_id', $userId)
-            ->with('reviewer:id,name')
+        return Submission::where('submitter_person_id', $personId)
+            ->with(['reviewer:id,name', 'submitter:id,full_name'])
             ->latest()
             ->paginate($perPage);
     }

@@ -98,7 +98,7 @@ class SiteSettingSeeder extends Seeder
             ],
             [
                 'key' => 'home.hero_image_location',
-                'value' => 'Yogyakarta, Indonesia',
+                'value' => 'Mojokerto, Indonesia',
                 'type' => 'text',
             ],
 
@@ -167,6 +167,18 @@ class SiteSettingSeeder extends Seeder
                 'key' => 'home.cta_subtitle',
                 'value' => 'Akses silsilah lengkap, daftar acara, dan tetap terhubung dengan keluarga besar.',
                 'type' => 'text',
+            ],
+
+            // Portal Authentication Settings
+            [
+                'key' => 'portal.login_enabled',
+                'value' => 'true',
+                'type' => 'boolean',
+            ],
+            [
+                'key' => 'portal.nib_claiming_enabled',
+                'value' => 'true',
+                'type' => 'boolean',
             ],
         ];
 

@@ -12,6 +12,7 @@ class Submission extends Model
 
     protected $fillable = [
         'user_id',
+        'submitter_person_id',
         'type',
         'data',
         'status',
@@ -31,6 +32,14 @@ class Submission extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the person who submitted this (if no user account)
+     */
+    public function submitter(): BelongsTo
+    {
+        return $this->belongsTo(Person::class, 'submitter_person_id');
     }
 
     /**

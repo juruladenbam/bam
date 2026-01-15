@@ -3,20 +3,33 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Person } from '../types'
 import { useRelationship } from '../hooks/useSilsilah'
+import { nibWithChecksum } from '../../../utils/nib'
 
 interface MemberSidebarProps {
     person: Person | null
     isOpen: boolean
     onClose: () => void
     isMobile?: boolean
+    linkedPerson?: Person | null // If provided, relationship can be calculated
+    branchId?: number // The branch currently being viewed
 }
 
 import { ShareModal } from './ShareModal'
 
-export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: MemberSidebarProps) {
+export function MemberSidebar({ person, isOpen, onClose, isMobile = false, linkedPerson, branchId }: MemberSidebarProps) {
     const navigate = useNavigate()
-    const { data: rel } = useRelationship(person ? person.id : 0)
+    // Only fetch relationship if there's a linked person (auth or NIB)
+    const canFetchRelationship = !!linkedPerson
+    const { data: rel } = useRelationship(person ? person.id : 0, canFetchRelationship)
     const [isShareModalOpen, setIsShareModalOpen] = useState(false)
+    const [nibCopied, setNibCopied] = useState(false)
+
+    // Helper to copy NIB with feedback
+    const handleCopyNib = (nib: string) => {
+        navigator.clipboard.writeText(nibWithChecksum(nib))
+        setNibCopied(true)
+        setTimeout(() => setNibCopied(false), 2000) // Reset after 2 seconds
+    }
 
     // Helper for date formatting
     const formatDate = (dateString: string | null | undefined) => {
@@ -162,7 +175,7 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                                 </button>
                             </div>
                             <button
-                                onClick={() => navigate('/submissions', { state: { preselectedPerson: person } })}
+                                onClick={() => navigate('/submissions', { state: { preselectedPerson: person, fromBranchId: branchId } })}
                                 className="w-full mt-2 bg-white border border-[#ec1325] text-[#ec1325] hover:bg-red-50 font-medium py-2.5 px-4 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
                             >
                                 <span className="material-symbols-outlined text-[18px]">edit_note</span>
@@ -213,6 +226,35 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                                 )}
                             </div>
                         </div>
+
+                        {/* NIB Display */}
+                        {person.nib && (
+                            <div>
+                                <h4 className="text-xs font-bold text-[#896165] uppercase tracking-wider mb-2">Nomor Induk BAM</h4>
+                                <div className="bg-[#f8f6f6] rounded-xl p-3">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-[#896165] text-[18px]">fingerprint</span>
+                                            <p className="text-sm font-mono font-bold text-[#181112] tracking-wider">
+                                                {nibWithChecksum(person.nib)}
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleCopyNib(person.nib!)}
+                                            className={`p-1.5 rounded-lg transition-all ${nibCopied ? 'bg-green-100' : 'hover:bg-[#e6dbdc]'}`}
+                                            title={nibCopied ? 'Tersalin!' : 'Salin NIB'}
+                                        >
+                                            <span className={`material-symbols-outlined text-[16px] transition-colors ${nibCopied ? 'text-green-600' : 'text-[#896165]'}`}>
+                                                {nibCopied ? 'check' : 'content_copy'}
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <p className={`text-[10px] mt-1 transition-colors ${nibCopied ? 'text-green-600 font-medium' : 'text-[#896165]'}`}>
+                                        {nibCopied ? 'NIB tersalin ke clipboard!' : 'Termasuk digit checksum'}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <ShareModal
@@ -288,7 +330,7 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                                 </button>
                             </div>
                             <button
-                                onClick={() => navigate('/submissions', { state: { preselectedPerson: person } })}
+                                onClick={() => navigate('/submissions', { state: { preselectedPerson: person, fromBranchId: branchId } })}
                                 className="w-full bg-white border border-[#ec1325] text-[#ec1325] hover:bg-red-50 font-medium py-2 px-4 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
                             >
                                 <span className="material-symbols-outlined text-[18px]">edit_note</span>
@@ -372,6 +414,35 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false }: Mem
                                 </div>
                             </div>
                         </div>
+
+                        {/* NIB Display */}
+                        {person.nib && (
+                            <div>
+                                <h4 className="text-xs font-bold text-[#896165] uppercase tracking-wider mb-3">Nomor Induk BAM</h4>
+                                <div className="bg-[#f8f6f6] rounded-xl p-4">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-3">
+                                            <span className="material-symbols-outlined text-[#896165] text-[20px]">fingerprint</span>
+                                            <p className="text-base font-mono font-bold text-[#181112] tracking-wider">
+                                                {nibWithChecksum(person.nib)}
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleCopyNib(person.nib!)}
+                                            className={`p-2 rounded-lg transition-all ${nibCopied ? 'bg-green-100' : 'hover:bg-[#e6dbdc]'}`}
+                                            title={nibCopied ? 'Tersalin!' : 'Salin NIB'}
+                                        >
+                                            <span className={`material-symbols-outlined text-[18px] transition-colors ${nibCopied ? 'text-green-600' : 'text-[#896165]'}`}>
+                                                {nibCopied ? 'check' : 'content_copy'}
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <p className={`text-xs mt-2 transition-colors ${nibCopied ? 'text-green-600 font-medium' : 'text-[#896165]'}`}>
+                                        {nibCopied ? 'NIB tersalin ke clipboard!' : 'Gunakan NIB ini untuk login di portal'}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 import SEO from '@/components/SEO'
 import { useAboutContent } from '@/hooks/useAboutContent'
 import { useAuthCheck } from '@/hooks/useAuthCheck'
+import { usePortalMode } from '@/hooks/usePortalMode'
 
 const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 
@@ -16,6 +17,12 @@ export default function AboutPage() {
     const values = data?.values || [];
     const branches = data?.branches || [];
     const totalMembers = data?.total_members || 500;
+
+    // Logic for portal URL/Label
+    const { data: portalMode } = usePortalMode()
+    const loginEnabled = portalMode?.login_enabled ?? true
+    const portalUrl = isLoggedIn ? PORTAL_URL : (loginEnabled ? `${PORTAL_URL}/login` : PORTAL_URL)
+    const portalLabel = isLoggedIn ? 'Buka Portal' : (loginEnabled ? 'Login ke Portal' : 'Masuk Portal')
 
     return (
         <div className="bg-[#f8f6f6]">
@@ -129,11 +136,11 @@ export default function AboutPage() {
                 <div className="container mx-auto px-4 text-center">
                     <p className="text-[#896165] mb-4">Ingin melihat silsilah lengkap?</p>
                     <a
-                        href={isLoggedIn ? PORTAL_URL : `${PORTAL_URL}/login`}
+                        href={portalUrl}
                         className="inline-flex items-center gap-2 bg-[#ec1325] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#c91020] transition-colors"
                     >
                         <span className="material-symbols-outlined">{isLoggedIn ? 'dashboard' : 'login'}</span>
-                        {isLoggedIn ? 'Buka Portal' : 'Login ke Portal'}
+                        {portalLabel}
                     </a>
                 </div>
             </section>

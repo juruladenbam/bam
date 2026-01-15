@@ -106,7 +106,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
 
             {/* Title */}
             <h1 className="text-2xl font-bold text-[#181112] mb-2">BAM Portal</h1>
-            <p className="text-sm text-[#896165] mb-8">Keluarga Besar Bani Abu Mansyur</p>
+            <p className="text-sm text-[#896165] mb-8">Keluarga Besar Bani Abdul Manan</p>
 
             {/* Progress Bar */}
             <div className="w-full max-w-xs">

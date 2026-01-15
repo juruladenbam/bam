@@ -3,6 +3,7 @@ import { AuthGuard } from './components/AuthGuard'
 import { HomePage } from './pages/home/HomePage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { RegisterPage } from './pages/auth/RegisterPage'
+import { LinkNibPage } from './pages/auth/LinkNibPage'
 import { ClaimProfilePage } from './pages/auth/ClaimProfilePage'
 import { SilsilahPage } from './pages/silsilah/SilsilahPage'
 import { BranchPage } from './pages/silsilah/BranchPage'
@@ -22,6 +23,7 @@ function App() {
       {/* Public Auth Route */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/link-nib" element={<LinkNibPage />} />
 
       {/* Protected Routes - require authentication */}
       <Route path="/" element={<AuthGuard><HomePage /></AuthGuard>} />

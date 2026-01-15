@@ -2,11 +2,14 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { silsilahApi } from '../../features/silsilah/api/silsilahApi'
 import { useDebounce } from '../../hooks/useDebounce'
+import { usePortalMode } from '../../hooks/usePortalMode'
 import type { Person } from '../../features/silsilah/types'
 
 export function PortalHeader() {
     const location = useLocation()
     const navigate = useNavigate()
+    const { user, isAuthenticated, loginEnabled, linkedPerson, isNibLinked, unlinkNib, nibClaimingEnabled } = usePortalMode()
+
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [searchResults, setSearchResults] = useState<Person[]>([])
@@ -48,19 +51,9 @@ export function PortalHeader() {
         navigate(`/silsilah/branch/${person.branch_id}?focus=${person.id}`)
     }
 
-    // User and Menu State
-    const [user, setUser] = useState<any>(null)
+    // User Menu State (no longer need to fetch user manually - using usePortalMode)
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-
-    // Fetch User
-    useEffect(() => {
-        silsilahApi.getMe().then(data => {
-            setUser(data.user)
-        }).catch(err => {
-            console.error('Failed to fetch user:', err)
-        })
-    }, [])
 
     // Environment Variables
     const PUBLIC_WEB_URL = import.meta.env.VITE_PUBLIC_WEB_URL || 'http://localhost:5173'
@@ -73,7 +66,11 @@ export function PortalHeader() {
 
     const confirmLogout = async () => {
         try {
-            await silsilahApi.logout()
+            if (isAuthenticated) {
+                await silsilahApi.logout()
+            } else if (isNibLinked) {
+                unlinkNib()
+            }
             window.location.href = PUBLIC_WEB_URL
         } catch (error) {
             console.error('Logout failed:', error)
@@ -115,7 +112,7 @@ export function PortalHeader() {
     return (
         <header className="sticky top-0 z-50 flex flex-col bg-white border-b border-[#f4f0f0] shadow-sm">
             {/* Warning Banner */}
-            {user && !user.person_id && (
+            {isAuthenticated && !user?.person_id && (
                 <div className="bg-red-50 border-b border-red-100 px-4 py-2 text-center text-sm text-red-700 relative">
                     <span className="font-medium">Akun anda belum terhubung dengan data silsilah.</span>{' '}
                     <Link to="/claim-profile" className="underline hover:text-[#ec1325] font-bold ml-1">
@@ -233,52 +230,90 @@ export function PortalHeader() {
                         </span>
                     </button>
 
-                    {/* User Avatar Dropdown */}
+                    {/* User Avatar Dropdown / Login Button */}
                     <div ref={userMenuRef} className="relative hidden md:block">
-                        <button
-                            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                            className="bg-gray-200 bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-[#ec1325]/10 cursor-pointer hover:ring-[#ec1325]/30 transition-all focus:outline-none"
-                        >
-                            <span className="flex items-center justify-center w-full h-full text-xs font-bold text-gray-500">
-                                {user?.name?.charAt(0) || 'U'}
-                            </span>
-                        </button>
-
-                        {/* Desktop User Menu */}
-                        {isUserMenuOpen && (
-                            <div className="absolute top-12 right-0 w-48 bg-white rounded-xl shadow-xl border border-[#f4f0f0] overflow-hidden py-1 z-50 animate-in fade-in zoom-in duration-200">
-                                <div className="px-4 py-2 border-b border-gray-100">
-                                    <p className="text-sm font-bold text-[#181112] truncate">{user?.name || 'User'}</p>
-                                    <p className="text-xs text-[#896165] truncate">{user?.email}</p>
-                                </div>
-                                {/* Warning if not linked */}
-                                {!user?.person_id && (
-                                    <Link
-                                        to="/claim-profile"
-                                        className="flex items-center gap-2 px-4 py-2 text-sm text-[#ec1325] bg-red-50 hover:bg-red-100 transition-colors font-medium"
-                                    >
-                                        <span className="material-symbols-outlined text-[18px]">link_off</span>
-                                        Tautkan Data Diri
-                                    </Link>
-                                )}
-
-                                {user?.role === 'admin' && (
-                                    <a
-                                        href="/admin"
-                                        target="_blank"
-                                        className="flex items-center gap-2 px-4 py-2 text-sm text-[#181112] hover:bg-[#f8f6f6] transition-colors"
-                                    >
-                                        <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
-                                        Dashboard Admin
-                                    </a>
-                                )}
+                        {isAuthenticated || isNibLinked ? (
+                            <>
                                 <button
-                                    onClick={handleLogoutClick}
-                                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+                                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                    className="bg-gray-200 bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-[#ec1325]/10 cursor-pointer hover:ring-[#ec1325]/30 transition-all focus:outline-none flex items-center justify-center overflow-hidden"
                                 >
-                                    <span className="material-symbols-outlined text-[18px]">logout</span>
-                                    Keluar
+                                    {linkedPerson?.photo_url ? (
+                                        <img src={linkedPerson.photo_url} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-xs font-bold text-gray-500 uppercase">
+                                            {(user?.name || linkedPerson?.full_name || 'U').charAt(0)}
+                                        </span>
+                                    )}
                                 </button>
+
+                                {/* Desktop User Menu */}
+                                {isUserMenuOpen && (
+                                    <div className="absolute top-12 right-0 w-48 bg-white rounded-xl shadow-xl border border-[#f4f0f0] overflow-hidden py-1 z-50 animate-in fade-in zoom-in duration-200">
+                                        <div className="px-4 py-2 border-b border-gray-100">
+                                            <p className="text-sm font-bold text-[#181112] truncate">{user?.name || linkedPerson?.full_name || 'User'}</p>
+                                            <p className="text-xs text-[#896165] truncate">{user?.email || (isNibLinked ? 'Akses via NIB' : '')}</p>
+                                        </div>
+                                        {/* Warning if not linked */}
+                                        {isAuthenticated && !user?.person_id && (
+                                            <Link
+                                                to="/claim-profile"
+                                                className="flex items-center gap-2 px-4 py-2 text-sm text-[#ec1325] bg-red-50 hover:bg-red-100 transition-colors font-medium"
+                                            >
+                                                <span className="material-symbols-outlined text-[18px]">link_off</span>
+                                                Tautkan Data Diri
+                                            </Link>
+                                        )}
+
+                                        {user?.role === 'admin' && (
+                                            <a
+                                                href="/admin"
+                                                target="_blank"
+                                                className="flex items-center gap-2 px-4 py-2 text-sm text-[#181112] hover:bg-[#f8f6f6] transition-colors"
+                                            >
+                                                <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+                                                Dashboard Admin
+                                            </a>
+                                        )}
+
+                                        <Link
+                                            to="/profile"
+                                            className="flex items-center gap-2 px-4 py-2 text-sm text-[#181112] hover:bg-[#f8f6f6] transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px]">person</span>
+                                            Profil Saya
+                                        </Link>
+
+                                        <button
+                                            onClick={handleLogoutClick}
+                                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px]">logout</span>
+                                            {isNibLinked ? 'Lepas Tautan NIB' : 'Keluar'}
+                                        </button>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                {loginEnabled ? (
+                                    <Link
+                                        to="/login"
+                                        className="inline-flex items-center justify-center px-4 py-2 text-sm font-bold text-white bg-[#ec1325] rounded-xl hover:bg-[#c91020] transition-colors"
+                                    >
+                                        Login
+                                    </Link>
+                                ) : (
+                                    nibClaimingEnabled && (
+                                        <Link
+                                            to="/link-nib"
+                                            className="inline-flex items-center justify-center px-4 py-2 text-sm font-bold text-[#ec1325] bg-red-50 border border-red-100 rounded-xl hover:bg-red-100 transition-colors gap-2"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px]">link</span>
+                                            Tautkan NIB
+                                        </Link>
+                                    )
+                                )}
                             </div>
                         )}
                     </div>
@@ -293,31 +328,68 @@ export function PortalHeader() {
                         <Link to="/news" className="text-[#181112] font-medium py-2">Berita</Link>
                         <hr className="border-[#f4f0f0]" />
                         <div className="py-2">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="size-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-xs text-gray-500">
-                                    {user?.name?.charAt(0) || 'U'}
+                            {isAuthenticated || isNibLinked ? (
+                                <>
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="size-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-sm text-gray-500 overflow-hidden">
+                                            {linkedPerson?.photo_url ? (
+                                                <img src={linkedPerson.photo_url} alt="" className="w-full h-full object-cover" />
+                                            ) : (
+                                                (user?.name || linkedPerson?.full_name || 'U').charAt(0).toUpperCase()
+                                            )}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-[#181112] text-sm truncate">{user?.name || linkedPerson?.full_name || 'User'}</p>
+                                            <p className="text-xs text-[#896165] truncate">{user?.email || (isNibLinked ? 'Akses via NIB' : '')}</p>
+                                        </div>
+                                    </div>
+
+                                    <Link to="/profile" className="flex items-center gap-3 py-3 text-sm text-[#181112] border-t border-[#f4f0f0]">
+                                        <span className="material-symbols-outlined text-[20px]">person</span>
+                                        Profil Saya
+                                    </Link>
+
+                                    {user?.role === 'admin' && (
+                                        <a href="/admin" className="flex items-center gap-3 py-3 text-sm text-[#181112] border-t border-[#f4f0f0]">
+                                            <span className="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+                                            Dashboard Admin
+                                        </a>
+                                    )}
+
+                                    {isAuthenticated && !user?.person_id && (
+                                        <Link to="/claim-profile" className="flex items-center gap-3 py-3 text-sm text-[#ec1325] font-medium border-t border-[#f4f0f0]">
+                                            <span className="material-symbols-outlined text-[20px]">link_off</span>
+                                            Tautkan Data Diri
+                                        </Link>
+                                    )}
+
+                                    <button onClick={handleLogoutClick} className="flex items-center gap-3 py-3 text-sm text-red-600 w-full text-left border-t border-[#f4f0f0]">
+                                        <span className="material-symbols-outlined text-[20px]">logout</span>
+                                        {isNibLinked ? 'Lepas Tautan NIB' : 'Keluar'}
+                                    </button>
+                                </>
+                            ) : (
+                                <div className="space-y-3">
+                                    {loginEnabled ? (
+                                        <Link
+                                            to="/login"
+                                            className="flex items-center justify-center w-full py-3 h-12 text-sm font-bold text-white bg-[#ec1325] rounded-xl"
+                                        >
+                                            Login Akun
+                                        </Link>
+                                    ) : (
+                                        nibClaimingEnabled && (
+                                            <Link
+                                                to="/link-nib"
+                                                className="flex items-center justify-center w-full py-3 h-12 text-sm font-bold text-[#ec1325] bg-red-50 border border-red-100 rounded-xl gap-2"
+                                            >
+                                                <span className="material-symbols-outlined text-[20px]">link</span>
+                                                Tautkan NIB
+                                            </Link>
+                                        )
+                                    )}
                                 </div>
-                                <div>
-                                    <p className="font-medium text-[#181112] text-sm">{user?.name || 'User'}</p>
-                                    <p className="text-xs text-[#896165]">{user?.email}</p>
-                                </div>
-                            </div>
-                            {user?.role === 'admin' && (
-                                <a href="/admin" className="flex items-center gap-2 py-2 text-sm text-[#181112]">
-                                    <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
-                                    Dashboard Admin
-                                </a>
                             )}
-                            {!user?.person_id && (
-                                <Link to="/claim-profile" className="flex items-center gap-2 py-2 text-sm text-[#ec1325] font-medium">
-                                    <span className="material-symbols-outlined text-[18px]">link_off</span>
-                                    Tautkan Data Diri
-                                </Link>
-                            )}
-                            <button onClick={handleLogoutClick} className="flex items-center gap-2 py-2 text-sm text-red-600 w-full text-left">
-                                <span className="material-symbols-outlined text-[18px]">logout</span>
-                                Keluar
-                            </button>
                         </div>
                     </div>
                 )}
@@ -329,8 +401,13 @@ export function PortalHeader() {
                             <div className="mb-4">
                                 <span className="material-symbols-outlined text-4xl text-[#ec1325]">logout</span>
                             </div>
-                            <h3 className="text-lg font-bold text-[#181112] mb-2">Konfirmasi Keluar</h3>
-                            <p className="text-[#896165] mb-6">Apakah Anda yakin ingin keluar dari portal?</p>
+                            <h3 className="text-lg font-bold text-[#181112] mb-2">{isNibLinked ? 'Lepas Tautan NIB?' : 'Konfirmasi Keluar'}</h3>
+                            <p className="text-[#896165] mb-6">
+                                {isNibLinked
+                                    ? 'Sesi personalisasi Anda akan dihapus dari perangkat ini.'
+                                    : 'Apakah Anda yakin ingin keluar dari portal?'
+                                }
+                            </p>
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setShowLogoutConfirm(false)}
@@ -342,7 +419,7 @@ export function PortalHeader() {
                                     onClick={confirmLogout}
                                     className="flex-1 py-2.5 rounded-xl font-medium bg-[#ec1325] text-white hover:bg-red-600 transition-colors"
                                 >
-                                    Ya, Keluar
+                                    {isNibLinked ? 'Ya, Lepas' : 'Ya, Keluar'}
                                 </button>
                             </div>
                         </div>

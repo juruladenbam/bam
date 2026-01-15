@@ -54,7 +54,7 @@ export function LoginPage() {
                             onChange={handleChange}
                             required
                             className="w-full px-4 py-2 border border-[#e6dbdc] rounded-lg focus:outline-none focus:border-[#ec1325]/50 transition-colors"
-                            placeholder="nama@email.com"
+                            placeholder="admin@contoh.com"
                         />
                     </div>
 

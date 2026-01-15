@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Portal\AuthController;
 use App\Http\Controllers\Api\Portal\SilsilahController;
 use App\Http\Controllers\Api\Portal\PersonController;
 use App\Http\Controllers\Api\Portal\RelationshipController;
+use App\Http\Controllers\Api\Portal\NibController;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Support\Facades\Route;
 
@@ -15,18 +16,24 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Public portal routes (no auth required)
-// Public portal routes (no auth required)
-// Public portal routes (no auth required)
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1');
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:6,1');
 
-// Protected routes (auth required)
-Route::middleware('auth:sanctum')->group(function () {
-    // Auth
-    Route::get('/me', [AuthController::class, 'me']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/me/claim', [AuthController::class, 'claimPerson']);
+// Portal mode settings (public)
+Route::get('/settings/mode', [NibController::class, 'getPortalMode']);
 
+// NIB routes (semi-public with rate limiting)
+// These endpoints don't require auth but are throttled to prevent abuse
+Route::middleware('throttle:10,1')->prefix('nib')->group(function () {
+    Route::post('/validate', [NibController::class, 'validate']);
+    Route::post('/link', [NibController::class, 'link']);
+    Route::get('/guide', [NibController::class, 'guide']);
+});
+
+// Protected routes - uses optional.auth which:
+// - Requires auth when login_enabled = true
+// - Allows guest access when login_enabled = false
+Route::middleware('optional.auth')->group(function () {
     // Silsilah
     Route::get('/silsilah', [SilsilahController::class, 'index']);
     Route::get('/silsilah/branch/{id}', [SilsilahController::class, 'branch']);
@@ -51,8 +58,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // Calendar
     Route::get('/calendar', [\App\Http\Controllers\Api\Portal\CalendarController::class, 'index']);
 
-    // Submissions (Member Data Approval)
+    // Submissions (Member Data Approval) - accessible via auth OR nib session
     Route::get('/submissions', [\App\Http\Controllers\Api\Portal\SubmissionController::class, 'index']);
     Route::post('/submissions', [\App\Http\Controllers\Api\Portal\SubmissionController::class, 'store']);
     Route::get('/submissions/{id}', [\App\Http\Controllers\Api\Portal\SubmissionController::class, 'show']);
+});
+
+// Strictly protected routes (always require auth, regardless of login_enabled setting)
+// These are user-specific actions that don't make sense for guests
+Route::middleware('auth:sanctum')->group(function () {
+    // Auth - user specific
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/me/claim', [AuthController::class, 'claimPerson']);
 });

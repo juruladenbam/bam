@@ -6,12 +6,17 @@ import { useBranches } from '../../features/silsilah'
 import { contentApi } from '../../features/content/api/contentApi'
 import { silsilahApi } from '../../features/silsilah/api/silsilahApi'
 import { useDebounce } from '../../hooks/useDebounce'
+import { usePortalMode } from '../../hooks/usePortalMode'
 import type { Person } from '../../features/silsilah/types'
 
 export function HomePage() {
     const navigate = useNavigate()
     const { data } = useBranches()
     const stats = data?.stats
+    const { loginEnabled, isNibLinked, nibClaimingEnabled } = usePortalMode()
+
+    // Show NIB prompt when: login disabled + nib claiming enabled + not yet linked
+    const showNibPrompt = !loginEnabled && nibClaimingEnabled && !isNibLinked
 
     const { data: homeData } = useQuery({
         queryKey: ['portal', 'home'],
@@ -81,6 +86,15 @@ export function HomePage() {
                                     <span className="material-symbols-outlined">account_tree</span>
                                     Lihat Silsilah
                                 </Link>
+                                {showNibPrompt && (
+                                    <Link
+                                        to="/link-nib"
+                                        className="px-5 py-2.5 md:px-6 md:py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium transition-colors flex items-center gap-2 border border-white/30"
+                                    >
+                                        <span className="material-symbols-outlined">fingerprint</span>
+                                        Tautkan NIB
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -262,6 +276,20 @@ export function HomePage() {
                     <div className="order-3 lg:order-2 lg:col-span-3">
                         <h2 className="text-lg font-bold text-[#181112] mb-4">Akses Cepat</h2>
                         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                            {/* NIB Link Card - shown when login disabled and not yet linked */}
+                            {showNibPrompt && (
+                                <Link
+                                    to="/link-nib"
+                                    className="bg-gradient-to-br from-[#ec1325] to-[#c91020] border border-[#ec1325] rounded-xl p-4 hover:shadow-lg hover:scale-[1.02] transition-all group col-span-2 md:col-span-1"
+                                >
+                                    <div className="size-10 rounded-lg bg-white/20 flex items-center justify-center mb-3">
+                                        <span className="material-symbols-outlined text-white">fingerprint</span>
+                                    </div>
+                                    <h3 className="font-bold text-white text-sm">Tautkan NIB</h3>
+                                    <p className="text-xs text-white/70 mt-1">Identitas keluarga</p>
+                                </Link>
+                            )}
+
                             <Link
                                 to="/events"
                                 className="bg-white border border-[#e6dbdc] rounded-xl p-4 hover:shadow-md hover:border-[#ec1325]/30 transition-all group"

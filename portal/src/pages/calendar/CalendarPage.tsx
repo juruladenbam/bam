@@ -8,7 +8,7 @@ import type { CalendarDay, CalendarEvent } from '../../features/calendar/useCale
 import { MobileLayout } from '../../components/layout/MobileLayout'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
-import { useMe } from '../../features/silsilah'
+import { usePortalMode } from '../../hooks/usePortalMode'
 
 // Import Swiper styles (v12+ bundled path)
 import 'swiper/swiper-bundle.css'
@@ -204,9 +204,9 @@ export function CalendarPage() {
     const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null)
     const [selectedDate, setSelectedDate] = useState<string | null>(null)
 
-    const { data: userData, isLoading: userLoading } = useMe()
-    const user = userData?.user
-    const isUnlinked = user && !user.person_id
+    const { linkedPerson, isLoading: portalLoading, loginEnabled, isAuthenticated } = usePortalMode()
+    // Blur overlay only when login ENABLED + authenticated + NOT linked
+    const showBlurOverlay = loginEnabled && isAuthenticated && !linkedPerson
 
     // Use internal state for current month (initialized from URL)
     const now = new Date()
@@ -226,7 +226,7 @@ export function CalendarPage() {
     // Current month data for header
     const { data, isLoading: calendarLoading } = useCalendar(year, month)
 
-    const isLoading = userLoading || (calendarLoading && !data)
+    const isLoading = portalLoading || (calendarLoading && !data)
 
     // Prefetch adjacent months
     usePrefetchAdjacentMonths(year, month)
@@ -316,7 +316,7 @@ export function CalendarPage() {
         <MobileLayout>
             <div className="relative flex-1">
                 {/* Overlay Blur for Unlinked Users */}
-                {isUnlinked && (
+                {showBlurOverlay && (
                     <div className="absolute inset-0 z-[100] backdrop-blur-md bg-white/30 flex items-center justify-center px-6">
                         <div className="bg-white rounded-2xl shadow-2xl border border-[#e6dbdc] p-8 max-w-sm w-full text-center animate-in fade-in zoom-in duration-300">
                             <div className="size-16 rounded-full bg-[#ec1325]/10 flex items-center justify-center mx-auto mb-6 text-[#ec1325]">
@@ -343,7 +343,7 @@ export function CalendarPage() {
                 )}
 
                 {/* 2-Column Layout Container */}
-                <div className={`w-full md:grid md:grid-cols-[1fr_380px] md:gap-6 md:px-6 md:py-6 ${isUnlinked ? 'h-[80vh] overflow-hidden' : ''}`}>
+                <div className={`w-full md:grid md:grid-cols-[1fr_380px] md:gap-6 md:px-6 md:py-6 ${showBlurOverlay ? 'h-[80vh] overflow-hidden' : ''}`}>
 
                     {/* Left Column: Header + Calendar */}
                     <div className="md:min-w-0">

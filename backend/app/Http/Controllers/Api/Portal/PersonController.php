@@ -49,11 +49,21 @@ class PersonController extends Controller
             ],
         ];
 
-        // Calculate relationship if user is logged in and linked to a person
-        $viewerId = $request->user()?->person_id;
+        // Calculate relationship
+        $viewerId = $request->user()?->person_id ?? $request->header('X-Viewer-Person-Id');
         
-        if ($viewerId && $viewerId !== $id) {
-            $response['relationship'] = $this->relationshipService->calculate($viewerId, $id);
+        if ($viewerId) {
+            if ((int)$viewerId === $id) {
+                $response['relationship'] = [
+                    'relationship' => 'self',
+                    'label' => 'Diri Sendiri',
+                ];
+            } else {
+                $response['relationship'] = $this->relationshipService->calculate((int)$viewerId, $id);
+            }
+        } else {
+            // Guest mode: return root perspective
+            $response['relationship'] = $this->relationshipService->getRelationshipFromRoot($person);
         }
 
         return $this->success($response, 'Detail person berhasil dimuat');

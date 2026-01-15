@@ -2,6 +2,7 @@ import { useNews, NewsCard, HeadlineSection } from '@/features/news';
 import { useState } from 'react';
 import SEO from '@/components/SEO';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
+import { usePortalMode } from '@/hooks/usePortalMode';
 
 const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 
@@ -9,6 +10,10 @@ export default function NewsPage() {
     const [page, setPage] = useState(1);
     const { data, isLoading, error } = useNews(page);
     const { isLoggedIn } = useAuthCheck();
+    const { data: portalMode } = usePortalMode()
+    const loginEnabled = portalMode?.login_enabled ?? true
+    const portalUrl = isLoggedIn ? PORTAL_URL : (loginEnabled ? `${PORTAL_URL}/login` : PORTAL_URL)
+    const portalLabel = isLoggedIn ? 'Buka Portal' : (loginEnabled ? 'Login ke Portal' : 'Masuk Portal')
 
     return (
         <div>
@@ -95,10 +100,10 @@ export default function NewsPage() {
                         Login ke Portal Member untuk mengakses berita khusus anggota keluarga.
                     </p>
                     <a
-                        href={isLoggedIn ? PORTAL_URL : `${PORTAL_URL}/login`}
+                        href={portalUrl}
                         className="inline-block px-8 py-3 bg-[#ec1325] text-white font-semibold rounded-lg hover:bg-[#c91020] transition-colors"
                     >
-                        {isLoggedIn ? 'Buka Portal' : 'Login ke Portal'}
+                        {portalLabel}
                     </a>
                 </div>
             </section>

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import SEO from '@/components/SEO'
 import { useHomeContent } from '@/hooks/useHomeContent'
 import { useAuthCheck } from '@/hooks/useAuthCheck'
+import { usePortalMode } from '@/hooks/usePortalMode'
 import { ServiceCard } from '@/components/ui/ServiceCard'
 
 const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
@@ -9,6 +10,13 @@ const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174'
 export default function HomePage() {
     const { data } = useHomeContent();
     const { isLoggedIn } = useAuthCheck();
+    const { data: portalMode } = usePortalMode()
+    const loginEnabled = portalMode?.login_enabled ?? true
+
+    // Portal Links
+    const portalUrl = isLoggedIn ? PORTAL_URL : (loginEnabled ? `${PORTAL_URL}/login` : PORTAL_URL)
+    const portalLabel = isLoggedIn ? 'Buka Portal' : (loginEnabled ? 'Login ke Portal' : 'Masuk Portal')
+    const ctaLabel = isLoggedIn ? 'Buka Portal' : (loginEnabled ? 'Login Sekarang' : 'Masuk Portal')
 
     // Use data from backend or fallback to static
     const hero = data?.hero || {
@@ -18,7 +26,7 @@ export default function HomePage() {
         image: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&auto=format&fit=crop&q=60',
         image_year: 'Sejak 1945',
         image_caption: 'Pertemuan Akbar Keluarga',
-        image_location: 'Yogyakarta, Indonesia',
+        image_location: 'Mojokerto, Indonesia',
     };
 
     const featuresSection = data?.features || {
@@ -38,10 +46,13 @@ export default function HomePage() {
         image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&auto=format&fit=crop&q=60',
     };
 
-    const cta = data?.cta || {
+    const cta = data?.cta || (loginEnabled ? {
         title: 'Bergabung dengan Portal Keluarga',
         subtitle: 'Akses silsilah lengkap, daftar acara, dan tetap terhubung dengan keluarga besar.',
-    };
+    } : {
+        title: 'Jelajahi Portal Keluarga',
+        subtitle: 'Akses silsilah lengkap, daftar acara, dan tetap terhubung dengan keluarga besar. Tautkan NIB Anda untuk pengalaman personal.',
+    });
 
     return (
         <div>
@@ -73,17 +84,19 @@ export default function HomePage() {
                             <div className="p-6 bg-white border border-[#e6dbdc] rounded-xl shadow-sm max-w-[480px]">
                                 <h3 className="text-base font-bold text-[#181112] mb-4">Akses Cepat Member</h3>
                                 <a
-                                    href={isLoggedIn ? PORTAL_URL : `${PORTAL_URL}/login`}
+                                    href={portalUrl}
                                     className="flex w-full cursor-pointer items-center justify-center rounded-lg h-12 px-6 bg-[#ec1325] text-white text-sm font-bold hover:bg-[#c91020] transition-colors"
                                 >
-                                    {isLoggedIn ? 'Buka Portal' : 'Login ke Portal'}
+                                    {portalLabel}
                                 </a>
-                                <div className="mt-3 flex justify-between text-xs">
-                                    <span className="text-[#896165]">Belum punya akun?</span>
-                                    <a href={`${PORTAL_URL}/register`} className="text-[#ec1325] font-medium hover:underline">
-                                        Daftar Sekarang
-                                    </a>
-                                </div>
+                                {loginEnabled && (
+                                    <div className="mt-3 flex justify-between text-xs">
+                                        <span className="text-[#896165]">Belum punya akun?</span>
+                                        <a href={`${PORTAL_URL}/register`} className="text-[#ec1325] font-medium hover:underline">
+                                            Daftar Sekarang
+                                        </a>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -274,10 +287,10 @@ export default function HomePage() {
                         {cta.subtitle}
                     </p>
                     <a
-                        href={isLoggedIn ? PORTAL_URL : `${PORTAL_URL}/login`}
+                        href={portalUrl}
                         className="bg-white text-[#ec1325] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition inline-block"
                     >
-                        {isLoggedIn ? 'Buka Portal' : 'Login Sekarang'}
+                        {ctaLabel}
                     </a>
                 </div>
             </section>

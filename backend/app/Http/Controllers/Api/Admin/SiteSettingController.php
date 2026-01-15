@@ -13,6 +13,20 @@ class SiteSettingController extends Controller
     use ApiResponse;
 
     /**
+     * Parse boolean value from various formats (string 'true'/'false', '1'/'0', or actual boolean)
+     */
+    private function parseBooleanValue(mixed $value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+        if (is_string($value)) {
+            return in_array(strtolower($value), ['true', '1', 'yes', 'on'], true);
+        }
+        return (bool) $value;
+    }
+
+    /**
      * Get all site settings
      */
     public function index(): JsonResponse
@@ -33,10 +47,17 @@ class SiteSettingController extends Controller
         
         $result = [];
         foreach ($settings as $setting) {
+            $value = match($setting->type) {
+                'json' => json_decode($setting->value, true),
+                'boolean' => (bool) $setting->value,
+                'integer' => (int) $setting->value,
+                default => $setting->value,
+            };
+            
             $result[] = [
                 'id' => $setting->id,
                 'key' => $setting->key,
-                'value' => $setting->type === 'json' ? json_decode($setting->value, true) : $setting->value,
+                'value' => $value,
                 'type' => $setting->type,
             ];
         }
@@ -51,7 +72,7 @@ class SiteSettingController extends Controller
     {
         $validated = $request->validate([
             'value' => 'required',
-            'type' => 'sometimes|in:text,html,json',
+            'type' => 'sometimes|in:text,html,json,boolean,integer',
         ]);
 
         $setting = SiteSetting::where('key', $key)->first();
@@ -61,7 +82,12 @@ class SiteSettingController extends Controller
         }
 
         $type = $validated['type'] ?? $setting->type ?? 'text';
-        $value = $type === 'json' ? json_encode($validated['value']) : $validated['value'];
+        $value = match($type) {
+            'json' => json_encode($validated['value']),
+            'boolean' => $this->parseBooleanValue($validated['value']) ? '1' : '0',
+            'integer' => (string) intval($validated['value']),
+            default => $validated['value'],
+        };
 
         $setting->value = $value;
         $setting->type = $type;
@@ -82,7 +108,7 @@ class SiteSettingController extends Controller
             'settings' => 'required|array',
             'settings.*.key' => 'required|string',
             'settings.*.value' => 'required',
-            'settings.*.type' => 'sometimes|in:text,html,json',
+            'settings.*.type' => 'sometimes|in:text,html,json,boolean,integer',
         ]);
 
         $updated = [];
@@ -92,7 +118,12 @@ class SiteSettingController extends Controller
                 : "{$prefix}.{$item['key']}";
             
             $type = $item['type'] ?? 'text';
-            $value = $type === 'json' ? json_encode($item['value']) : $item['value'];
+            $value = match($type) {
+                'json' => json_encode($item['value']),
+                'boolean' => $this->parseBooleanValue($item['value']) ? '1' : '0',
+                'integer' => (string) intval($item['value']),
+                default => $item['value'],
+            };
 
             $setting = SiteSetting::updateOrCreate(
                 ['key' => $fullKey],

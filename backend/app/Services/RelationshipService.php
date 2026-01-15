@@ -393,4 +393,64 @@ class RelationshipService
                            "berjarak {$distA} generasi dari {$lca['name']}.",
         ];
     }
+
+    /**
+     * Calculate relationship from a specific perspective person.
+     * Used for NIB-based access where we calculate from the NIB person's perspective.
+     * 
+     * @param int $perspectivePersonId The person whose perspective we're using (viewer)
+     * @param int $targetPersonId The person we're looking at (target)
+     * @return array Relationship data
+     */
+    public function calculateFromPerspective(int $perspectivePersonId, int $targetPersonId): array
+    {
+        return $this->calculate($perspectivePersonId, $targetPersonId);
+    }
+
+    /**
+     * Get relationship from root's perspective.
+     * Returns generation-based labels (anak, cucu, cicit, etc.)
+     * Used for guest mode when no personal perspective is available.
+     */
+    public function getRelationshipFromRoot(Person $person): array
+    {
+        $generation = $person->generation;
+        
+        $label = match ($generation) {
+            1 => 'Root',
+            2 => 'Anak',
+            3 => 'Cucu',
+            4 => 'Cicit',
+            5 => 'Canggah',
+            6 => 'Wareng',
+            7 => 'Udeg-udeg',
+            8 => 'Gantung Siwur',
+            default => 'Generasi ' . $generation,
+        };
+
+        // Check if person is a spouse (NIB doesn't end with 000)
+        $isSpouse = $person->nib && !str_ends_with($person->nib, '000');
+        
+        if ($isSpouse) {
+            $label = 'Pasangan ' . $label;
+        }
+
+        return [
+            'relationship' => 'root_perspective',
+            'generation' => $generation,
+            'label' => $label,
+            'label_short' => match ($generation) {
+                1 => 'Root',
+                2 => 'Anak',
+                3 => 'Cucu',
+                4 => 'Cicit',
+                5 => 'Canggah',
+                default => 'Gen-' . $generation,
+            },
+            'is_spouse' => $isSpouse,
+            'label_javanese' => null,
+            'path' => null,
+            'lca_id' => null,
+        ];
+    }
 }

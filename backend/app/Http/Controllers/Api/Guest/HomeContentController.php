@@ -26,7 +26,7 @@ class HomeContentController extends Controller
                 'image' => $settings['hero_image'] ?? '',
                 'image_year' => $settings['hero_image_year'] ?? 'Sejak 1945',
                 'image_caption' => $settings['hero_image_caption'] ?? 'Pertemuan Akbar Keluarga',
-                'image_location' => $settings['hero_image_location'] ?? 'Yogyakarta, Indonesia',
+                'image_location' => $settings['hero_image_location'] ?? 'Mojokerto, Indonesia',
             ],
             'features' => [
                 'title' => $settings['features_title'] ?? '',

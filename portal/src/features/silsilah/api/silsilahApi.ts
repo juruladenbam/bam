@@ -1,4 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+import { getNibSession } from '../../../services/nibSession'
 
 function getCookie(name: string): string | null {
     const value = `; ${document.cookie}`;
@@ -7,7 +8,11 @@ function getCookie(name: string): string | null {
     return null;
 }
 
-export async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
+export interface FetchApiOptions extends RequestInit {
+    skipAuthRedirect?: boolean;
+}
+
+export async function fetchApi<T>(endpoint: string, options?: FetchApiOptions): Promise<T> {
     const headers: HeadersInit = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -22,6 +27,12 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
         }
     }
 
+    // Add NIB Session ID header if available (for NIB-linked features in guest mode)
+    const nibSession = getNibSession();
+    if (nibSession?.person_id) {
+        (headers as any)['X-Viewer-Person-Id'] = String(nibSession.person_id);
+    }
+
     const response = await fetch(`${API_URL}${endpoint}`, {
         ...options,
         headers,
@@ -29,11 +40,11 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
     })
 
     if (!response.ok) {
-        // Handle 401 Unauthorized - redirect to login
+        // Handle 401 Unauthorized
         if (response.status === 401) {
-            const returnUrl = encodeURIComponent(window.location.href)
-            window.location.href = `/login?redirect=${returnUrl}`
-            throw new Error('Unauthorized - redirecting to login')
+            // Don't auto-redirect here - let AuthGuard handle it
+            // This prevents redirect loops when login is disabled
+            throw new Error('Unauthorized');
         }
 
         // Handle 403 Forbidden
@@ -176,12 +187,62 @@ export const silsilahApi = {
     getRelationship: (personId: number) => fetchApi<import('../types').Relationship>(
         `/portal/relationship/${personId}`
     ),
-    // Get logged-in user
-    getMe: () => fetchApi<{
+
+    // Get logged-in user (Modified to support skipAuthRedirect)
+    getMe: (options?: FetchApiOptions) => fetchApi<{
         user: any
         person: import('../types').Person
-    }>('/portal/me'),
+    }>('/portal/me', options),
 
     // Logout
     logout: () => fetchApi('/portal/logout', { method: 'POST' }),
+
+    // --- New Optional Login Module Endpoints ---
+
+    // Get Portal Settings (Login enabled, NIB claiming enabled)
+    getPortalSettings: () => fetchApi<{
+        login_enabled: boolean
+        nib_claiming_enabled: boolean
+    }>('/portal/settings/mode'),
+
+    // Validate NIB
+    validateNib: (nib: string) => fetchApi<{
+        valid: boolean
+        preview?: {
+            id: number
+            full_name: string
+            nickname: string | null
+            gender: 'male' | 'female'
+            generation: number
+            branch: { id: number; name: string } | null
+            is_alive: boolean
+        }
+        error?: string
+    }>('/portal/nib/validate', {
+        method: 'POST',
+        body: JSON.stringify({ nib })
+    }),
+
+    // Link NIB
+    linkNib: (nib: string) => fetchApi<{
+        success: boolean
+        session: import('../../../services/nibSession').NibSession
+    }>('/portal/nib/link', {
+        method: 'POST',
+        body: JSON.stringify({ nib })
+    }),
+
+    // Get NIB Guide
+    getNibGuide: (nib?: string) => fetchApi<{
+        pattern: { format: string, description: string }
+        segments: Array<{
+            position: string
+            label: string
+            description: string
+            example: string
+            color: string
+        }>
+        examples: Array<any>
+        parsed_input: Array<any>
+    }>(`/portal/nib/guide${nib ? `?nib=${nib}` : ''}`),
 }

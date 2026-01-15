@@ -13,6 +13,7 @@ export interface Person {
     birth_order?: number
     branch_id: number
     branch?: Branch
+    nib?: string
 }
 
 export interface Branch {

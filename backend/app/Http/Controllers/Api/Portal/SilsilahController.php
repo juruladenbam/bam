@@ -82,7 +82,13 @@ class SilsilahController extends Controller
         }
 
         // Get additional spouse persons (from outside the branch)
-        $spouses = \App\Models\Person::whereIn('id', array_unique($spouseIds))->get();
+        $spouses = \App\Models\Person::whereIn('id', array_unique($spouseIds))->with('branch')->get();
+
+        // Ensure branch relation is also loaded for branch persons
+        // and explicitly set it to ensure the frontend gets the branch object
+        $branch->persons->each(function($p) use ($branch) {
+            $p->setRelation('branch', $branch);
+        });
 
         // Combine branch persons with outside spouses
         $allPersons = $branch->persons->merge($spouses);

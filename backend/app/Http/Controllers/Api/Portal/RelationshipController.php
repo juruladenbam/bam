@@ -22,13 +22,17 @@ class RelationshipController extends Controller
      */
     public function calculate(Request $request, int $personId)
     {
-        $viewerId = $request->user()?->person_id;
+        $viewerId = $request->user()?->person_id ?? $request->header('X-Viewer-Person-Id');
+
+        $person = \App\Models\Person::findOrFail($personId);
 
         if (!$viewerId) {
-            return $this->error('Akun Anda belum terhubung dengan data silsilah', 400);
+            // Guest mode: return root perspective (Anak, Cucu, etc.)
+            $result = $this->relationshipService->getRelationshipFromRoot($person);
+            return $this->success($result, 'Hubungan dari perspektif root');
         }
 
-        if ($viewerId === $personId) {
+        if ((int)$viewerId === $personId) {
             return $this->success([
                 'relationship' => 'self',
                 'label' => 'Diri Sendiri',
@@ -36,7 +40,7 @@ class RelationshipController extends Controller
             ], 'Ini adalah profil Anda');
         }
 
-        $result = $this->relationshipService->calculate($viewerId, $personId);
+        $result = $this->relationshipService->calculate((int)$viewerId, $personId);
 
         return $this->success($result, 'Hubungan berhasil dihitung');
     }

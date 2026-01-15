@@ -1,7 +1,8 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom'
 import { useReactFlow, ReactFlowProvider } from '@xyflow/react'
-import { useBranch, useMe, FamilyTree, TreeListSidebar } from '../../features/silsilah'
+import { useBranch, FamilyTree, TreeListSidebar } from '../../features/silsilah'
+import { usePortalMode } from '../../hooks/usePortalMode'
 import { buildHorizontalTreeLayout } from '../../features/silsilah/utils/horizontalTreeLayout'
 import { PortalHeader } from '../../components/layout/PortalHeader'
 import { TreeControls } from '../../features/silsilah/components/TreeControls'
@@ -14,13 +15,16 @@ function BranchPageContent() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { data, isLoading: branchLoading, error } = useBranch(Number(id))
-    const { data: userData, isLoading: userLoading } = useMe()
+    const { linkedPerson, isLoading: portalLoading, loginEnabled, isAuthenticated } = usePortalMode()
     const reactFlowInstance = useReactFlow()
     const isMobile = useIsMobile()
 
-    const isLoading = branchLoading || userLoading
-    const user = userData?.user
-    const isUnlinked = user && !user.person_id
+    const isLoading = branchLoading || portalLoading
+
+    // Blur overlay logic:
+    // - Only show if login is ENABLED and user is authenticated but NOT linked
+    // - If login is DISABLED (guest mode), NO blur at all - per OPTIONAL_LOGIN_MODULE.md
+    const showBlurOverlay = loginEnabled && isAuthenticated && !linkedPerson
 
     // UI State
     const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
@@ -139,34 +143,49 @@ function BranchPageContent() {
 
     const [searchParams] = useSearchParams()
     const focusId = searchParams.get('focus')
+    const lastFocusedId = useRef<string | null>(null)
+    const hasInitialFocused = useRef(false)
 
     // Auto-focus Logic
     useEffect(() => {
-        if (nodes.length > 0 && !isUnlinked) {
+        // Wait until nodes data is ready and not in a restricted (blur) state
+        if (nodes.length === 0 || showBlurOverlay || !reactFlowInstance) return
+
+        // 1. Focus from URL Priority
+        if (focusId && focusId !== lastFocusedId.current) {
+            const targetNode = nodes.find((n: any) => n.id === `person-${focusId}`)
+            if (targetNode) {
+                lastFocusedId.current = focusId
+                hasInitialFocused.current = true // Stop initial sequence if URL focus succeeds
+
+                const x = targetNode.position.x + 90
+                const y = targetNode.position.y + 45
+
+                setTimeout(() => {
+                    reactFlowInstance.setCenter(x, y, { zoom: 1.6, duration: 1200 })
+                }, 50)
+
+                const person = persons?.find(p => p.id === Number(focusId))
+                if (person) {
+                    setSelectedPerson(person)
+                    setIsSidebarOpen(true)
+                }
+                return
+            }
+        }
+
+        // 2. Initial Page Load Sequence (if no URL focus was handled)
+        if (!hasInitialFocused.current && !focusId) {
             let targetNode = null
             let zoomLevel = 1.2
 
-            // Priority 0: URL Search Param (?focus=ID)
-            if (focusId) {
-                targetNode = nodes.find((n: any) => n.id === `person-${focusId}`)
-                if (targetNode) {
-                    zoomLevel = 1.5
-                    // Also open sidebar if person exists
-                    const person = persons?.find(p => p.id === Number(focusId))
-                    if (person) {
-                        setSelectedPerson(person)
-                        setIsSidebarOpen(true)
-                    }
-                }
-            }
-
-            // Priority 1: Logged-in User
-            if (!targetNode && userData?.person) {
-                targetNode = nodes.find((n: any) => n.id === `person-${userData.person.id}`)
+            // Try focused linked person if applicable
+            if (linkedPerson) {
+                targetNode = nodes.find((n: any) => n.id === `person-${linkedPerson.id}`)
                 if (targetNode) zoomLevel = 1.5
             }
 
-            // Priority 2: Root (Gen 1)
+            // Fallback to Root
             if (!targetNode) {
                 targetNode = nodes.find((n: any) => n.type === 'personNode' && (n.data as any)?.generation === 1)
             }
@@ -176,15 +195,14 @@ function BranchPageContent() {
                 const y = targetNode.position.y + 45
                 setTimeout(() => {
                     reactFlowInstance.setCenter(x, y, { zoom: zoomLevel, duration: 1200 })
-                }, 100)
+                }, 50)
             } else {
-                // Priority 3: Fit View
-                setTimeout(() => {
-                    reactFlowInstance.fitView({ padding: 0.2, duration: 800 })
-                }, 100)
+                reactFlowInstance.fitView({ padding: 0.2, duration: 800 })
             }
+
+            hasInitialFocused.current = true
         }
-    }, [nodes, reactFlowInstance, userData, focusId, isUnlinked])
+    }, [nodes, reactFlowInstance, linkedPerson, focusId, showBlurOverlay, persons])
 
     // Handlers
     const handleNodeClick = (personId: number) => {
@@ -242,7 +260,7 @@ function BranchPageContent() {
 
             <div className="flex-1 relative">
                 {/* Overlay Blur for Unlinked Users */}
-                {isUnlinked && (
+                {showBlurOverlay && (
                     <div className="absolute inset-0 z-[100] backdrop-blur-md bg-white/30 flex items-center justify-center px-6">
                         <div className="bg-white rounded-2xl shadow-2xl border border-[#e6dbdc] p-8 max-w-sm w-full text-center animate-in fade-in zoom-in duration-300">
                             <div className="size-16 rounded-full bg-[#ec1325]/10 flex items-center justify-center mx-auto mb-6 text-[#ec1325]">
@@ -370,6 +388,8 @@ function BranchPageContent() {
                     isOpen={isSidebarOpen}
                     onClose={() => setIsSidebarOpen(false)}
                     isMobile={isMobile}
+                    linkedPerson={linkedPerson}
+                    branchId={Number(id)}
                 />
             </div>
         </div>

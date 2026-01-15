@@ -21,10 +21,22 @@ class SubmissionController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $submissions = $this->submissionService->getUserSubmissions(
-            $request->user()->id,
-            $request->input('per_page', 15)
-        );
+        $user = $request->user();
+        $personId = $request->header('X-Viewer-Person-Id');
+
+        if ($user) {
+            $submissions = $this->submissionService->getUserSubmissions(
+                $user->id,
+                $request->input('per_page', 15)
+            );
+        } elseif ($personId) {
+            $submissions = $this->submissionService->getPersonSubmissions(
+                (int) $personId,
+                $request->input('per_page', 15)
+            );
+        } else {
+            return $this->error('Identitas tidak ditemukan. Silahkan login atau tautkan NIB.', 401);
+        }
         
         return $this->paginated($submissions, 'Data submission berhasil diambil');
     }
@@ -71,9 +83,13 @@ class SubmissionController extends Controller
             'data.notes' => 'nullable|string',
         ]);
         
+        $user = $request->user();
+        $personId = $request->header('X-Viewer-Person-Id');
+
         $submission = $this->submissionService->createSubmission(
             $validated,
-            $request->user()->id
+            $user?->id,
+            $personId ? (int) $personId : null
         );
         
         return $this->success($submission, 'Submission berhasil dikirim, menunggu persetujuan admin', 201);
@@ -84,9 +100,20 @@ class SubmissionController extends Controller
      */
     public function show(Request $request, int $id): JsonResponse
     {
-        $submission = $request->user()
-            ->submissions()
-            ->with('reviewer:id,name')
+        $user = $request->user();
+        $personId = $request->header('X-Viewer-Person-Id');
+
+        $query = \App\Models\Submission::query();
+
+        if ($user) {
+            $query->where('user_id', $user->id);
+        } elseif ($personId) {
+            $query->where('submitter_person_id', (int) $personId);
+        } else {
+            return $this->error('Identitas tidak ditemukan.', 401);
+        }
+
+        $submission = $query->with(['reviewer:id,name', 'submitter:id,full_name'])
             ->findOrFail($id);
         
         return $this->success($submission);

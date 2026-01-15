@@ -2,7 +2,7 @@ import { type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { PortalHeader } from './PortalHeader'
 import { BottomNavbar } from './BottomNavbar'
-import { useMe } from '../../features/silsilah'
+import { usePortalMode } from '../../hooks/usePortalMode'
 
 interface MobileLayoutProps {
     children: ReactNode
@@ -16,8 +16,9 @@ interface MobileLayoutProps {
  * - Mobile: BottomNavbar at bottom (no top header)
  */
 export function MobileLayout({ children, className = '' }: MobileLayoutProps) {
-    const { data } = useMe()
-    const user = data?.user
+    const { user, isAuthenticated, loginEnabled } = usePortalMode()
+    // Only show link warning if login is enabled and user is authenticated but not linked
+    const showLinkWarning = loginEnabled && isAuthenticated && user && !user.person_id
 
     return (
         <div className="min-h-screen bg-[#f8f6f6] flex flex-col">
@@ -27,7 +28,7 @@ export function MobileLayout({ children, className = '' }: MobileLayoutProps) {
             </div>
 
             {/* Mobile Link Warning Alert */}
-            {user && !user.person_id && (
+            {showLinkWarning && (
                 <div className="md:hidden bg-[#ec1325] text-white px-4 py-3 flex items-center justify-between shadow-lg sticky top-0 z-[60]">
                     <div className="flex items-center gap-3">
                         <span className="material-symbols-outlined text-xl">link_off</span>
@@ -49,7 +50,7 @@ export function MobileLayout({ children, className = '' }: MobileLayoutProps) {
             {/* Add padding-bottom on mobile to avoid content being hidden behind navbar */}
             <main
                 className={`flex-1 pb-[calc(60px+env(safe-area-inset-bottom,0px))] md:pb-0 ${className}`}
-                style={{ paddingTop: user && !user.person_id ? '0' : 'env(safe-area-inset-top, 0px)' }}
+                style={{ paddingTop: showLinkWarning ? '0' : 'env(safe-area-inset-top, 0px)' }}
             >
                 {children}
             </main>

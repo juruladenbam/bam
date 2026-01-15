@@ -68,7 +68,7 @@ export function MediaUploadPage() {
                         type="url"
                         {...register('file_url', { required: 'URL wajib diisi' })}
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#ec1325]/20 focus:border-[#ec1325] outline-none"
-                        placeholder="https://example.com/image.jpg"
+                        placeholder="https://images.unsplash.com/photo-..."
                     />
                     {errors.file_url && <span className="text-xs text-red-500">{errors.file_url.message}</span>}
                     <p className="text-xs text-gray-500 mt-1">Masukkan link direct ke gambar atau video.</p>

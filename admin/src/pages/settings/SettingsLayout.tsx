@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 
 const tabs = [
     { label: 'Beranda', path: '/settings/home', icon: 'home' },
+    { label: 'Portal', path: '/settings/portal', icon: 'security' },
     { label: 'Tentang', path: '/settings/about', icon: 'info' },
     { label: 'Kalender', path: '/settings/calendar', icon: 'calendar_month' },
 ];

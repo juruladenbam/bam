@@ -31,17 +31,19 @@ export function usePerson(id: number) {
     })
 }
 
-export function useRelationship(personId: number) {
+export function useRelationship(personId: number, canFetch: boolean = true) {
     return useQuery({
         queryKey: ['silsilah', 'relationship', personId],
         queryFn: () => silsilahApi.getRelationship(personId),
-        enabled: !!personId,
+        enabled: !!personId && canFetch,
+        retry: false, // Don't retry on 400 error
     })
 }
 export function useMe() {
     return useQuery({
         queryKey: ['auth', 'me'],
-        queryFn: silsilahApi.getMe,
+        queryFn: () => silsilahApi.getMe({ skipAuthRedirect: true }),
         staleTime: Infinity,
+        retry: false,
     })
 }

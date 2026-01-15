@@ -1,83 +1,55 @@
-import { type ReactNode, useEffect, useState, useCallback } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { silsilahApi } from '../features/silsilah/api/silsilahApi'
+import { type ReactNode, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { SplashScreen } from './SplashScreen'
+import { usePortalMode } from '../hooks/usePortalMode'
 
 interface AuthGuardProps {
     children: ReactNode
 }
 
-// Key to track if initial preload has been done
 const PRELOAD_DONE_KEY = 'bam_preload_done'
 
 export function AuthGuard({ children }: AuthGuardProps) {
     const navigate = useNavigate()
-    const location = useLocation()
-    const [isChecking, setIsChecking] = useState(true)
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [showSplash, setShowSplash] = useState(false)
 
-    const checkAuth = useCallback(async (silent = false) => {
-        if (!silent) {
-            setIsChecking(true)
-            setIsAuthenticated(false)
+    // Use the central hook
+    const {
+        loginEnabled,
+        isAuthenticated,
+        isLoading
+    } = usePortalMode()
+
+    useEffect(() => {
+        // Only redirect if NOT loading and login IS enabled and NOT authenticated
+        if (!isLoading && loginEnabled && !isAuthenticated) {
+            const returnUrl = encodeURIComponent(window.location.href)
+            navigate(`/login?redirect=${returnUrl}`, { replace: true })
         }
+    }, [isLoading, loginEnabled, isAuthenticated, navigate])
 
-        try {
-            await silsilahApi.getMe()
-            setIsAuthenticated(true)
-
-            // Check if we have cached calendar data OR preload was done recently
+    // Handle splash logic
+    useEffect(() => {
+        // Check for splash only once when auth check is done
+        if (!isLoading) {
             const cacheExists = localStorage.getItem('bam-portal-cache')
             const preloadDone = localStorage.getItem(PRELOAD_DONE_KEY)
             const preloadTimestamp = preloadDone ? parseInt(preloadDone) : 0
             const isPreloadFresh = Date.now() - preloadTimestamp < 24 * 60 * 60 * 1000 // 24 hours
 
-            // Show splash only if no cache exists AND preload wasn't done recently
-            if (!cacheExists && !isPreloadFresh && !silent) {
+            // Show splash if:
+            // 1. Cache doesn't exist AND Preload not fresh
+            // 2. AND we are either Authenticated OR (Login Disabled AND (Guest or NibLinked))
+            // Basically if we get ACCESS, we might want splash.
+            const hasAccess = isAuthenticated || !loginEnabled;
+
+            if (!cacheExists && !isPreloadFresh && hasAccess) {
                 setShowSplash(true)
             }
-        } catch {
-            // Not authenticated, redirect to login
-            const returnUrl = encodeURIComponent(window.location.href)
-            navigate(`/login?redirect=${returnUrl}`, { replace: true })
-        } finally {
-            if (!silent) {
-                setIsChecking(false)
-            }
         }
-    }, [navigate])
+    }, [isLoading, isAuthenticated, loginEnabled])
 
-    // Check auth on mount
-    useEffect(() => {
-        checkAuth()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    // Re-check auth silently when pathname changes (if already authenticated)
-    useEffect(() => {
-        if (isAuthenticated) {
-            checkAuth(true) // Silent check - no loading shown
-        }
-    }, [location.pathname, isAuthenticated, checkAuth])
-
-    // Also check auth when window gains focus (silent check)
-    useEffect(() => {
-        const handleFocus = () => {
-            checkAuth(true)
-        }
-
-        window.addEventListener('focus', handleFocus)
-        return () => window.removeEventListener('focus', handleFocus)
-    }, [checkAuth])
-
-    // Handle splash completion
-    const handleSplashComplete = useCallback(() => {
-        setShowSplash(false)
-    }, [])
-
-    // Initial auth checking state
-    if (isChecking) {
+    if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#f8f6f6]">
                 <div className="flex flex-col items-center gap-4">
@@ -88,13 +60,13 @@ export function AuthGuard({ children }: AuthGuardProps) {
         )
     }
 
-    if (!isAuthenticated) {
+    // If login required but not auth, render nothing (redirecting)
+    if (loginEnabled && !isAuthenticated) {
         return null
     }
 
-    // Show splash screen with data preload
     if (showSplash) {
-        return <SplashScreen onComplete={handleSplashComplete} />
+        return <SplashScreen onComplete={() => setShowSplash(false)} />
     }
 
     return <>{children}</>

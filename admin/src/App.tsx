@@ -18,6 +18,7 @@ import { SubmissionDetailPage } from './pages/submissions/SubmissionDetailPage'
 import { UserListPage } from './pages/users/UserListPage'
 import AboutSettingsPage from './pages/settings/AboutSettingsPage'
 import HomeSettingsPage from './pages/settings/HomeSettingsPage'
+import PortalSettingsPage from './pages/settings/PortalSettingsPage'
 import { CalendarSettingsPage } from './pages/settings/CalendarSettingsPage'
 import SettingsLayout from './pages/settings/SettingsLayout'
 import ScrollToTop from './components/ScrollToTop'
@@ -74,6 +75,7 @@ function App() {
               <Route path="/settings" element={<SettingsLayout />}>
                 <Route index element={<Navigate to="/settings/home" replace />} />
                 <Route path="home" element={<HomeSettingsPage />} />
+                <Route path="portal" element={<PortalSettingsPage />} />
                 <Route path="about" element={<AboutSettingsPage />} />
                 <Route path="calendar" element={<CalendarSettingsPage />} />
               </Route>

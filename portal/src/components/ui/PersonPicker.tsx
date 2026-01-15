@@ -81,7 +81,7 @@ export function PersonPicker({
                     <div className="flex-1 min-w-0">
                         <p className="font-medium text-gray-900 truncate">{value.full_name}</p>
                         <p className="text-xs text-gray-500 truncate">
-                            {value.branch ? `Qobilah ${value.branch.name.replace('Qobilah ', '')}` : 'Tidak ada qobilah'}
+                            {value.branch?.name ? `Qobilah ${value.branch.name.replace('Qobilah ', '')}` : (value.branch_id ? `Qobilah #${value.branch_id}` : 'Tidak ada qobilah')}
                         </p>
                     </div>
                     <button
