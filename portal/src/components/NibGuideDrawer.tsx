@@ -93,7 +93,7 @@ export function NibGuideDrawer({ isOpen, onClose, currentNib }: NibGuideDrawerPr
                                     {guideData.examples.map((ex: any, idx: number) => (
                                         <div key={idx} className="text-sm bg-gray-50 rounded-lg p-3 border border-gray-100">
                                             <div className="flex items-center justify-between mb-1">
-                                                <div className="font-mono font-bold text-gray-800 tracking-wide">{ex.nib_with_checksum}</div>
+                                                <div className="font-mono font-bold text-gray-800 tracking-wide">{ex.nib}</div>
                                             </div>
                                             <div className="text-xs text-gray-500">{ex.meaning}</div>
                                         </div>

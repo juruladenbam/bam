@@ -127,7 +127,7 @@ class NibService
             $statusPart = substr($remaining, -3);
             
             // Split into 2-digit segments
-            $generationNumber = 2;
+            $generationNumber = 1;
             for ($i = 0; $i < strlen($generationPart); $i += 2) {
                 $segment = substr($generationPart, $i, 2);
                 $generationNumber++;

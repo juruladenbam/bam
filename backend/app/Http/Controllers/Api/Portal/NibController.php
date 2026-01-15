@@ -26,19 +26,10 @@ class NibController extends Controller
         $person = null;
         $actualNib = null;
         
-        // Strategy 1: Try with checksum validation first
-        if (NibService::validate($nibInput)) {
-            $actualNib = NibService::extractNib($nibInput);
-            $person = NibService::findPersonByNib($actualNib);
-        }
-        
-        // Strategy 2: If checksum validation failed, try direct DB lookup
-        // This allows users to enter NIB without checksum
-        if (!$person) {
-            $person = NibService::findPersonByNib($nibInput);
-            if ($person) {
-                $actualNib = $nibInput;
-            }
+        // Try direct DB lookup
+        $person = NibService::findPersonByNib($nibInput);
+        if ($person) {
+            $actualNib = $nibInput;
         }
         
         if (!$person) {
@@ -80,19 +71,10 @@ class NibController extends Controller
         $person = null;
         $actualNib = null;
         
-        // Strategy 1: Try with checksum validation first
-        if (NibService::validate($nibInput)) {
-            $actualNib = NibService::extractNib($nibInput);
-            $person = NibService::findPersonByNib($actualNib);
-        }
-        
-        // Strategy 2: If checksum validation failed, try direct DB lookup
-        // This allows users to enter NIB without checksum
-        if (!$person) {
-            $person = NibService::findPersonByNib($nibInput);
-            if ($person) {
-                $actualNib = $nibInput;
-            }
+        // Try direct DB lookup
+        $person = NibService::findPersonByNib($nibInput);
+        if ($person) {
+            $actualNib = $nibInput;
         }
         
         if (!$person) {
@@ -131,18 +113,13 @@ class NibController extends Controller
         // Parse segments if NIB provided
         $segments = [];
         if ($nib && strlen($nib) >= 2) {
-            // Remove checksum if present (validate first)
-            $actualNib = NibService::validate($nib) 
-                ? NibService::extractNib($nib) 
-                : $nib;
-            
-            $segments = NibService::parseNibSegments($actualNib);
+            $segments = NibService::parseNibSegments($nib);
         }
         
         return response()->json([
             'pattern' => [
-                'format' => '[08] + [XX][XX]... + [SSS] + [C]',
-                'description' => 'NIB terdiri dari kode root, urutan per generasi, status, dan checksum',
+                'format' => '[08] + [XX][XX]... + [SSS]',
+                'description' => 'NIB terdiri dari kode root (08), urutan per generasi, dan status',
             ],
             'segments' => [
                 [
@@ -167,44 +144,32 @@ class NibController extends Controller
                     'color' => '#16a34a',
                 ],
                 [
-                    'position' => 'n-3 s/d n-1',
+                    'position' => '3 digit terakhir',
                     'label' => 'Status',
                     'description' => '000 = Garis Darah, 001+ = Pasangan',
                     'example' => '000',
                     'color' => '#9333ea',
                 ],
-                [
-                    'position' => 'terakhir',
-                    'label' => 'Checksum',
-                    'description' => 'Digit validasi (dihitung otomatis)',
-                    'example' => '1',
-                    'color' => '#64748b',
-                ],
             ],
             'examples' => [
                 [
                     'nib' => '08',
-                    'nib_with_checksum' => NibService::withChecksum('08'),
                     'meaning' => 'Abdul Manan (Root)',
                 ],
                 [
                     'nib' => '0801000',
-                    'nib_with_checksum' => NibService::withChecksum('0801000'),
                     'meaning' => 'Anak ke-1 Abdul Manan (garis darah)',
                 ],
                 [
                     'nib' => '0801001',
-                    'nib_with_checksum' => NibService::withChecksum('0801001'),
                     'meaning' => 'Pasangan anak ke-1 Abdul Manan',
                 ],
                 [
                     'nib' => '080101000',
-                    'nib_with_checksum' => NibService::withChecksum('080101000'),
                     'meaning' => 'Cucu dari anak ke-1, anak ke-1 (garis darah)',
                 ],
                 [
                     'nib' => '080302000',
-                    'nib_with_checksum' => NibService::withChecksum('080302000'),
                     'meaning' => 'Cucu dari anak ke-3, anak ke-2 (garis darah)',
                 ],
             ],

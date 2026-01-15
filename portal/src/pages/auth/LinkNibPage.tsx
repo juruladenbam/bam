@@ -104,12 +104,12 @@ export function LinkNibPage() {
 
                     <div className="space-y-5">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">NIB (Termasuk Checksum)</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">NIB</label>
                             <div className="relative">
                                 <input
                                     type="text"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] font-mono text-lg text-center tracking-widest placeholder:tracking-normal transition-all"
-                                    placeholder="Contoh: 08010001"
+                                    placeholder="Contoh: 0801000"
                                     value={nib}
                                     onChange={(e) => {
                                         const val = e.target.value.replace(/[^0-9]/g, '');

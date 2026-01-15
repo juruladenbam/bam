@@ -394,38 +394,39 @@ export function PortalHeader() {
                     </div>
                 )}
 
-                {/* Logout Confirmation Modal */}
-                {showLogoutConfirm && (
-                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-                        <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 animate-in fade-in zoom-in duration-200">
-                            <div className="mb-4">
-                                <span className="material-symbols-outlined text-4xl text-[#ec1325]">logout</span>
-                            </div>
-                            <h3 className="text-lg font-bold text-[#181112] mb-2">{isNibLinked ? 'Lepas Tautan NIB?' : 'Konfirmasi Keluar'}</h3>
-                            <p className="text-[#896165] mb-6">
-                                {isNibLinked
-                                    ? 'Sesi personalisasi Anda akan dihapus dari perangkat ini.'
-                                    : 'Apakah Anda yakin ingin keluar dari portal?'
-                                }
-                            </p>
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={() => setShowLogoutConfirm(false)}
-                                    className="flex-1 py-2.5 rounded-xl font-medium text-[#181112] bg-[#f8f6f6] hover:bg-gray-200 transition-colors"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    onClick={confirmLogout}
-                                    className="flex-1 py-2.5 rounded-xl font-medium bg-[#ec1325] text-white hover:bg-red-600 transition-colors"
-                                >
-                                    {isNibLinked ? 'Ya, Lepas' : 'Ya, Keluar'}
-                                </button>
-                            </div>
+            </div>
+
+            {/* Logout Confirmation Modal */}
+            {showLogoutConfirm && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 animate-in fade-in zoom-in duration-200 whitespace-normal">
+                        <div className="mb-4">
+                            <span className="material-symbols-outlined text-4xl text-[#ec1325]">logout</span>
+                        </div>
+                        <h3 className="text-lg font-bold text-[#181112] mb-2">{isNibLinked ? 'Lepas Tautan NIB?' : 'Konfirmasi Keluar'}</h3>
+                        <p className="text-[#896165] mb-6">
+                            {isNibLinked
+                                ? 'Sesi personalisasi Anda akan dihapus dari perangkat ini.'
+                                : 'Apakah Anda yakin ingin keluar dari portal?'
+                            }
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowLogoutConfirm(false)}
+                                className="flex-1 py-2.5 rounded-xl font-medium text-[#181112] bg-[#f8f6f6] hover:bg-gray-200 transition-colors"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={confirmLogout}
+                                className="flex-1 py-2.5 rounded-xl font-medium bg-[#ec1325] text-white hover:bg-red-600 transition-colors"
+                            >
+                                {isNibLinked ? 'Ya, Lepas' : 'Ya, Keluar'}
+                            </button>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </header>
     )
 }

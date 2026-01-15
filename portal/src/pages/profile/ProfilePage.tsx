@@ -209,7 +209,7 @@ export function ProfilePage() {
             {/* Logout Confirmation Modal */}
             {showLogoutConfirm && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-                    <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 animate-in fade-in zoom-in duration-200">
+                    <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 animate-in fade-in zoom-in duration-200 whitespace-normal">
                         <div className="mb-4">
                             <span className="material-symbols-outlined text-4xl text-[#ec1325]">logout</span>
                         </div>

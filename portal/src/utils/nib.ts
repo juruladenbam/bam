@@ -1,6 +1,5 @@
 /**
  * NIB (Nomor Induk BAM) Utility Functions
- * Uses Luhn algorithm for checksum calculation
  */
 
 /**
@@ -53,28 +52,27 @@ export function validateNibChecksum(nibWithChecksum: string): boolean {
 
 /**
  * Format NIB for display with visual grouping
- * e.g., "08-03-10-04-000-8" or just adds checksum
+ * e.g., "08-03-10-04-000"
  */
 export function formatNibForDisplay(nib: string, withGrouping = false): string {
     if (!nib) return '-';
 
-    const nibFull = nibWithChecksum(nib);
+    const nibFull = nib;
 
     if (!withGrouping) {
         return nibFull;
     }
 
-    // Visual grouping: root-branch-sub...-status-checksum
-    // 08-03-10-04-000-8
+    // Visual grouping: root-branch-sub...-status
+    // 08-03-10-04-000
     const root = nibFull.slice(0, 2);
-    const middle = nibFull.slice(2, -4); // everything between root and status+checksum
-    const status = nibFull.slice(-4, -1);
-    const checksum = nibFull.slice(-1);
+    const middle = nibFull.slice(2, -3); // everything between root and status
+    const status = nibFull.slice(-3);
 
     const middleParts = [];
     for (let i = 0; i < middle.length; i += 2) {
         middleParts.push(middle.slice(i, i + 2));
     }
 
-    return [root, ...middleParts, status, checksum].join('-');
+    return [root, ...middleParts, status].join('-');
 }
