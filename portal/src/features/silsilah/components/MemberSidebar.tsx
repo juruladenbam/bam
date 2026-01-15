@@ -250,7 +250,7 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false, linke
                                         </button>
                                     </div>
                                     <p className={`text-[10px] mt-1 transition-colors ${nibCopied ? 'text-green-600 font-medium' : 'text-[#896165]'}`}>
-                                        {nibCopied ? 'NIB tersalin ke clipboard!' : 'Termasuk digit checksum'}
+                                        {nibCopied ? 'NIB tersalin ke clipboard!' : 'Gunakan NIB ini untuk masuk ke portal'}
                                     </p>
                                 </div>
                             </div>
@@ -438,7 +438,7 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false, linke
                                         </button>
                                     </div>
                                     <p className={`text-xs mt-2 transition-colors ${nibCopied ? 'text-green-600 font-medium' : 'text-[#896165]'}`}>
-                                        {nibCopied ? 'NIB tersalin ke clipboard!' : 'Gunakan NIB ini untuk login di portal'}
+                                        {nibCopied ? 'NIB tersalin ke clipboard!' : 'Gunakan NIB ini untuk masuk ke portal'}
                                     </p>
                                 </div>
                             </div>

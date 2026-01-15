@@ -28,12 +28,10 @@ export function calculateNibChecksum(nib: string): number {
 }
 
 /**
- * Add checksum to NIB
+ * Get NIB (formerly added checksum, now just returns the NIB for compatibility)
  */
 export function nibWithChecksum(nib: string): string {
-    if (!nib) return '';
-    const checksum = calculateNibChecksum(nib);
-    return nib + checksum;
+    return nib || '';
 }
 
 /**

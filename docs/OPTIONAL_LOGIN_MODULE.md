@@ -22,7 +22,7 @@ Dokumen ini menjelaskan implementasi fitur **Optional Login Module** untuk BAM P
 2. ✅ User bisa mengakses fitur dengan menautkan NIB saja (tanpa login)
 3. ✅ Fitur sensitif yang memerlukan identitas otomatis menyesuaikan
 4. ✅ Halaman NIB linking dengan panduan per-digit pattern
-5. ✅ NIB memiliki validasi checksum untuk keamanan
+5. ✅ NIB memiliki format terstandarisasi untuk identifikasi diri (Anak, Cucu, dll)
 
 ### Non-Goals
 1. ❌ Menghapus total sistem login (tetap tersedia jika dibutuhkan)
@@ -165,19 +165,6 @@ Format NIB saat ini memiliki panjang yang flexible:
 │                        NIB PATTERN GUIDE                             │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
-│  Contoh NIB: 0 8 0 3 0 2 0 1 0 0 0                                 │
-│              └┬┘└┬┘└┬┘└┬┘└──┬──┘                                    │
-│               │  │  │  │    │                                       │
-│               │  │  │  │    └─── Status (000 = Garis Darah)         │
-│               │  │  │  │         (001, 002... = Pasangan ke-1,2...) │
-│               │  │  │  │                                            │
-│               │  │  │  └──────── Urutan di Generasi 4 (anak ke-1)   │
-│               │  │  │                                               │
-│               │  │  └─────────── Urutan di Generasi 3 (anak ke-2)   │
-│               │  │                                                  │
-│               │  └────────────── Urutan di Generasi 2 (anak ke-3)   │
-│               │                  dari Abdul Manan                   │
-│               │                                                     │
 │               └───────────────── Kode Root (08 = Abdul Manan)       │
 │                                                                     │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -253,173 +240,17 @@ Format NIB saat ini memiliki panjang yang flexible:
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### Proposed: Luhn Checksum Variant
+---
 
-Karena NIB memiliki panjang flexible, kita menggunakan **Luhn Algorithm** yang sudah terbukti (digunakan oleh kartu kredit, IMEI, dll).
+## 🔢 NIB Validation Algorithm (Simplified)
 
-#### Algorithm Steps:
-```
-Input NIB: 0801000
-1. Dari kanan ke kiri, gandakan setiap digit di posisi ganjil (1st, 3rd, 5th...)
-2. Jika hasil gandakan >= 10, kurangi 9
-3. Jumlahkan semua digit
-4. Checksum digit = (10 - (sum % 10)) % 10
-5. Append checksum ke NIB
+NIB divalidasi berdasarkan keberadaannya di database. Tidak ada lagi digit checksum tambahan untuk memudahkan input user. Sistem mengandalkan pencarian langsung di tabel `persons`.
 
-Contoh:
-Original:  0 8 0 1 0 0 0
-Position:  7 6 5 4 3 2 1  (dari kanan)
-Double:    0 8 0 1 0 0 0  (posisi ganjil: 1,3,5,7 → double posisi genap dari kanan)
-           0 16 0 2 0 0 0
-After -9:  0 7 0 2 0 0 0
-Sum:       0+7+0+2+0+0+0 = 9
-Checksum:  (10 - (9 % 10)) % 10 = 1
+#### Implementation
+NIB divalidasi langsung ke database menggunakan `NibService::findPersonByNib($nib)`. Penggunaan Luhn Checksum telah dihapus untuk menyederhanakan pengalaman pengguna.
 
-Final NIB: 08010001 (dengan checksum)
-```
-
-#### Migration Strategy:
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ NIB MIGRATION OPTIONS                                           │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│ Option A: Append checksum ke NIB existing                       │
-│   - 0801000 → 08010001                                          │
-│   - Butuh migration script                                      │
-│   - Breaking change untuk data yang sudah ada                   │
-│                                                                 │
-│ Option B: Checksum di-generate saat validasi saja               │
-│   - NIB tetap 0801000 di database                               │
-│   - Saat user input, sistem validasi dengan Luhn                │
-│   - User harus input dengan checksum: 08010001                  │
-│   - RECOMMENDED: No breaking change                             │
-│                                                                 │
-│ Option C: Dual validation                                       │
-│   - Accept both dengan dan tanpa checksum                       │
-│   - Untuk transisi period                                       │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-**Rekomendasi**: Gunakan **Option B** - NIB di database tetap tanpa checksum, tapi saat user memasukkan NIB untuk linking, mereka harus include checksum yang valid.
-
-### PHP Implementation
-
-```php
-<?php
-// app/Services/NibService.php
-
-class NibService
-{
-    /**
-     * Calculate Luhn checksum for NIB
-     */
-    public static function calculateChecksum(string $nib): int
-    {
-        $digits = str_split($nib);
-        $sum = 0;
-        $length = count($digits);
-        
-        for ($i = 0; $i < $length; $i++) {
-            $digit = (int) $digits[$length - 1 - $i];
-            
-            // Double every second digit from right
-            if ($i % 2 === 1) {
-                $digit *= 2;
-                if ($digit > 9) {
-                    $digit -= 9;
-                }
-            }
-            
-            $sum += $digit;
-        }
-        
-        return (10 - ($sum % 10)) % 10;
-    }
-    
-    /**
-     * Generate NIB with checksum
-     */
-    public static function withChecksum(string $nib): string
-    {
-        $checksum = self::calculateChecksum($nib);
-        return $nib . $checksum;
-    }
-    
-    /**
-     * Validate NIB with checksum (last digit is checksum)
-     */
-    public static function validate(string $nibWithChecksum): bool
-    {
-        if (strlen($nibWithChecksum) < 3) {
-            return false;
-        }
-        
-        $nib = substr($nibWithChecksum, 0, -1);
-        $providedChecksum = (int) substr($nibWithChecksum, -1);
-        $expectedChecksum = self::calculateChecksum($nib);
-        
-        return $providedChecksum === $expectedChecksum;
-    }
-    
-    /**
-     * Extract original NIB (without checksum)
-     */
-    public static function extractNib(string $nibWithChecksum): ?string
-    {
-        if (!self::validate($nibWithChecksum)) {
-            return null;
-        }
-        
-        return substr($nibWithChecksum, 0, -1);
-    }
-}
-```
-
-### TypeScript Implementation (Frontend)
-
-```typescript
-// portal/src/utils/nibValidation.ts
-
-export function calculateNibChecksum(nib: string): number {
-  const digits = nib.split('').map(Number);
-  let sum = 0;
-  const length = digits.length;
-  
-  for (let i = 0; i < length; i++) {
-    let digit = digits[length - 1 - i];
-    
-    if (i % 2 === 1) {
-      digit *= 2;
-      if (digit > 9) digit -= 9;
-    }
-    
-    sum += digit;
-  }
-  
-  return (10 - (sum % 10)) % 10;
-}
-
-export function nibWithChecksum(nib: string): string {
-  return nib + calculateNibChecksum(nib);
-}
-
-export function validateNib(nibWithChecksum: string): boolean {
-  if (nibWithChecksum.length < 3) return false;
-  
-  const nib = nibWithChecksum.slice(0, -1);
-  const providedChecksum = parseInt(nibWithChecksum.slice(-1));
-  const expectedChecksum = calculateNibChecksum(nib);
-  
-  return providedChecksum === expectedChecksum;
-}
-
-export function extractNib(nibWithChecksum: string): string | null {
-  if (!validateNib(nibWithChecksum)) return null;
-  return nibWithChecksum.slice(0, -1);
-}
-```
+### Deployment Status
+Sistem telah diimplementasikan tanpa checksum untuk memudahkan input pengguna. Hubungan keluarga divalidasi langsung melalui pencarian database.
 
 ---
 
@@ -446,9 +277,9 @@ export function extractNib(nibWithChecksum: string): string | null {
 
 #### Task 1.2: Create NibService
 **File**: `app/Services/NibService.php`
-- Implement Luhn checksum calculation
-- Implement validation method
-- Add helper for generating NIB with checksum
+- Implementasi pencarian NIB di database
+- Implementasi parsing segmen NIB (Root, Generasi, Status)
+- Helper untuk label hubungan dari perspektif person/NIB
 
 #### Task 1.3: API Endpoint for NIB Linking (Semi-Public)
 **File**: `app/Http/Controllers/Api/Portal/NibController.php`
@@ -816,8 +647,8 @@ export function clearNibSession(): void;
 
 ```typescript
 // Add NIB-based endpoints
-async linkNib(nibWithChecksum: string): Promise<NibLinkResponse>;
-async validateNib(nibWithChecksum: string): Promise<NibValidationResponse>;
+async linkNib(nib: string): Promise<NibLinkResponse>;
+async validateNib(nib: string): Promise<NibValidationResponse>;
 async getMeByNib(): Promise<MeResponse>; // Uses NIB from session
 ```
 
@@ -839,7 +670,7 @@ portal/
 ├── src/components/DisabledFeatureDialog.tsx   # Dialog fitur disabled
 ├── src/components/SimplifiedProfileView.tsx   # Profile tanpa edit
 ├── src/services/nibSession.ts                 # LocalStorage session
-├── src/utils/nibValidation.ts                 # Luhn checksum
+├── src/utils/nib.ts                           # NIB formatting
 
 public-web/
 ├── src/hooks/usePortalMode.ts                 # Fetch portal mode settings
@@ -901,7 +732,7 @@ admin/
 - [ ] Tombol "Tautkan NIB" tersedia dan membuka drawer
 
 #### NIB-Linked
-- [ ] NIB validation dengan Luhn checksum bekerja
+- [ ] NIB validation bekerja dengan benar
 - [ ] NIB guide drawer menampilkan penjelasan per-segment
 - [ ] Setelah tautkan NIB:
   - [ ] Relationship menampilkan perspektif NIB (Pakde, Bulik, dll)
@@ -911,12 +742,6 @@ admin/
 - [ ] Profile page simplified (tanpa edit, tanpa logout)
 - [ ] NIB session persists di localStorage
 - [ ] "Hapus Tautan NIB" berfungsi untuk reset
-
-### NIB Validation
-- [ ] NIB valid dengan checksum → accepted
-- [ ] NIB invalid checksum → rejected dengan error message
-- [ ] NIB tidak ditemukan di database → rejected
-- [ ] NIB sudah di-claim orang lain → rejected (jika login enabled)
 
 ### Admin Panel
 - [ ] Toggle login enabled/disabled works
@@ -938,7 +763,7 @@ admin/
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| NIB bisa ditebak | Seseorang bisa claim identitas orang lain | Luhn checksum membuat guessing lebih sulit |
+| NIB bisa ditebak | Seseorang bisa claim identitas orang lain | Pembatasan klaim NIB (hanya jika diizinkan admin) |
 | Session theft | NIB session dicuri dari browser | Short expiry (7 hari), device fingerprint (future) |
 | No audit trail | Tidak tahu siapa akses apa | Log NIB session creation dengan timestamp |
 | Bulk enumeration | Bot mencoba semua NIB | Rate limiting pada endpoint link |
@@ -991,6 +816,5 @@ public function link(Request $request)
 
 ## 📚 References
 
-- [Luhn Algorithm - Wikipedia](https://en.wikipedia.org/wiki/Luhn_algorithm)
 - [FamilySearch Privacy Practices](https://www.familysearch.org/privacy)
 - [Ancestry Tree Privacy Settings](https://support.ancestry.com/s/article/Privacy-Settings)
