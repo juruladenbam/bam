@@ -34,6 +34,8 @@ export function EventScheduleManager({ eventId, eventStartDate }: Props) {
         queryFn: () => contentApi.getEvent(eventId)
     })
 
+    const [editingSchedule, setEditingSchedule] = useState<EventSchedule | null>(null)
+
     const schedules = event?.schedules || []
 
     // Mutations
@@ -42,7 +44,18 @@ export function EventScheduleManager({ eventId, eventStartDate }: Props) {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['event', String(eventId)] })
             setIsAdding(false)
-            reset()
+            setEditingSchedule(null)
+            reset({ day_sequence: 1, title: '', time_start: '', time_end: '', description: '' })
+        }
+    })
+
+    const updateScheduleMutation = useMutation({
+        mutationFn: (data: CreateScheduleData) => contentApi.updateSchedule(eventId, editingSchedule!.id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['event', String(eventId)] })
+            setIsAdding(false)
+            setEditingSchedule(null)
+            reset({ day_sequence: 1, title: '', time_start: '', time_end: '', description: '' })
         }
     })
 
@@ -60,7 +73,29 @@ export function EventScheduleManager({ eventId, eventStartDate }: Props) {
     })
 
     const onSubmit = (data: CreateScheduleData) => {
-        createScheduleMutation.mutate(data)
+        if (editingSchedule) {
+            updateScheduleMutation.mutate(data)
+        } else {
+            createScheduleMutation.mutate(data)
+        }
+    }
+
+    const handleEdit = (schedule: EventSchedule) => {
+        setEditingSchedule(schedule)
+        setIsAdding(true)
+        reset({
+            day_sequence: schedule.day_sequence,
+            title: schedule.title,
+            time_start: schedule.time_start.slice(0, 5),
+            time_end: schedule.time_end?.slice(0, 5) || '',
+            description: schedule.description || ''
+        })
+    }
+
+    const handleCancel = () => {
+        setIsAdding(false)
+        setEditingSchedule(null)
+        reset({ day_sequence: 1, title: '', time_start: '', time_end: '', description: '' })
     }
 
     const formatDate = (daySequence: number, time?: string) => {
@@ -85,7 +120,13 @@ export function EventScheduleManager({ eventId, eventStartDate }: Props) {
                 <h3 className="text-lg font-bold text-[#181112]">Rundown Acara</h3>
                 <button
                     type="button"
-                    onClick={() => setIsAdding(!isAdding)}
+                    onClick={() => {
+                        if (isAdding) {
+                            handleCancel()
+                        } else {
+                            setIsAdding(true)
+                        }
+                    }}
                     className={`text-sm font-medium flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors ${isAdding
                         ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         : 'bg-[#ec1325]/10 text-[#ec1325] hover:bg-[#ec1325]/20'
@@ -98,6 +139,9 @@ export function EventScheduleManager({ eventId, eventStartDate }: Props) {
 
             {isAdding && (
                 <div className="bg-gray-50 border border-[#e6dbdc] rounded-lg p-4 space-y-4">
+                    <h4 className="font-semibold text-sm text-[#181112]">
+                        {editingSchedule ? 'Edit Jadwal' : 'Tambah Jadwal Baru'}
+                    </h4>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-semibold text-[#896165] mb-1">Hari Ke-</label>
@@ -105,14 +149,14 @@ export function EventScheduleManager({ eventId, eventStartDate }: Props) {
                                 type="number"
                                 min={1}
                                 {...register('day_sequence', { required: true, min: 1 })}
-                                className="w-full px-3 py-2 border rounded text-sm"
+                                className="w-full px-3 py-2 border border-[#e6dbdc] rounded text-sm focus:outline-none focus:border-[#ec1325]/50"
                             />
                         </div>
                         <div>
                             <label className="block text-xs font-semibold text-[#896165] mb-1">Judul Kegiatan</label>
                             <input
                                 {...register('title', { required: true })}
-                                className="w-full px-3 py-2 border rounded text-sm"
+                                className="w-full px-3 py-2 border border-[#e6dbdc] rounded text-sm focus:outline-none focus:border-[#ec1325]/50"
                                 placeholder="Contoh: Pembukaan"
                             />
                         </div>
@@ -121,7 +165,7 @@ export function EventScheduleManager({ eventId, eventStartDate }: Props) {
                             <input
                                 type="time"
                                 {...register('time_start', { required: true })}
-                                className="w-full px-3 py-2 border rounded text-sm"
+                                className="w-full px-3 py-2 border border-[#e6dbdc] rounded text-sm focus:outline-none focus:border-[#ec1325]/50"
                             />
                         </div>
                         <div>
@@ -129,14 +173,14 @@ export function EventScheduleManager({ eventId, eventStartDate }: Props) {
                             <input
                                 type="time"
                                 {...register('time_end')}
-                                className="w-full px-3 py-2 border rounded text-sm"
+                                className="w-full px-3 py-2 border border-[#e6dbdc] rounded text-sm focus:outline-none focus:border-[#ec1325]/50"
                             />
                         </div>
                         <div className="col-span-2">
                             <label className="block text-xs font-semibold text-[#896165] mb-1">Deskripsi (Opsional)</label>
                             <textarea
                                 {...register('description')}
-                                className="w-full px-3 py-2 border rounded text-sm"
+                                className="w-full px-3 py-2 border border-[#e6dbdc] rounded text-sm focus:outline-none focus:border-[#ec1325]/50"
                                 rows={2}
                             />
                         </div>
@@ -144,7 +188,7 @@ export function EventScheduleManager({ eventId, eventStartDate }: Props) {
                     <div className="flex justify-end gap-3">
                         <button
                             type="button"
-                            onClick={() => setIsAdding(false)}
+                            onClick={handleCancel}
                             className="px-4 py-2 border border-[#e6dbdc] rounded-lg text-[#181112] font-medium hover:bg-[#f8f6f6] transition-colors text-sm"
                         >
                             Batal
@@ -152,10 +196,10 @@ export function EventScheduleManager({ eventId, eventStartDate }: Props) {
                         <button
                             type="button"
                             onClick={handleSubmit(onSubmit)}
-                            disabled={createScheduleMutation.isPending}
-                            className="bg-[#ec1325] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors shadow-sm"
+                            disabled={createScheduleMutation.isPending || updateScheduleMutation.isPending}
+                            className="bg-[#ec1325] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors shadow-sm disabled:opacity-50"
                         >
-                            {createScheduleMutation.isPending ? 'Menyimpan...' : 'Simpan Jadwal'}
+                            {createScheduleMutation.isPending || updateScheduleMutation.isPending ? 'Menyimpan...' : (editingSchedule ? 'Update Jadwal' : 'Simpan Jadwal')}
                         </button>
                     </div>
                 </div>
@@ -177,21 +221,34 @@ export function EventScheduleManager({ eventId, eventStartDate }: Props) {
                                         <h4 className="font-medium text-[#181112]">{item.title}</h4>
                                         {item.description && <p className="text-sm text-[#896165] mt-1">{item.description}</p>}
                                     </div>
-                                    <button
-                                        onClick={() => {
-                                            if (confirm('Hapus jadwal ini?')) {
-                                                deleteScheduleMutation.mutate(item.id)
-                                            }
-                                        }}
-                                        className="text-gray-400 hover:text-red-500 transition-colors"
-                                    >
-                                        <span className="material-symbols-outlined text-[18px]">delete</span>
-                                    </button>
+                                    <div className="flex items-center gap-1">
+                                        <button
+                                            type="button"
+                                            onClick={() => handleEdit(item)}
+                                            className="p-1 text-gray-400 hover:text-blue-600 transition-colors rounded hover:bg-blue-50"
+                                            title="Edit"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px]">edit</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (confirm('Hapus jadwal ini?')) {
+                                                    deleteScheduleMutation.mutate(item.id)
+                                                }
+                                            }}
+                                            className="p-1 text-gray-400 hover:text-red-500 transition-colors rounded hover:bg-red-50"
+                                            title="Hapus"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     </div>
                 ))}
+
 
                 {schedules.length === 0 && !isAdding && (
                     <div className="text-center py-8 text-[#896165] bg-gray-50 rounded-lg border border-dashed border-[#e6dbdc]">

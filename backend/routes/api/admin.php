@@ -40,7 +40,7 @@ Route::apiResource('marriages', MarriageController::class);
 Route::apiResource('events', \App\Http\Controllers\Api\Admin\EventController::class);
 Route::apiResource('news', \App\Http\Controllers\Api\Admin\NewsController::class);
 Route::apiResource('media', \App\Http\Controllers\Api\Admin\MediaController::class);
-Route::apiResource('events.schedules', \App\Http\Controllers\Api\Admin\EventScheduleController::class)->shallow();
+Route::apiResource('events.schedules', \App\Http\Controllers\Api\Admin\EventScheduleController::class);
 
 // User Management
 Route::apiResource('users', \App\Http\Controllers\Api\Admin\UserController::class)->except(['store']);

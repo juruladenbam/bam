@@ -58,6 +58,20 @@ export function EventFormPage() {
         }
     })
 
+    const deleteMutation = useMutation({
+        mutationFn: () => contentApi.deleteEvent(Number(id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['events'] })
+            navigate('/events')
+        }
+    })
+
+    const handleDelete = () => {
+        if (Number(id) && window.confirm('Apakah Anda yakin ingin menghapus acara ini? Pekerjaan yang sudah dihapus tidak dapat dikembalikan.')) {
+            deleteMutation.mutate()
+        }
+    }
+
     const onSubmit = (data: CreateEventData) => {
         if (isEditMode) {
             updateMutation.mutate(data)
@@ -93,6 +107,17 @@ export function EventFormPage() {
                     </h1>
                 </div>
                 <div className="flex items-center gap-3">
+                    {isEditMode && (
+                        <button
+                            type="button"
+                            onClick={handleDelete}
+                            disabled={deleteMutation.isPending}
+                            className="px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-200 rounded-lg hover:bg-red-50 transition-colors flex items-center gap-2"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                            {deleteMutation.isPending ? 'Menghapus...' : 'Hapus'}
+                        </button>
+                    )}
                     <button
                         type="button"
                         onClick={() => navigate('/events')}
@@ -105,7 +130,7 @@ export function EventFormPage() {
                         disabled={isSubmitting || createMutation.isPending || updateMutation.isPending}
                         className="px-6 py-2 text-sm font-medium text-white bg-[#ec1325] rounded-lg hover:bg-[#d01020] disabled:opacity-70 flex items-center gap-2 shadow-sm shadow-red-200"
                     >
-                        {isSubmitting ? 'Menyimpan...' : 'Simpan Acara'}
+                        {isSubmitting || createMutation.isPending || updateMutation.isPending ? 'Menyimpan...' : 'Simpan Acara'}
                     </button>
                 </div>
             </div>
