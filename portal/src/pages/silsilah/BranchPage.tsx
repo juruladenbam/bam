@@ -31,6 +31,7 @@ function BranchPageContent() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const [isTreeListOpen, setIsTreeListOpen] = useState(true) // Default open
     const [highlightLine, setHighlightLine] = useState(false)
+    const [showGhostChildren, setShowGhostChildren] = useState(true) // Show children from internal marriages
 
 
     // On mobile, default TreeList to closed
@@ -39,7 +40,46 @@ function BranchPageContent() {
     }, [isMobile])
 
     // Data Processing
-    const { branch, persons, parent_child, marriages } = data || {}
+    const { branch, persons: rawPersons, parent_child: rawParentChild, marriages: rawMarriages } = data || {}
+
+    // Ghost children filtering: identify persons from other branches (via internal marriages)
+    const ghostChildIds = useMemo(() => {
+        if (!rawPersons || !branch?.id) return new Set<number>()
+        return new Set(
+            rawPersons
+                .filter(p => p.branch_id !== null && p.branch_id !== branch.id)
+                // Exclude spouses from outside (they have no branch_id or are external)
+                // Ghost children are persons who DO have a branch_id but it's a DIFFERENT branch
+                .map(p => p.id)
+        )
+    }, [rawPersons, branch?.id])
+
+    // Filter data based on showGhostChildren toggle
+    const persons = useMemo(() => {
+        if (!rawPersons || showGhostChildren) return rawPersons
+        // When hiding ghost children, keep only:
+        // 1. Persons from this branch (branch_id === branch.id)
+        // 2. Persons with no branch_id (external spouses)
+        // Filter out ghost children AND their external spouses
+        const ghostSet = ghostChildIds
+        return rawPersons.filter(p => !ghostSet.has(p.id))
+    }, [rawPersons, showGhostChildren, ghostChildIds])
+
+    const parent_child = useMemo(() => {
+        if (!rawParentChild || showGhostChildren) return rawParentChild
+        const ghostSet = ghostChildIds
+        return rawParentChild.filter(pc => !ghostSet.has(pc.child_id))
+    }, [rawParentChild, showGhostChildren, ghostChildIds])
+
+    const marriages = useMemo(() => {
+        if (!rawMarriages || showGhostChildren) return rawMarriages
+        // Keep marriages where at least one partner is NOT a ghost child
+        const ghostSet = ghostChildIds
+        return rawMarriages.filter(m => !ghostSet.has(m.husband_id) || !ghostSet.has(m.wife_id))
+    }, [rawMarriages, showGhostChildren, ghostChildIds])
+
+    // Count ghost children for display
+    const ghostChildCount = ghostChildIds.size
 
     // Statistics Calculation
     const stats = useMemo(() => {
@@ -86,27 +126,38 @@ function BranchPageContent() {
         return ids
     }, [rawNodes, branch?.id])
 
-    // Apply Highlight Logic to Nodes
+    // Apply Highlight Logic + Ghost Badge to Nodes
     const nodes = useMemo(() => {
-        if (!highlightLine || !branch?.id) return rawNodes
-
         return rawNodes.map((node: any) => {
             if (node.type === 'personNode') {
+                const person = node.data as Person
                 const isDirectLine = directLineNodeIds.has(node.id)
+                const isGhostChild = branch?.id ? ghostChildIds.has(person.id) : false
+
+                // Ghost badge data
+                const ghostData = isGhostChild ? {
+                    isGhostChild: true,
+                    originalBranchName: person.branch?.name || `Qobilah #${person.branch_id}`,
+                } : {}
+
+                // Highlight logic
+                const highlightData = highlightLine && branch?.id ? {
+                    isDimmed: !isDirectLine,
+                    customStyle: isDirectLine ? 'ring-2 ring-[#ec1325] shadow-md shadow-[#ec1325]/20' : ''
+                } : {}
 
                 return {
                     ...node,
                     data: {
                         ...node.data,
-                        isDimmed: !isDirectLine,
-                        // Add visual pop for direct line (red ring)
-                        customStyle: isDirectLine ? 'ring-2 ring-[#ec1325] shadow-md shadow-[#ec1325]/20' : ''
+                        ...ghostData,
+                        ...highlightData,
                     }
                 }
             }
             return node
         })
-    }, [rawNodes, highlightLine, branch?.id, directLineNodeIds])
+    }, [rawNodes, highlightLine, branch?.id, directLineNodeIds, ghostChildIds])
 
     // Apply Highlight Logic to Edges
     const edges = useMemo(() => {
@@ -261,7 +312,7 @@ function BranchPageContent() {
             <div className="flex-1 relative">
                 {/* Overlay Blur for Unlinked Users */}
                 {showBlurOverlay && (
-                    <div className="absolute inset-0 z-[100] backdrop-blur-md bg-white/30 flex items-center justify-center px-6">
+                    <div className="absolute inset-0 z-100 backdrop-blur-md bg-white/30 flex items-center justify-center px-6">
                         <div className="bg-white rounded-2xl shadow-2xl border border-[#e6dbdc] p-8 max-w-sm w-full text-center animate-in fade-in zoom-in duration-300">
                             <div className="size-16 rounded-full bg-[#ec1325]/10 flex items-center justify-center mx-auto mb-6 text-[#ec1325]">
                                 <span className="material-symbols-outlined text-4xl">link_off</span>
@@ -302,7 +353,7 @@ function BranchPageContent() {
                 {/* Top Controls Overlay */}
                 <div className={`
                     absolute top-4 right-0 z-10 flex flex-col md:flex-row gap-3 items-center justify-center
-                    transition-all duration-300
+                    transition-all duration-300 px-4
                     ${isMobile ? 'left-0' : isTreeListOpen ? 'left-[316px]' : 'left-0'}
                 `}>
                     {/* Branch Info with Back Button */}
@@ -340,19 +391,45 @@ function BranchPageContent() {
 
 
 
-                    {/* Highlight Toggle Node */}
-                    <button
-                        onClick={() => setHighlightLine(!highlightLine)}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-sm border text-xs font-medium transition-all backdrop-blur ${highlightLine
-                            ? 'bg-[#ec1325] border-[#ec1325] text-white shadow-[#ec1325]/20'
-                            : 'bg-white/90 border-[#e6dbdc] text-[#181112] hover:border-[#ec1325] hover:text-[#ec1325]'
-                            }`}
-                    >
-                        <span className="material-symbols-outlined text-[18px]">
-                            {highlightLine ? 'hub' : 'hub'}
-                        </span>
-                        {highlightLine ? 'Line Active' : 'Highlight Direct Line'}
-                    </button>
+                    {/* Action Toggles Group */}
+                    <div className="flex flex-row gap-2 justify-center md:contents">
+                        {/* Highlight Toggle Node */}
+                        <button
+                            onClick={() => setHighlightLine(!highlightLine)}
+                            className={`flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl shadow-sm border text-xs font-medium transition-all backdrop-blur ${highlightLine
+                                ? 'bg-[#ec1325] border-[#ec1325] text-white shadow-[#ec1325]/20'
+                                : 'bg-white/90 border-[#e6dbdc] text-[#181112] hover:border-[#ec1325] hover:text-[#ec1325]'
+                                }`}
+                            title={highlightLine ? 'Matikan Highlight' : 'Highlight Direct Line'}
+                        >
+                            <span className="material-symbols-outlined text-[18px]">
+                                {highlightLine ? 'hub' : 'hub'}
+                            </span>
+                            <span className="hidden md:inline">
+                                {highlightLine ? 'Line Active' : 'Highlight Direct Line'}
+                            </span>
+                        </button>
+
+                        {/* Ghost Children Toggle (Only show if there are ghost children) */}
+                        {ghostChildCount > 0 && (
+                            <button
+                                onClick={() => setShowGhostChildren(!showGhostChildren)}
+                                className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl shadow-sm border text-xs font-medium transition-all backdrop-blur ${showGhostChildren
+                                    ? 'bg-amber-500 border-amber-500 text-white shadow-amber-500/20'
+                                    : 'bg-white/90 border-[#e6dbdc] text-[#896165] hover:border-amber-500 hover:text-amber-600'
+                                    }`}
+                                title={showGhostChildren ? 'Sembunyikan Sesama Cucu' : 'Tampilkan Sesama Cucu'}
+                            >
+                                <span className="material-symbols-outlined text-[18px]">
+                                    {showGhostChildren ? 'family_restroom' : 'family_restroom'}
+                                </span>
+                                <span className="hidden md:inline">
+                                    {showGhostChildren ? 'Sesama Cucu' : 'Sesama Cucu'}
+                                </span>
+                                <span className="font-bold">({ghostChildCount})</span>
+                            </button>
+                        )}
+                    </div>
 
                     {/* Legend (Only when highlighting) */}
                     {highlightLine && (
@@ -363,6 +440,11 @@ function BranchPageContent() {
                             <span className="flex items-center gap-1">
                                 <span className="w-2 h-2 rounded-full bg-gray-300"></span> Spouse
                             </span>
+                            {showGhostChildren && ghostChildCount > 0 && (
+                                <span className="flex items-center gap-1">
+                                    <span className="w-2 h-2 rounded-full bg-amber-500"></span> Sesama Cucu
+                                </span>
+                            )}
                         </div>
                     )}
                 </div>

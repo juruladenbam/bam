@@ -158,6 +158,7 @@ export const silsilahApi = {
             husband_id: number
             wife_id: number
             is_active: boolean
+            is_internal: boolean
         }>
     }>(`/portal/silsilah/branch/${id}`),
 

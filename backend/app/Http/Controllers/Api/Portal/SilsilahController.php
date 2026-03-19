@@ -84,21 +84,189 @@ class SilsilahController extends Controller
         // Get additional spouse persons (from outside the branch)
         $spouses = \App\Models\Person::whereIn('id', array_unique($spouseIds))->with('branch')->get();
 
+        // Ghost Children: Include children from internal marriages from other branches
+        $extraData = $this->collectGhostChildren($marriages, $personIds, $spouses->pluck('id')->toArray());
+        
+        $extraPersons = $extraData['persons'];
+        $extraParentChildLinks = $extraData['parent_child'];
+        $extraMarriages = $extraData['marriages'];
+
         // Ensure branch relation is also loaded for branch persons
         // and explicitly set it to ensure the frontend gets the branch object
         $branch->persons->each(function($p) use ($branch) {
             $p->setRelation('branch', $branch);
         });
 
-        // Combine branch persons with outside spouses
-        $allPersons = $branch->persons->merge($spouses);
+        // Merge all parent_child links
+        $allParentChildLinks = $parentChildLinks->merge($extraParentChildLinks)->values();
+
+        // Merge all marriages
+        $allMarriages = $marriages->merge($extraMarriages)->unique('id')->values();
+
+        // Combine branch persons + outside spouses + ghost children & their families
+        $allPersons = $branch->persons
+            ->merge($spouses)
+            ->merge($extraPersons)
+            ->unique('id');
 
         return $this->success([
             'branch' => $branch,
             'persons' => $allPersons->values(),
-            'parent_child' => $parentChildLinks,
-            'marriages' => $marriages,
+            'parent_child' => $allParentChildLinks,
+            'marriages' => $allMarriages,
         ], 'Data cabang berhasil dimuat');
+    }
+
+    /**
+     * Collect children from internal marriages who are in other branches.
+     */
+    private function collectGhostChildren(
+        \Illuminate\Database\Eloquent\Collection $marriages,
+        array $personIds,
+        array $spouseIds
+    ): array {
+        $internalMarriages = $marriages->filter(fn($m) => $m->is_internal);
+        $extraPersons = collect();
+        $extraParentChildLinks = collect();
+        $extraMarriages = collect();
+
+        if ($internalMarriages->isEmpty()) {
+            return [
+                'persons' => $extraPersons,
+                'parent_child' => $extraParentChildLinks,
+                'marriages' => $extraMarriages,
+            ];
+        }
+
+        $internalMarriageIds = $internalMarriages->pluck('id')->toArray();
+        $allKnownIds = array_merge($personIds, $spouseIds);
+
+        // Get children of internal marriages that are NOT already in the branch
+        $ghostChildren = \App\Models\ParentChild::whereIn('marriage_id', $internalMarriageIds)
+            ->whereNotIn('child_id', $allKnownIds)
+            ->with(['child.branch', 'marriage:id,husband_id,wife_id'])
+            ->orderBy('birth_order')
+            ->get();
+
+        if ($ghostChildren->isNotEmpty()) {
+            // Add ghost children persons
+            $ghostChildPersons = $ghostChildren->pluck('child')->filter()->unique('id');
+            $extraPersons = $extraPersons->merge($ghostChildPersons);
+
+            // Add their parent_child links
+            $ghostChildLinks = $ghostChildren->map(fn($pc) => [
+                'child_id' => $pc->child_id,
+                'marriage_id' => $pc->marriage_id,
+                'father_id' => $pc->marriage?->husband_id,
+                'mother_id' => $pc->marriage?->wife_id,
+                'birth_order' => $pc->birth_order,
+            ]);
+            $extraParentChildLinks = $extraParentChildLinks->merge($ghostChildLinks);
+
+            // Recursively collect descendants of ghost children (up to 2 levels)
+            $ghostChildIds = $ghostChildPersons->pluck('id')->toArray();
+            $this->collectDescendants(
+                $ghostChildIds,
+                array_merge($allKnownIds, $ghostChildIds),
+                $extraPersons,
+                $extraParentChildLinks,
+                $extraMarriages,
+                0,  // current depth
+                2   // max depth
+            );
+        }
+
+        return [
+            'persons' => $extraPersons,
+            'parent_child' => $extraParentChildLinks,
+            'marriages' => $extraMarriages,
+        ];
+    }
+
+    /**
+     * Recursively collect descendants (children, their spouses, marriages)
+     * for ghost children from internal marriages.
+     */
+    private function collectDescendants(
+        array $parentIds,
+        array $knownIds,
+        \Illuminate\Support\Collection &$extraPersons,
+        \Illuminate\Support\Collection &$extraParentChildLinks,
+        \Illuminate\Support\Collection &$extraMarriages,
+        int $depth,
+        int $maxDepth
+    ): void {
+        if ($depth >= $maxDepth || empty($parentIds)) {
+            return;
+        }
+
+        // Get marriages of these parents
+        $childMarriages = \App\Models\Marriage::where(function ($q) use ($parentIds) {
+                $q->whereIn('husband_id', $parentIds)
+                  ->orWhereIn('wife_id', $parentIds);
+            })
+            ->with(['husband:id,full_name,gender', 'wife:id,full_name,gender'])
+            ->get();
+
+        if ($childMarriages->isEmpty()) {
+            return;
+        }
+
+        $extraMarriages = $extraMarriages->merge($childMarriages);
+
+        // Collect spouse persons not yet known
+        $newSpouseIds = [];
+        foreach ($childMarriages as $m) {
+            if (!in_array($m->husband_id, $knownIds)) {
+                $newSpouseIds[] = $m->husband_id;
+            }
+            if (!in_array($m->wife_id, $knownIds)) {
+                $newSpouseIds[] = $m->wife_id;
+            }
+        }
+
+        if (!empty($newSpouseIds)) {
+            $newSpouseIds = array_unique($newSpouseIds);
+            $newSpouses = \App\Models\Person::whereIn('id', $newSpouseIds)->with('branch')->get();
+            $extraPersons = $extraPersons->merge($newSpouses);
+            $knownIds = array_merge($knownIds, $newSpouseIds);
+        }
+
+        // Get children of these marriages
+        $marriageIds = $childMarriages->pluck('id')->toArray();
+        $nextChildren = \App\Models\ParentChild::whereIn('marriage_id', $marriageIds)
+            ->whereNotIn('child_id', $knownIds)
+            ->with(['child.branch', 'marriage:id,husband_id,wife_id'])
+            ->orderBy('birth_order')
+            ->get();
+
+        if ($nextChildren->isEmpty()) {
+            return;
+        }
+
+        $nextChildPersons = $nextChildren->pluck('child')->filter()->unique('id');
+        $extraPersons = $extraPersons->merge($nextChildPersons);
+
+        $nextChildLinks = $nextChildren->map(fn($pc) => [
+            'child_id' => $pc->child_id,
+            'marriage_id' => $pc->marriage_id,
+            'father_id' => $pc->marriage?->husband_id,
+            'mother_id' => $pc->marriage?->wife_id,
+            'birth_order' => $pc->birth_order,
+        ]);
+        $extraParentChildLinks = $extraParentChildLinks->merge($nextChildLinks);
+
+        // Recurse deeper
+        $nextChildIds = $nextChildPersons->pluck('id')->toArray();
+        $this->collectDescendants(
+            $nextChildIds,
+            array_merge($knownIds, $nextChildIds),
+            $extraPersons,
+            $extraParentChildLinks,
+            $extraMarriages,
+            $depth + 1,
+            $maxDepth
+        );
     }
 
     /**

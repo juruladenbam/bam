@@ -9,6 +9,7 @@ interface PersonNodeData extends Person {
     originalPersonId?: number
     originalBranchId?: number
     originalBranchName?: string
+    isGhostChild?: boolean  // Person from another branch via internal marriage
     isDimmed?: boolean
     customStyle?: string
     layoutMode?: 'vertical' | 'horizontal'
@@ -41,7 +42,8 @@ function PersonNodeComponent({ data }: PersonNodeProps) {
         <div
             className={`
         relative px-4 py-3 rounded-xl shadow-sm border ${widthClass} min-h-[90px] flex flex-col justify-center z-10 transition-all duration-200 group
-        bg-white border-[#e6dbdc]
+        bg-white
+        ${data.isGhostChild ? 'border-amber-400 border-dashed' : 'border-[#e6dbdc]'}
         ${isDeceased ? 'opacity-75 grayscale' : ''}
         ${data.isGhost ? 'border-dashed opacity-60' : ''}
         ${data.isDimmed
@@ -56,7 +58,7 @@ function PersonNodeComponent({ data }: PersonNodeProps) {
                 type="target"
                 position={Position.Top}
                 id="top"
-                className="!bg-gray-400 !w-3 !h-3"
+                className="bg-gray-400! w-3! h-3!"
             />
 
             {/* Top handle for spouse upward connection */}
@@ -64,7 +66,7 @@ function PersonNodeComponent({ data }: PersonNodeProps) {
                 type="source"
                 position={Position.Top}
                 id="top-source"
-                className="!bg-transparent !border-none !w-1 !h-1"
+                className="bg-transparent! border-none! w-1! h-1!"
                 style={{ top: 0 }}
             />
 
@@ -73,14 +75,14 @@ function PersonNodeComponent({ data }: PersonNodeProps) {
                 type="source"
                 position={Position.Right}
                 id="right"
-                className="!bg-transparent !border-none !w-1 !h-1"
+                className="bg-transparent! border-none! w-1! h-1!"
                 style={{ right: 0, top: '50%' }}
             />
             <Handle
                 type="target"
                 position={Position.Left}
                 id="left"
-                className="!bg-transparent !border-none !w-1 !h-1"
+                className="bg-transparent! border-none! w-1! h-1!"
                 style={{ left: 0, top: '50%' }}
             />
 
@@ -127,9 +129,20 @@ function PersonNodeComponent({ data }: PersonNodeProps) {
                 </div>
             </div>
 
-            {/* Generation badge - hide for Gen 0 (outside spouses) */}
+            {/* Generation badge + Ghost child badge */}
             <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
-                {data.generation > 0 && <span>Gen {data.generation}</span>}
+                <div className="flex items-center gap-2">
+                    {data.generation > 0 && <span>Gen {data.generation}</span>}
+                    {data.isGhostChild && (
+                        <span 
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-medium border border-amber-200"
+                            title={`Dari ${data.originalBranchName || 'cabang lain'}`}
+                        >
+                            <span className="material-symbols-outlined text-[12px]">swap_horiz</span>
+                            {data.originalBranchName || 'Cabang lain'}
+                        </span>
+                    )}
+                </div>
                 {isDeceased && (
                     <span className="flex items-center gap-1 text-gray-400">
                         <span className="material-symbols-outlined text-sm">deceased</span>
@@ -142,7 +155,7 @@ function PersonNodeComponent({ data }: PersonNodeProps) {
                 type="source"
                 position={Position.Bottom}
                 id="bottom"
-                className="!bg-gray-400 !w-3 !h-3"
+                className="bg-gray-400! w-3! h-3!"
             />
         </div>
     )
