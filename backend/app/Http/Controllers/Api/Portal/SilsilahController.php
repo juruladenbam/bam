@@ -36,6 +36,9 @@ class SilsilahController extends Controller
                 'total_living_spouses' => $data['total_living_spouses'],
                 'total_living' => $data['total_living'],
                 'total_kk_utuh' => $data['total_kk_utuh'],
+                'total_male' => $data['total_male'],
+                'total_female' => $data['total_female'],
+                'generation_stats' => $data['generation_stats'],
             ],
         ], 'Data silsilah berhasil dimuat');
     }

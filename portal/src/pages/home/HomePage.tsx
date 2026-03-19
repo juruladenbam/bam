@@ -62,7 +62,7 @@ export function HomePage() {
         <MobileLayout>
             <div className="flex-1">
                 {/* Hero Section */}
-                <div className="relative bg-gradient-to-br from-[#181112] via-[#2d1f20] to-[#181112] text-white overflow-hidden">
+                <div className="relative bg-linear-to-br from-[#181112] via-[#2d1f20] to-[#181112] text-white overflow-hidden">
                     {/* Decorative Pattern */}
                     <div className="absolute inset-0 opacity-5">
                         <div className="absolute top-0 left-0 w-96 h-96 bg-[#ec1325] rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
@@ -177,50 +177,32 @@ export function HomePage() {
                     {/* 1. Stats Section (Full Width, Order 1) */}
                     {stats && (
                         <div className="lg:col-span-3 order-1">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                                <div className="bg-white rounded-xl p-4 md:p-5 border border-[#e6dbdc] shadow-lg">
-                                    <div className="flex items-center gap-3">
-                                        <div className="size-10 rounded-lg bg-[#ec1325]/10 flex items-center justify-center">
-                                            <span className="material-symbols-outlined text-[#ec1325]">group</span>
-                                        </div>
-                                        <div>
-                                            <p className="text-xl md:text-2xl font-bold text-[#181112]">{stats.total_persons}</p>
-                                            <p className="text-xs text-[#896165]">Total Anggota</p>
-                                        </div>
-                                    </div>
+                            <div className="bg-white/80 backdrop-blur rounded-2xl px-6 py-4 border border-[#e6dbdc] shadow-sm flex flex-wrap items-center justify-center md:justify-start gap-x-8 gap-y-2 text-sm text-[#896165]">
+                                <div className="flex items-center gap-2">
+                                    <span className="font-bold text-[#181112]">{stats.total_persons}</span> Anggota
                                 </div>
-                                <div className="bg-white rounded-xl p-4 md:p-5 border border-[#e6dbdc] shadow-lg">
-                                    <div className="flex items-center gap-3">
-                                        <div className="size-10 rounded-lg bg-green-50 flex items-center justify-center">
-                                            <span className="material-symbols-outlined text-green-600">favorite</span>
-                                        </div>
-                                        <div>
-                                            <p className="text-xl md:text-2xl font-bold text-[#181112]">{stats.total_living}</p>
-                                            <p className="text-xs text-[#896165]">Masih Hidup</p>
-                                        </div>
-                                    </div>
+                                <span className="hidden md:inline text-gray-300">•</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-bold text-green-600">{stats.total_living}</span> Hidup
                                 </div>
-                                <div className="bg-white rounded-xl p-4 md:p-5 border border-[#e6dbdc] shadow-lg">
-                                    <div className="flex items-center gap-3">
-                                        <div className="size-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                                            <span className="material-symbols-outlined text-blue-600">account_tree</span>
-                                        </div>
-                                        <div>
-                                            <p className="text-xl md:text-2xl font-bold text-[#181112]">{(data?.branches || []).filter(b => b.order <= 10).length}</p>
-                                            <p className="text-xs text-[#896165]">Qobilah</p>
-                                        </div>
-                                    </div>
+                                <span className="hidden md:inline text-gray-300">•</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-bold text-[#ec1325]">{stats.total_persons - stats.total_living}</span> Wafat
                                 </div>
-                                <div className="bg-white rounded-xl p-4 md:p-5 border border-[#e6dbdc] shadow-lg">
-                                    <div className="flex items-center gap-3">
-                                        <div className="size-10 rounded-lg bg-purple-50 flex items-center justify-center">
-                                            <span className="material-symbols-outlined text-purple-600">diversity_3</span>
-                                        </div>
-                                        <div>
-                                            <p className="text-xl md:text-2xl font-bold text-[#181112]">{stats.total_descendants}</p>
-                                            <p className="text-xs text-[#896165]">Keturunan</p>
-                                        </div>
-                                    </div>
+                                <span className="hidden md:inline text-gray-300">•</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-bold text-[#181112]">{stats.total_kk_utuh || 0}</span> KK
+                                </div>
+                                <span className="hidden md:inline text-gray-300">•</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="flex items-center gap-1 font-mono font-bold text-blue-600">
+                                        <span className="material-symbols-outlined text-[16px]">male</span>
+                                        {stats.total_male || 0}
+                                    </span>
+                                    <span className="flex items-center gap-1 font-mono font-bold text-pink-500">
+                                        <span className="material-symbols-outlined text-[16px]">female</span>
+                                        {stats.total_female || 0}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -280,7 +262,7 @@ export function HomePage() {
                             {showNibPrompt && (
                                 <Link
                                     to="/link-nib"
-                                    className="bg-gradient-to-br from-[#ec1325] to-[#c91020] border border-[#ec1325] rounded-xl p-4 hover:shadow-lg hover:scale-[1.02] transition-all group col-span-2 md:col-span-1"
+                                    className="bg-linear-to-br from-[#ec1325] to-[#c91020] border border-[#ec1325] rounded-xl p-4 hover:shadow-lg hover:scale-[1.02] transition-all group col-span-2 md:col-span-1"
                                 >
                                     <div className="size-10 rounded-lg bg-white/20 flex items-center justify-center mb-3">
                                         <span className="material-symbols-outlined text-white">fingerprint</span>

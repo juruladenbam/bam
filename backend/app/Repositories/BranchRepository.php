@@ -34,6 +34,12 @@ class BranchRepository implements BranchRepositoryInterface
             ->withCount(['persons as living_count' => function ($query) {
                 $query->where('is_alive', true);
             }])
+            ->withCount(['persons as male_count' => function ($query) {
+                $query->where('gender', 'male');
+            }])
+            ->withCount(['persons as female_count' => function ($query) {
+                $query->where('gender', 'female');
+            }])
             ->orderBy('order')
             ->get();
 

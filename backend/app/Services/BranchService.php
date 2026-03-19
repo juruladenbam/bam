@@ -52,15 +52,32 @@ class BranchService
     {
         $branches = $this->branchRepository->getAllWithStats();
 
+        // Calculate generation stats
+        // We only count persons from main branches (order <= 10) to exclude spouses-only branch if any
+        $generationStats = \App\Models\Person::whereHas('branch', function ($q) {
+                $q->where('order', '<=', 10);
+            })
+            ->selectRaw('generation, 
+                COUNT(*) as total, 
+                SUM(CASE WHEN is_alive = 1 THEN 1 ELSE 0 END) as living,
+                SUM(CASE WHEN gender = "male" THEN 1 ELSE 0 END) as male,
+                SUM(CASE WHEN gender = "female" THEN 1 ELSE 0 END) as female')
+            ->groupBy('generation')
+            ->orderBy('generation')
+            ->get();
+
         return [
             'branches' => $branches,
-            'total_descendants' => $branches->where('order', '<=', 10)->sum('persons_count'),
-            'total_spouses' => $branches->where('order', 99)->sum('persons_count'),
-            'total_living_descendants' => $branches->where('order', '<=', 10)->sum('living_count'),
-            'total_living_spouses' => $branches->where('order', 99)->sum('living_count'),
-            'total_persons' => $branches->sum('persons_count'),
-            'total_living' => $branches->sum('living_count'),
-            'total_kk_utuh' => $branches->sum('kk_utuh_count'),
+            'total_descendants' => (int) $branches->sum('persons_count'),
+            'total_spouses' => (int) $branches->sum(fn($b) => $b->spouse_count ?? 0),
+            'total_living_descendants' => (int) $branches->sum('living_count'),
+            'total_living_spouses' => (int) $branches->sum(fn($b) => $b->spouse_living_count ?? 0),
+            'total_persons' => (int) $branches->sum('persons_count') + (int) $branches->sum(fn($b) => $b->spouse_count ?? 0),
+            'total_living' => (int) $branches->sum('living_count') + (int) $branches->sum(fn($b) => $b->spouse_living_count ?? 0),
+            'total_kk_utuh' => (int) $branches->sum(fn($b) => $b->kk_utuh_count ?? 0),
+            'total_male' => (int) $branches->sum('male_count'),
+            'total_female' => (int) $branches->sum('female_count'),
+            'generation_stats' => $generationStats,
         ];
     }
 }

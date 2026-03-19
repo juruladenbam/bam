@@ -26,7 +26,17 @@ export interface Branch {
     spouse_count?: number
     spouse_living_count?: number
     kk_utuh_count?: number
+    male_count?: number
+    female_count?: number
     root_gender?: 'male' | 'female'
+}
+
+export interface GenerationStat {
+    generation: number
+    total: number
+    living: number
+    male: number
+    female: number
 }
 
 export interface Marriage {

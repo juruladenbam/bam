@@ -87,6 +87,8 @@ function BranchPageContent() {
 
         const personMap = new Map(persons.map(p => [p.id, p]))
         const living = persons.filter(p => p.is_alive).length
+        const male = persons.filter(p => p.gender === 'male').length
+        const female = persons.filter(p => p.gender === 'female').length
 
         // KK Utuh: Both husband and wife alive & active marriage
         const livingHeadIds = new Set<number>()
@@ -100,6 +102,8 @@ function BranchPageContent() {
 
         return {
             living,
+            male,
+            female,
             kkUtuh: livingHeadIds.size
         }
     }, [persons, marriages])
@@ -372,19 +376,18 @@ function BranchPageContent() {
                             <div className="flex items-center gap-3 text-xs text-[#896165]">
                                 <span className="flex items-center gap-1" title="Total Anggota">
                                     <span className="material-symbols-outlined text-[14px]">group</span>
-                                    {persons?.length || 0}
-                                </span>
-                                <span>•</span>
-                                <span className="flex items-center gap-1 text-green-600 font-medium" title="Masih Hidup">
-                                    <span className="material-symbols-outlined text-[14px]">favorite</span>
-                                    {stats.living}
+                                    {stats.living}/{persons?.length || 0}
                                 </span>
                                 <span>•</span>
                                 <span className="flex items-center gap-1 text-orange-600 font-medium" title="Keluarga Utuh (KK)">
                                     <span className="material-symbols-outlined text-[14px]">home</span>
                                     {stats.kkUtuh}
                                 </span>
-
+                                <span>•</span>
+                                <div className="flex items-center gap-1 font-mono font-bold">
+                                    <span className="text-blue-600">♂{stats.male}</span>
+                                    <span className="text-pink-500">♀{stats.female}</span>
+                                </div>
                             </div>
                         </div>
                     </div>

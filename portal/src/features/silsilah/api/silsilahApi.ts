@@ -140,6 +140,9 @@ export const silsilahApi = {
             total_living_descendants: number
             total_living_spouses: number
             total_kk_utuh: number
+            total_male: number
+            total_female: number
+            generation_stats: import('../types').GenerationStat[]
         }
     }>('/portal/silsilah'),
 

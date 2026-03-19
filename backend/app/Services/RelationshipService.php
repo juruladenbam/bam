@@ -33,6 +33,64 @@ class RelationshipService
         $personA = $this->personRepository->findOrFail($personAId);
         $personB = $this->personRepository->findOrFail($personBId);
 
+        // Check if target (personB) is a spouse from outside the family
+        // A spouse has no branch_id (or was originally gen 0)
+        $isSpouse = $this->isExternalSpouse($personB);
+
+        if ($isSpouse) {
+            // Find the internal partner (keturunan) of this spouse
+            $internalPartner = $this->findInternalPartner($personB);
+
+            if ($internalPartner && $internalPartner->id !== $personAId) {
+                // Calculate relationship to the internal partner instead
+                $partnerResult = $this->calculate($personAId, $internalPartner->id);
+
+                if ($partnerResult['relationship'] !== 'unknown') {
+                    // Append "Ipar" to the label
+                    $iparLabel = $this->convertToIparLabel($partnerResult['label'], $personB->gender);
+                    $iparSapaan = $this->getIparSapaan($partnerResult, $personA, $personB);
+
+                    return [
+                        'relationship' => $partnerResult['relationship'] . '_ipar',
+                        'label' => $iparLabel,
+                        'label_javanese' => $partnerResult['label_javanese'] ? $partnerResult['label_javanese'] . ' (Ipar)' : null,
+                        'path' => $partnerResult['path'],
+                        'lca_id' => $partnerResult['lca_id'],
+                        'lca_name' => $partnerResult['lca_name'] ?? null,
+                        'distance_a' => $partnerResult['distance_a'] ?? null,
+                        'distance_b' => $partnerResult['distance_b'] ?? null,
+                        'sapaan' => $iparSapaan,
+                        'is_ipar' => true,
+                        'partner_name' => $internalPartner->full_name,
+                    ];
+                }
+            }
+        }
+
+        // Check if viewer (personA) is a spouse - calculate via their partner
+        $isViewerSpouse = $this->isExternalSpouse($personA);
+
+        if ($isViewerSpouse) {
+            $viewerPartner = $this->findInternalPartner($personA);
+
+            if ($viewerPartner && $viewerPartner->id !== $personBId) {
+                $partnerResult = $this->calculate($viewerPartner->id, $personBId);
+
+                if ($partnerResult['relationship'] !== 'unknown') {
+                    // For viewer being spouse, the relationship label should be
+                    // from the partner's perspective with "Ipar" context
+                    $iparLabel = $this->convertToIparLabel($partnerResult['label'], $personB->gender);
+
+                    return array_merge($partnerResult, [
+                        'relationship' => $partnerResult['relationship'] . '_ipar',
+                        'label' => $iparLabel,
+                        'is_ipar' => true,
+                    ]);
+                }
+            }
+        }
+
+        // Standard calculation for descendants
         // Build ancestor paths
         $pathA = $this->buildAncestorPath($personAId);
         $pathB = $this->buildAncestorPath($personBId);
@@ -54,7 +112,6 @@ class RelationshipService
         $distA = $this->getDistanceToAncestor($personAId, $lca['id']);
         $distB = $this->getDistanceToAncestor($personBId, $lca['id']);
 
-        // Determine relationship
         // Determine relationship (Target relative to Viewer)
         $relationship = $this->determineRelationship($distB, $distA);
         $label = $this->getRelationshipLabel($relationship, $personB->gender, $distA, $distB);
@@ -74,6 +131,111 @@ class RelationshipService
             'distance_b' => $distB,
             'sapaan' => $this->getSapaan($relationship, $personA, $personB),
         ];
+    }
+
+    /**
+     * Check if a person is an external spouse (not a descendant)
+     */
+    protected function isExternalSpouse(Person $person): bool
+    {
+        // External spouses have no branch_id
+        if ($person->branch_id === null) {
+            return true;
+        }
+
+        // Check if they have a parent_child record (descendants do, spouses don't)
+        $hasParent = ParentChild::where('child_id', $person->id)->exists();
+        if (!$hasParent && !$person->is_root) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Find the internal (descendant) partner of an external spouse
+     */
+    protected function findInternalPartner(Person $spouse): ?Person
+    {
+        $marriage = Marriage::where('husband_id', $spouse->id)
+            ->orWhere('wife_id', $spouse->id)
+            ->first();
+
+        if (!$marriage) {
+            return null;
+        }
+
+        $partnerId = $marriage->husband_id === $spouse->id
+            ? $marriage->wife_id
+            : $marriage->husband_id;
+
+        return $this->personRepository->find($partnerId);
+    }
+
+    /**
+     * Convert relationship label to "Ipar" variant
+     */
+    protected function convertToIparLabel(string $label, string $gender): string
+    {
+        // Map base labels to ipar versions
+        $iparMap = [
+            'Diri Sendiri' => $gender === 'male' ? 'Suami' : 'Istri',
+            'Anak Laki-laki' => $gender === 'male' ? 'Menantu Laki-laki' : 'Menantu Perempuan',
+            'Anak Perempuan' => $gender === 'male' ? 'Menantu Laki-laki' : 'Menantu Perempuan',
+            'Ayah' => $gender === 'male' ? 'Mertua Laki-laki' : 'Mertua Perempuan',
+            'Ibu' => $gender === 'male' ? 'Mertua Laki-laki' : 'Mertua Perempuan',
+            'Saudara Laki-laki' => $gender === 'male' ? 'Ipar Laki-laki' : 'Ipar Perempuan',
+            'Saudara Perempuan' => $gender === 'male' ? 'Ipar Laki-laki' : 'Ipar Perempuan',
+        ];
+
+        if (isset($iparMap[$label])) {
+            return $iparMap[$label];
+        }
+
+        // For other relationships, append "(Ipar)"
+        return $label . ' (Ipar)';
+    }
+
+    /**
+     * Get appropriate sapaan for ipar relationship
+     */
+    protected function getIparSapaan(array $partnerResult, Person $viewer, Person $target): ?string
+    {
+        $category = $target->gender === 'male' ? 'male' : 'female';
+        $baseRelationship = $partnerResult['relationship'];
+        $isOlder = ($target->birth_date && $viewer->birth_date)
+            ? $target->birth_date < $viewer->birth_date
+            : null;
+
+        // Direct spouse of viewer's sibling/cousin = Ipar
+        if (in_array($baseRelationship, ['sibling', 'cousin'])) {
+            if ($isOlder === true) {
+                return $category === 'male' ? 'Mas (Ipar)' : 'Mbak (Ipar)';
+            }
+            return $category === 'male' ? 'Mas (Ipar)' : 'Mbak (Ipar)';
+        }
+
+        // Spouse of uncle/aunt = use same sapaan
+        if ($baseRelationship === 'uncle_aunt') {
+            return $partnerResult['sapaan'] ? $partnerResult['sapaan'] . ' (Ipar)' : ($category === 'male' ? 'Paman (Ipar)' : 'Bibi (Ipar)');
+        }
+
+        // Spouse of child = Menantu
+        if ($baseRelationship === 'child') {
+            return $category === 'male' ? 'Mas / Nama (Menantu)' : 'Mbak / Nama (Menantu)';
+        }
+
+        // Spouse of nephew/niece
+        if ($baseRelationship === 'niece_nephew') {
+            return $category === 'male' ? 'Mas / Nama' : 'Mbak / Nama';
+        }
+
+        // Fallback: use partner's sapaan with Ipar suffix
+        if (!empty($partnerResult['sapaan'])) {
+            return $partnerResult['sapaan'] . ' (Ipar)';
+        }
+
+        return $category === 'male' ? 'Mas' : 'Mbak';
     }
 
     /**
@@ -416,6 +578,9 @@ class RelationshipService
     {
         $generation = $person->generation;
         
+        // Check if person is an external spouse (menantu)
+        $isSpouse = $this->isExternalSpouse($person);
+
         $label = match ($generation) {
             1 => 'Root',
             2 => 'Anak',
@@ -428,11 +593,8 @@ class RelationshipService
             default => 'Generasi ' . $generation,
         };
 
-        // Check if person is a spouse (NIB doesn't end with 000)
-        $isSpouse = $person->nib && !str_ends_with($person->nib, '000');
-        
         if ($isSpouse) {
-            $label = 'Pasangan ' . $label;
+            $label = 'Menantu ' . $label;
         }
 
         return [
