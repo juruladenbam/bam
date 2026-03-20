@@ -29,6 +29,26 @@ class MarriageRepository implements MarriageRepositoryInterface
             $query->where('is_internal', $filters['is_internal']);
         }
 
+        if (isset($filters['branch_id'])) {
+            $query->whereHas('husband', function ($q) use ($filters) {
+                $q->where('branch_id', $filters['branch_id']);
+            });
+        }
+
+        if (isset($filters['is_complete'])) {
+            if ($filters['is_complete']) {
+                $query->where('is_active', true)
+                    ->whereHas('husband', function($q) { $q->where('is_alive', true); })
+                    ->whereHas('wife', function($q) { $q->where('is_alive', true); });
+            } else {
+                $query->where(function($q) {
+                    $q->where('is_active', false)
+                      ->orWhereHas('husband', function($q2) { $q2->where('is_alive', false); })
+                      ->orWhereHas('wife', function($q2) { $q2->where('is_alive', false); });
+                });
+            }
+        }
+
         if (isset($filters['year'])) {
             $query->whereYear('marriage_date', $filters['year']);
         }

@@ -24,7 +24,23 @@ class MarriageController extends Controller
      */
     public function index(Request $request)
     {
-        $filters = $request->only(['is_active', 'is_internal', 'year', 'per_page', 'search']);
+        $filters = $request->only(['year', 'per_page', 'search']);
+
+        if ($request->has('is_active')) {
+            $filters['is_active'] = $request->boolean('is_active');
+        }
+
+        if ($request->has('is_internal')) {
+            $filters['is_internal'] = $request->boolean('is_internal');
+        }
+
+        if ($request->has('is_complete')) {
+            $filters['is_complete'] = $request->boolean('is_complete');
+        }
+
+        if ($request->has('branch_id')) {
+            $filters['branch_id'] = (int) $request->branch_id;
+        }
 
         $marriages = $this->marriageService->getAllMarriages($filters);
 

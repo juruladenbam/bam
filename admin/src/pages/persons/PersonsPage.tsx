@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { usePersons, useBranches, useDeletePerson } from '../../features/admin/hooks/useAdmin'
 import type { PersonFilters, Person, Branch } from '../../types'
+import api from '../../lib/api'
 
 export function PersonsPage() {
     const [filters, setFilters] = useState<PersonFilters>({
@@ -9,8 +10,9 @@ export function PersonsPage() {
         page: 1,
     })
     const [search, setSearch] = useState('')
+    const [isExporting, setIsExporting] = useState(false)
 
-    const { data, isLoading, error } = usePersons({ ...filters, search: search || undefined })
+    const { data, isLoading, error } = usePersons(filters)
     const { data: branchesData } = useBranches()
     const deletePerson = useDeletePerson()
 
@@ -19,11 +21,12 @@ export function PersonsPage() {
     const meta = data?.meta
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value)
-        setFilters(prev => ({ ...prev, page: 1 }))
+        const value = e.target.value
+        setSearch(value)
+        setFilters(prev => ({ ...prev, search: value, page: 1 }))
     }
 
-    const handleFilterChange = <K extends keyof PersonFilters>(key: K, value: PersonFilters[K]) => {
+    const handleFilterChange = (key: keyof PersonFilters, value: any) => {
         setFilters(prev => ({
             ...prev,
             [key]: value,
@@ -41,6 +44,33 @@ export function PersonsPage() {
         setFilters(prev => ({ ...prev, page: newPage }))
     }
 
+    const handleExport = async () => {
+        try {
+            setIsExporting(true)
+            const params = new URLSearchParams()
+            Object.entries({ ...filters, search: search || undefined }).forEach(([k, v]) => {
+                if (v !== undefined && v !== '') params.append(k, String(v))
+            })
+
+            const response = await api.get(`/export/persons?${params.toString()}`, {
+                responseType: 'blob'
+            })
+
+            const url = window.URL.createObjectURL(new Blob([response as any]))
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', `silsilah_anggota_${new Date().getTime()}.csv`)
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
+        } catch (err) {
+            console.error('Export gagal:', err)
+            alert('Gagal mengekspor data. Silakan coba lagi.')
+        } finally {
+            setIsExporting(false)
+        }
+    }
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -48,20 +78,20 @@ export function PersonsPage() {
                 <div>
                     <h1 className="text-xl font-bold text-[#181112]">Daftar Anggota</h1>
                     <p className="text-sm text-[#896165]">
-                        {meta ? `Total ${meta.total} anggota` : 'Kelola data anggota keluarga Bani Abdul Manan'}
+                        {meta ? `Total ${meta.total} anggota` : 'Kelola data silsilah keluarga'}
                     </p>
                 </div>
                 <Link
                     to="/persons/new"
                     className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#ec1325] text-white rounded-lg font-medium hover:bg-red-600 transition-colors"
                 >
-                    <span className="material-symbols-outlined text-[18px]">add</span>
+                    <span className="material-symbols-outlined text-[18px]">person_add</span>
                     Tambah Anggota
                 </Link>
             </div>
 
             {/* Filters */}
-            <div className="bg-white rounded-xl p-4 border border-[#e6dbdc] flex flex-wrap gap-4">
+            <div className="bg-white rounded-xl p-4 border border-[#e6dbdc] flex flex-wrap gap-4 items-center">
                 <div className="flex-1 min-w-48">
                     <input
                         type="text"
@@ -82,9 +112,19 @@ export function PersonsPage() {
                     ))}
                 </select>
                 <select
+                    value={filters.generation || ''}
+                    onChange={(e) => handleFilterChange('generation', e.target.value ? Number(e.target.value) : undefined)}
+                    className="px-4 py-2 border border-[#e6dbdc] rounded-lg bg-white focus:outline-none focus:border-[#ec1325]/50"
+                >
+                    <option value="">Semua Gen</option>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(g => (
+                        <option key={g} value={g}>Gen {g}</option>
+                    ))}
+                </select>
+                <select
                     value={filters.gender || ''}
                     onChange={(e) => handleFilterChange('gender', (e.target.value || undefined) as 'male' | 'female' | undefined)}
-                    className="px-4 py-2 border border-[#e6dbdc] rounded-lg bg-white focus:outline-none focus:border-[#ec1325]/50\"
+                    className="px-4 py-2 border border-[#e6dbdc] rounded-lg bg-white focus:outline-none focus:border-[#ec1325]/50"
                 >
                     <option value="">Semua Gender</option>
                     <option value="male">Laki-laki</option>
@@ -97,8 +137,21 @@ export function PersonsPage() {
                 >
                     <option value="">Semua Status</option>
                     <option value="1">Masih Hidup</option>
-                    <option value="0">Almarhum/Almarhumah</option>
+                    <option value="0">Almarhum</option>
                 </select>
+
+                <div className="h-8 w-px bg-[#e6dbdc] mx-1 hidden lg:block"></div>
+
+                <button
+                    onClick={handleExport}
+                    disabled={isExporting}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#e6dbdc] text-[#181112] rounded-lg font-medium hover:bg-[#f8f6f6] transition-colors disabled:opacity-50"
+                >
+                    <span className={`material-symbols-outlined text-[18px] ${isExporting ? 'animate-spin' : ''}`}>
+                        {isExporting ? 'progress_activity' : 'download'}
+                    </span>
+                    {isExporting ? 'Mengekspor...' : 'Ekspor'}
+                </button>
             </div>
 
             {/* Table */}
@@ -154,7 +207,7 @@ export function PersonsPage() {
                                         </div>
                                     </td>
                                     <td className="px-4 py-3 text-sm text-[#181112]">
-                                        {person.branch?.name || '-'}
+                                        {person.qobilah_name || '-'}
                                     </td>
                                     <td className="px-4 py-3 text-sm text-[#181112]">
                                         {person.generation}

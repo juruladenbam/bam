@@ -94,6 +94,12 @@ export interface DashboardStats {
     total_alive: number
     total_marriages: number
     total_branches: number
+    total_male: number
+    total_female: number
+    total_descendants: number
+    total_spouses: number
+    total_kk_utuh: number
+    pending_submissions: number
 }
 
 export interface RecentPerson {
@@ -105,6 +111,8 @@ export interface RecentPerson {
 
 export interface DashboardData {
     stats: DashboardStats
+    generation_stats: any[]
+    branch_stats: any[]
     recent_persons: RecentPerson[]
 }
 

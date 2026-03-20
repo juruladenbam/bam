@@ -1,21 +1,25 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useMarriages, useDeleteMarriage } from '../../features/admin/hooks/useAdmin'
+import { useMarriages, useDeleteMarriage, useBranches } from '../../features/admin/hooks/useAdmin'
 import type { MarriageFilters, Marriage } from '../../types'
+import api from '../../lib/api'
 
 export function MarriagesPage() {
     const [filters, setFilters] = useState<MarriageFilters>({
         per_page: 15,
         page: 1,
     })
+    const [isExporting, setIsExporting] = useState(false)
 
+    const { data: branchesData } = useBranches()
     const { data, isLoading, error } = useMarriages(filters)
     const deleteMarriage = useDeleteMarriage()
 
     const marriages: Marriage[] = data?.data || []
+    const branches = branchesData?.data || []
     const meta = data?.meta
 
-    const handleFilterChange = (key: keyof MarriageFilters, value: string | boolean | undefined) => {
+    const handleFilterChange = (key: keyof MarriageFilters, value: string | boolean | number | undefined) => {
         setFilters(prev => ({
             ...prev,
             [key]: value === '' ? undefined : value,
@@ -31,6 +35,33 @@ export function MarriagesPage() {
 
     const handlePageChange = (newPage: number) => {
         setFilters(prev => ({ ...prev, page: newPage }))
+    }
+
+    const handleExport = async () => {
+        try {
+            setIsExporting(true)
+            const params = new URLSearchParams()
+            Object.entries(filters).forEach(([k, v]) => {
+                if (v !== undefined && v !== '') params.append(k, String(v))
+            })
+
+            const response = await api.get(`/export/marriages?${params.toString()}`, {
+                responseType: 'blob'
+            })
+
+            const url = window.URL.createObjectURL(new Blob([response as any]))
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', `silsilah_pernikahan_${new Date().getTime()}.csv`)
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
+        } catch (err) {
+            console.error('Export gagal:', err)
+            alert('Gagal mengekspor data. Silakan coba lagi.')
+        } finally {
+            setIsExporting(false)
+        }
     }
 
     return (
@@ -53,7 +84,17 @@ export function MarriagesPage() {
             </div>
 
             {/* Filters */}
-            <div className="bg-white rounded-xl p-4 border border-[#e6dbdc] flex flex-wrap gap-4">
+            <div className="bg-white rounded-xl p-4 border border-[#e6dbdc] flex flex-wrap gap-4 items-center">
+                <select
+                    value={filters.branch_id || ''}
+                    onChange={(e) => handleFilterChange('branch_id', e.target.value ? Number(e.target.value) : undefined)}
+                    className="px-4 py-2 border border-[#e6dbdc] rounded-lg bg-white focus:outline-none focus:border-[#ec1325]/50"
+                >
+                    <option value="">Semua Qobilah</option>
+                    {branches.map((b) => (
+                        <option key={b.id} value={b.id}>{b.name}</option>
+                    ))}
+                </select>
                 <select
                     value={filters.is_active === undefined ? '' : filters.is_active ? '1' : '0'}
                     onChange={(e) => handleFilterChange('is_active', e.target.value === '' ? undefined : e.target.value === '1')}
@@ -72,6 +113,28 @@ export function MarriagesPage() {
                     <option value="1">Internal (Kerabat)</option>
                     <option value="0">Eksternal</option>
                 </select>
+                <select
+                    value={filters.is_complete === undefined ? '' : filters.is_complete ? '1' : '0'}
+                    onChange={(e) => handleFilterChange('is_complete', e.target.value === '' ? undefined : e.target.value === '1')}
+                    className="px-4 py-2 border border-[#e6dbdc] rounded-lg bg-white focus:outline-none focus:border-[#ec1325]/50"
+                >
+                    <option value="">Status Data</option>
+                    <option value="1">Lengkap</option>
+                    <option value="0">Tidak Lengkap</option>
+                </select>
+
+                <div className="h-8 w-px bg-[#e6dbdc] mx-1 hidden lg:block"></div>
+
+                <button
+                    onClick={handleExport}
+                    disabled={isExporting}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#e6dbdc] text-[#181112] rounded-lg font-medium hover:bg-[#f8f6f6] transition-colors disabled:opacity-50"
+                >
+                    <span className={`material-symbols-outlined text-[18px] ${isExporting ? 'animate-spin' : ''}`}>
+                        {isExporting ? 'progress_activity' : 'download'}
+                    </span>
+                    {isExporting ? 'Mengekspor...' : 'Ekspor'}
+                </button>
             </div>
 
             {/* Table */}
@@ -81,6 +144,7 @@ export function MarriagesPage() {
                         <tr className="bg-[#f8f6f6] border-b border-[#e6dbdc]">
                             <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Suami</th>
                             <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Istri</th>
+                            <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Qobilah</th>
                             <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Tahun</th>
                             <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Anak</th>
                             <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Status</th>
@@ -131,6 +195,9 @@ export function MarriagesPage() {
                                                 {marriage.wife?.full_name || 'Tidak diketahui'}
                                             </span>
                                         </div>
+                                    </td>
+                                    <td className="px-4 py-3 text-sm text-[#181112]">
+                                        {marriage.husband?.qobilah_name || '-'}
                                     </td>
                                     <td className="px-4 py-3 text-sm text-[#181112]">
                                         {marriage.marriage_date ? new Date(marriage.marriage_date).getFullYear() : '-'}

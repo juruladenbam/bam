@@ -25,9 +25,13 @@ class PersonController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only([
-            'branch_id', 'generation', 'gender', 'is_alive',
+            'branch_id', 'generation', 'gender',
             'search', 'sort_by', 'sort_dir', 'per_page'
         ]);
+
+        if ($request->has('is_alive')) {
+            $filters['is_alive'] = $request->boolean('is_alive');
+        }
 
         $persons = $this->personService->getAllPersons($filters);
 

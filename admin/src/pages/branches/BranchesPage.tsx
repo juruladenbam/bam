@@ -175,18 +175,22 @@ export function BranchesPage() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-3 pt-4 border-t border-[#e6dbdc]">
+                        <div className="grid grid-cols-4 gap-2 pt-4 border-t border-[#e6dbdc]">
                             <div className="text-center">
-                                <p className="text-lg font-bold text-[#181112]">{branch.persons_count || 0}</p>
-                                <p className="text-xs text-[#896165]">Anggota</p>
+                                <p className="text-sm font-bold text-[#181112]">{branch.persons_count || 0}</p>
+                                <p className="text-[10px] text-[#896165] font-bold uppercase tracking-tighter">Anggota</p>
                             </div>
                             <div className="text-center">
-                                <p className="text-lg font-bold text-green-600">{branch.living_count || 0}</p>
-                                <p className="text-xs text-[#896165]">Hidup</p>
+                                <p className="text-sm font-bold text-[#896165]">{branch.spouse_count || 0}</p>
+                                <p className="text-[10px] text-[#896165] font-bold uppercase tracking-tighter">Menantu</p>
                             </div>
                             <div className="text-center">
-                                <p className="text-lg font-bold text-[#896165]">{branch.spouse_count || 0}</p>
-                                <p className="text-xs text-[#896165]">Menantu</p>
+                                <p className="text-sm font-bold text-blue-600">{(branch as any).male_count - ((branch as any).spouse_male_count || 0)}</p>
+                                <p className="text-[10px] text-blue-600 font-bold uppercase tracking-tighter">Laki (K)</p>
+                            </div>
+                            <div className="text-center">
+                                <p className="text-sm font-bold text-pink-500">{(branch as any).female_count - ((branch as any).spouse_female_count || 0)}</p>
+                                <p className="text-[10px] text-pink-500 font-bold uppercase tracking-tighter">Perem (K)</p>
                             </div>
                         </div>
                     </div>

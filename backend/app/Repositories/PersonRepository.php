@@ -44,9 +44,11 @@ class PersonRepository implements PersonRepositoryInterface
 
         $sortBy = $filters['sort_by'] ?? 'full_name';
         $sortDir = $filters['sort_dir'] ?? 'asc';
-        $query->orderBy($sortBy, $sortDir);
-
-        return $query->with('branch')->paginate($filters['per_page'] ?? 15);
+        return $query->with([
+            'branch',
+            'marriagesAsHusband.wife.branch',
+            'marriagesAsWife.husband.branch'
+        ])->paginate($filters['per_page'] ?? 15);
     }
 
     public function find(int $id): ?Person

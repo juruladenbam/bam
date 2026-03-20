@@ -14,6 +14,7 @@ export interface Person {
     parents?: Person[] // derived from getParentsAttribute
     photo_url?: string
     branch?: Branch
+    qobilah_name?: string
     created_at?: string
     updated_at?: string
 }
@@ -27,6 +28,9 @@ export interface Branch {
     living_count?: number
     spouse_count?: number
     spouse_living_count?: number
+    male_count?: number
+    female_count?: number
+    kk_utuh_count?: number
     root_gender?: 'male' | 'female'
 }
 
@@ -67,16 +71,19 @@ export interface PersonFilters {
     generation?: number
     gender?: 'male' | 'female'
     is_alive?: boolean
+    is_complete?: boolean
     search?: string
+    page?: number
+    per_page?: number
     sort_by?: string
     sort_dir?: 'asc' | 'desc'
-    per_page?: number
-    page?: number
 }
 
 export interface MarriageFilters {
     is_active?: boolean
     is_internal?: boolean
+    is_complete?: boolean
+    branch_id?: number
     year?: number
     search?: string
     per_page?: number

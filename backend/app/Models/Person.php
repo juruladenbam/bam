@@ -43,6 +43,7 @@ class Person extends Model
 
     protected $appends = [
         'parent_marriage_id',
+        'qobilah_name',
     ];
 
     public function branch(): BelongsTo

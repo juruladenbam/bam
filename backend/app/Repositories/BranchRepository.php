@@ -97,12 +97,22 @@ class BranchRepository implements BranchRepositoryInterface
             $spouseFemale = 0;
 
             foreach ($marriages as $marriage) {
-                $spouseTotal++;
-                // Check which one is the external spouse (not in personIds)
+                // Determine external spouse
                 $isHusbandInternal = $personIds->contains($marriage->husband_id);
-                $externalSpouse = $isHusbandInternal ? $marriage->wife : $marriage->husband;
+                $isWifeInternal = $personIds->contains($marriage->wife_id);
                 
+                // If both are internal or both are external, skip special logic or handle as needed
+                // Usually one is internal, one is external
+                if ($isHusbandInternal && !$isWifeInternal) {
+                    $externalSpouse = $marriage->wife;
+                } elseif (!$isHusbandInternal && $isWifeInternal) {
+                    $externalSpouse = $marriage->husband;
+                } else {
+                    continue; // Skip internal-internal or external-external for spouse count
+                }
+
                 if ($externalSpouse) {
+                    $spouseTotal++;
                     if ($externalSpouse->is_alive) {
                         $spouseLiving++;
                     }
@@ -116,6 +126,8 @@ class BranchRepository implements BranchRepositoryInterface
 
             $branch->spouse_count = $spouseTotal;
             $branch->spouse_living_count = $spouseLiving;
+            $branch->spouse_male_count = $spouseMale;
+            $branch->spouse_female_count = $spouseFemale;
             
             // Add spouse genders to the total branch counts
             $branch->male_count += $spouseMale;

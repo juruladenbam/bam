@@ -21,6 +21,8 @@ Route::post('/logout', [\App\Http\Controllers\Api\Portal\AuthController::class, 
 
 // Dashboard
 Route::get('/dashboard', [\App\Http\Controllers\Api\Admin\DashboardController::class, 'index']);
+Route::get('/export/persons', [\App\Http\Controllers\Api\Admin\ExportController::class, 'persons']);
+Route::get('/export/marriages', [\App\Http\Controllers\Api\Admin\ExportController::class, 'marriages']);
 
 // Branches
 Route::get('/branches', [BranchController::class, 'index']);
