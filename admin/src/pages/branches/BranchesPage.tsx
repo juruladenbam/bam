@@ -66,27 +66,37 @@ export function BranchesPage() {
                     <p className="text-sm text-[#896165]">Total {branches.length} qobilah</p>
                 </div>
 
-                <div className="flex items-center gap-2 bg-white p-1 rounded-lg border border-[#e6dbdc]">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                     <button
-                        onClick={() => setSortBy('order')}
-                        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2 ${sortBy === 'order'
+                        onClick={() => window.open('/branches/print', '_blank')}
+                        className="px-4 py-2 bg-white border border-[#e6dbdc] text-[#181112] rounded-lg font-medium hover:bg-[#f8f6f6] transition-colors flex items-center gap-2 shadow-sm"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">print_connect</span>
+                        Cetak Bagan Silsilah (PDF)
+                    </button>
+
+                    <div className="flex items-center gap-2 bg-white p-1 rounded-lg border border-[#e6dbdc]">
+                        <button
+                            onClick={() => setSortBy('order')}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2 ${sortBy === 'order'
                                 ? 'bg-[#ec1325] text-white shadow-sm'
                                 : 'text-[#896165] hover:bg-[#f8f6f6]'
-                            }`}
-                    >
-                        <span className="material-symbols-outlined text-[18px]">format_list_numbered</span>
-                        Sesuai Urutan
-                    </button>
-                    <button
-                        onClick={() => setSortBy('count')}
-                        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2 ${sortBy === 'count'
+                                }`}
+                        >
+                            <span className="material-symbols-outlined text-[18px]">format_list_numbered</span>
+                            Sesuai Urutan
+                        </button>
+                        <button
+                            onClick={() => setSortBy('count')}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2 ${sortBy === 'count'
                                 ? 'bg-[#ec1325] text-white shadow-sm'
                                 : 'text-[#896165] hover:bg-[#f8f6f6]'
-                            }`}
-                    >
-                        <span className="material-symbols-outlined text-[18px]">group_add</span>
-                        Terbanyak
-                    </button>
+                                }`}
+                        >
+                            <span className="material-symbols-outlined text-[18px]">group_add</span>
+                            Terbanyak
+                        </button>
+                    </div>
                 </div>
             </div>
 

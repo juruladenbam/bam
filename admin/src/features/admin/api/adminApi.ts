@@ -140,6 +140,13 @@ export const adminApi = {
     // Branches
     getBranches,
     getBranch,
+    // Export
+    getTreeExport: () => api.get('/export/tree') as unknown as ApiResponse<{
+        persons: Person[]
+        marriages: Marriage[]
+        parent_child: any[]
+        branches: Branch[]
+    }>,
 }
 
 export default adminApi

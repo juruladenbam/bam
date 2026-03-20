@@ -12,6 +12,7 @@ import { NewsListPage } from './pages/news/NewsListPage'
 import { NewsFormPage } from './pages/news/NewsFormPage'
 import { MediaListPage } from './pages/media/MediaListPage'
 import { MediaUploadPage } from './pages/media/MediaUploadPage'
+import { BranchPrintPage } from './pages/branches/BranchPrintPage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { SubmissionListPage } from './pages/submissions/SubmissionListPage'
 import { SubmissionDetailPage } from './pages/submissions/SubmissionDetailPage'
@@ -30,6 +31,9 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
+
+        {/* Specialized Print Route (No Layout) */}
+        <Route path="/branches/print" element={<BranchPrintPage />} />
 
         {/* Protected Routes */}
         <Route path="/*" element={

@@ -106,6 +106,7 @@ class ExportController extends Controller
             $handle = fopen('php://output', 'w');
             fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
 
+            // Header
             fputcsv($handle, [
                 'ID',
                 'Suami',
@@ -134,6 +135,28 @@ class ExportController extends Controller
         }, 200, [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    /**
+     * Get full tree data for print
+     */
+    public function tree()
+    {
+        $persons = \App\Models\Person::with('branch')->orderBy('generation')->get();
+        $marriages = \App\Models\Marriage::with(['husband:id,full_name,gender', 'wife:id,full_name,gender'])->get();
+        $parentChild = \App\Models\ParentChild::orderBy('birth_order')->get();
+        $branches = \App\Models\Branch::orderBy('order')->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data silsilah lengkap berhasil dimuat',
+            'data' => [
+                'persons' => $persons,
+                'marriages' => $marriages,
+                'parent_child' => $parentChild,
+                'branches' => $branches,
+            ]
         ]);
     }
 }

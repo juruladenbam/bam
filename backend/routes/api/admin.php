@@ -23,6 +23,7 @@ Route::post('/logout', [\App\Http\Controllers\Api\Portal\AuthController::class, 
 Route::get('/dashboard', [\App\Http\Controllers\Api\Admin\DashboardController::class, 'index']);
 Route::get('/export/persons', [\App\Http\Controllers\Api\Admin\ExportController::class, 'persons']);
 Route::get('/export/marriages', [\App\Http\Controllers\Api\Admin\ExportController::class, 'marriages']);
+Route::get('/export/tree', [\App\Http\Controllers\Api\Admin\ExportController::class, 'tree']);
 
 // Branches
 Route::get('/branches', [BranchController::class, 'index']);
