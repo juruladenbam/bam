@@ -27,6 +27,7 @@ export interface CalendarEvent {
     thumbnail?: string
     label?: string
     person_name?: string
+    qobilah_name?: string
     hijri_date?: string
     commemoration_type?: string
 }

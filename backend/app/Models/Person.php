@@ -119,4 +119,26 @@ class Person extends Model
     {
         return $this->parentChild?->marriage_id;
     }
+
+    public function getQobilahNameAttribute(): ?string
+    {
+        if ($this->branch) {
+            return $this->branch->name;
+        }
+
+        if ($this->is_root) {
+            return null;
+        }
+
+        // Try to get from spouses
+        foreach ($this->marriagesAsHusband as $m) {
+            if ($m->wife?->branch) return $m->wife->branch->name;
+        }
+
+        foreach ($this->marriagesAsWife as $m) {
+            if ($m->husband?->branch) return $m->husband->branch->name;
+        }
+
+        return null;
+    }
 }

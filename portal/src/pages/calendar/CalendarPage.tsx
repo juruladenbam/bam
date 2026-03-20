@@ -317,7 +317,7 @@ export function CalendarPage() {
             <div className="relative flex-1">
                 {/* Overlay Blur for Unlinked Users */}
                 {showBlurOverlay && (
-                    <div className="absolute inset-0 z-[100] backdrop-blur-md bg-white/30 flex items-center justify-center px-6">
+                    <div className="absolute inset-0 z-100 backdrop-blur-md bg-white/30 flex items-center justify-center px-6">
                         <div className="bg-white rounded-2xl shadow-2xl border border-[#e6dbdc] p-8 max-w-sm w-full text-center animate-in fade-in zoom-in duration-300">
                             <div className="size-16 rounded-full bg-[#ec1325]/10 flex items-center justify-center mx-auto mb-6 text-[#ec1325]">
                                 <span className="material-symbols-outlined text-4xl">link_off</span>
@@ -555,7 +555,7 @@ export function CalendarPage() {
                                                     </div>
                                                     <p className="text-xs text-gray-500 mt-0.5">
                                                         {format(new Date(event.date), 'd MMM yyyy', { locale: id })}
-                                                        {event.person_name && ` • ${event.person_name}`}
+                                                        {event.person_name && ` • ${event.person_name} ${event.qobilah_name ? `(${event.qobilah_name})` : ''}`}
                                                     </p>
                                                     {event.hijri_date && (
                                                         <p className="text-xs text-gray-400 mt-0.5">

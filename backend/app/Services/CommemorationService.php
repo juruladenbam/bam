@@ -38,13 +38,14 @@ class CommemorationService
         $latestDeathForFixed = $to->copy()->subDays(6); // 7 days minimum
 
         // Get persons who might have fixed commemorations in this range
-        $deceasedForFixed = Person::whereNotNull('death_date')
+        $deceasedForFixed = Person::with(['branch', 'marriagesAsHusband.wife.branch', 'marriagesAsWife.husband.branch'])
+            ->whereNotNull('death_date')
             ->where('is_alive', false)
             ->whereBetween('death_date', [$earliestDeathForFixed, $latestDeathForFixed])
-            ->select(['id', 'full_name', 'death_date'])
             ->get();
 
         foreach ($deceasedForFixed as $person) {
+            /** @var \App\Models\Person $person */
             $fixedComms = $this->getFixedCommemorations($person, $from, $to);
             $commemorations = $commemorations->merge($fixedComms);
         }
@@ -52,21 +53,23 @@ class CommemorationService
         // For haul, we need a different approach - persons who died before this range
         // and might have their death anniversary in this month (Hijri-based)
         // Limit to last 100 years of deaths to be reasonable
-        $deceasedForHaul = Person::whereNotNull('death_date')
+        $deceasedForHaul = Person::with(['branch', 'marriagesAsHusband.wife.branch', 'marriagesAsWife.husband.branch'])
+            ->whereNotNull('death_date')
             ->where('is_alive', false)
             ->where('death_date', '<', $earliestDeathForFixed) // Not already included above
             ->where('death_date', '>=', now()->subYears(100))
-            ->select(['id', 'full_name', 'death_date'])
             ->limit(500) // Safety limit
             ->get();
 
         foreach ($deceasedForHaul as $person) {
+            /** @var \App\Models\Person $person */
             $haulComms = $this->getHaulForRange($person, $from, $to);
             $commemorations = $commemorations->merge($haulComms);
         }
 
         // Also check haul for recent deaths (included in fixed query)
         foreach ($deceasedForFixed as $person) {
+            /** @var \App\Models\Person $person */
             $haulComms = $this->getHaulForRange($person, $from, $to);
             $commemorations = $commemorations->merge($haulComms);
         }
@@ -93,6 +96,7 @@ class CommemorationService
                     'date' => $commDate->toDateString(),
                     'person_id' => $person->id,
                     'person_name' => $person->full_name,
+                    'qobilah_name' => $person->qobilah_name,
                     'hijri_date' => $this->hijriService->format($commDate),
                 ];
             }
@@ -136,6 +140,7 @@ class CommemorationService
                             'date' => $haulDate->toDateString(),
                             'person_id' => $person->id,
                             'person_name' => $person->full_name,
+                            'qobilah_name' => $person->qobilah_name,
                             'hijri_date' => $this->hijriService->format($haulDate),
                         ];
                     }

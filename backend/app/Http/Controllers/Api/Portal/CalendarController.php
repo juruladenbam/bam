@@ -39,7 +39,8 @@ class CalendarController extends Controller
         $days = $this->buildDaysData($startDate, $endDate);
 
         // Get family events from existing events table
-        $familyEvents = Event::where('is_active', true)
+        $familyEvents = Event::with(['hostRotations.host.branch', 'hostRotations.host.marriagesAsHusband.wife.branch', 'hostRotations.host.marriagesAsWife.husband.branch'])
+            ->where('is_active', true)
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('start_date', [$startDate, $endDate])
                     ->orWhereBetween('end_date', [$startDate, $endDate])
@@ -49,17 +50,22 @@ class CalendarController extends Controller
                     });
             })
             ->get()
-            ->map(fn ($event) => [
-                'id' => $event->id,
-                'type' => 'family',
-                'title' => $event->name,
-                'slug' => $event->slug,
-                'date' => Carbon::parse($event->start_date)->toDateString(),
-                'start_date' => Carbon::parse($event->start_date)->toDateString(),
-                'end_date' => Carbon::parse($event->end_date)->toDateString(),
-                'location' => $event->location_name,
-                'thumbnail' => $event->thumbnail_url,
-            ]);
+            ->map(function ($event) use ($year) {
+                $hostRotation = $event->hostRotations->where('year', $year)->first();
+                return [
+                    'id' => $event->id,
+                    'type' => 'family',
+                    'title' => $event->name,
+                    'slug' => $event->slug,
+                    'date' => Carbon::parse($event->start_date)->toDateString(),
+                    'start_date' => Carbon::parse($event->start_date)->toDateString(),
+                    'end_date' => Carbon::parse($event->end_date)->toDateString(),
+                    'location' => $event->location_name,
+                    'thumbnail' => $event->thumbnail_url,
+                    'person_name' => $hostRotation?->host?->full_name,
+                    'qobilah_name' => $hostRotation?->host?->qobilah_name,
+                ];
+            });
 
         // Get Islamic holidays for this month
         $islamicHolidays = $this->hijriService->getHolidaysForMonth($year, $month);
