@@ -257,11 +257,11 @@ export function SilsilahPage() {
 
                                 <div className="mt-auto pt-4 border-t border-[#f4f0f0] flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] font-bold text-[#896165] uppercase tracking-tighter">
                                     <span className="flex items-center gap-1">
-                                        {branch.persons_count} Anggota
+                                        {Number(branch.persons_count || 0) + Number(branch.spouse_count || 0)} Anggota
                                     </span>
                                     <span className="text-gray-300">•</span>
                                     <span className="flex items-center gap-1 text-green-600">
-                                        {branch.living_count} Hidup
+                                        {Number(branch.living_count || 0) + Number(branch.spouse_living_count || 0)} Hidup
                                     </span>
                                     <span className="text-gray-300">•</span>
                                     <span className="flex items-center gap-1 text-orange-600">

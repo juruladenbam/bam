@@ -52,11 +52,8 @@ class BranchService
     {
         $branches = $this->branchRepository->getAllWithStats();
 
-        // Calculate generation stats
-        // We only count persons from main branches (order <= 10) to exclude spouses-only branch if any
-        $generationStats = \App\Models\Person::whereHas('branch', function ($q) {
-                $q->where('order', '<=', 10);
-            })
+        // Calculate generation stats (including both descendants and spouses)
+        $generationStats = \App\Models\Person::whereNotNull('generation')
             ->selectRaw('generation, 
                 COUNT(*) as total, 
                 SUM(CASE WHEN is_alive = 1 THEN 1 ELSE 0 END) as living,

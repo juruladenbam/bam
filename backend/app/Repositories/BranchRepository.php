@@ -93,23 +93,33 @@ class BranchRepository implements BranchRepositoryInterface
 
             $spouseTotal = 0;
             $spouseLiving = 0;
+            $spouseMale = 0;
+            $spouseFemale = 0;
 
             foreach ($marriages as $marriage) {
                 $spouseTotal++;
                 // Check which one is the external spouse (not in personIds)
-                // personIds is Collection/Array? It's a pluck result (Collection).
-                // Use strict check.
-                
                 $isHusbandInternal = $personIds->contains($marriage->husband_id);
                 $externalSpouse = $isHusbandInternal ? $marriage->wife : $marriage->husband;
                 
-                if ($externalSpouse && $externalSpouse->is_alive) {
-                    $spouseLiving++;
+                if ($externalSpouse) {
+                    if ($externalSpouse->is_alive) {
+                        $spouseLiving++;
+                    }
+                    if ($externalSpouse->gender === 'male') {
+                        $spouseMale++;
+                    } elseif ($externalSpouse->gender === 'female') {
+                        $spouseFemale++;
+                    }
                 }
             }
 
             $branch->spouse_count = $spouseTotal;
             $branch->spouse_living_count = $spouseLiving;
+            
+            // Add spouse genders to the total branch counts
+            $branch->male_count += $spouseMale;
+            $branch->female_count += $spouseFemale;
 
             // 3. KK Utuh Logic (Intact Family) - Both spouses alive and active marriage
             $branch->kk_utuh_count = \App\Models\Marriage::where(function($q) use ($personIds) {
