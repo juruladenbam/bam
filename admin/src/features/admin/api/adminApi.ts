@@ -48,6 +48,22 @@ export async function getGenerations(): Promise<ApiResponse<number[]>> {
     return api.get('/persons/generations') as unknown as ApiResponse<number[]>
 }
 
+export async function validateBirthOrder(id: number, order: number): Promise<ApiResponse<{ has_conflict: boolean, colliding_sibling?: { id: number, full_name: string, birth_order: number } }>> {
+    return api.get(`/persons/${id}/validate-birth-order?order=${order}`) as unknown as ApiResponse<{ has_conflict: boolean, colliding_sibling?: { id: number, full_name: string, birth_order: number } }>
+}
+
+export async function getSiblings(id: number): Promise<ApiResponse<Person[]>> {
+    return api.get(`/persons/${id}/siblings`) as unknown as ApiResponse<Person[]>
+}
+
+export async function swapBirthOrder(idA: number, idB: number): Promise<ApiResponse<null>> {
+    return api.post('/persons/swap-order', { id_a: idA, id_b: idB }) as unknown as ApiResponse<null>
+}
+
+export async function rebuildNibs(rootBirthOrder = 8): Promise<ApiResponse<null>> {
+    return api.post('/persons/rebuild-nibs', { root_birth_order: rootBirthOrder }) as unknown as ApiResponse<null>
+}
+
 // ==================== MARRIAGES ====================
 
 export async function getMarriages(filters: MarriageFilters = {}): Promise<PaginatedResponse<Marriage>> {
@@ -135,6 +151,10 @@ export const adminApi = {
     updatePerson,
     deletePerson,
     searchPersons,
+    validateBirthOrder,
+    getSiblings,
+    swapBirthOrder,
+    rebuildNibs,
     // Marriages
     getMarriages,
     getMarriage,

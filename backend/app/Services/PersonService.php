@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Person;
+use App\Models\Marriage;
 use App\Repositories\Contracts\PersonRepositoryInterface;
 use App\Repositories\Contracts\MarriageRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -148,6 +149,7 @@ class PersonService
     public function updatePerson(int $id, array $data): Person
     {
         $person = $this->personRepository->findOrFail($id);
+        $oldBirthOrder = $person->birth_order;
         
         // Handle parent_marriage_id changes
         if (array_key_exists('parent_marriage_id', $data)) {
@@ -190,7 +192,156 @@ class PersonService
             unset($data['parent_marriage_id']);
         }
         
-        return $this->personRepository->update($id, $data);
+        // If birth_order updated specifically without changing parent marriage
+        if (isset($data['birth_order'])) {
+            // Also update parent_child table
+            \DB::table('parent_child')
+                ->where('child_id', $id)
+                ->update(['birth_order' => $data['birth_order']]);
+        }
+
+        $result = $this->personRepository->update($id, $data);
+
+        // If birth_order or parent_marriage_id changed, regenerate NIB
+        if ((isset($data['birth_order']) && $data['birth_order'] != $oldBirthOrder) || isset($newParentMarriageId)) {
+            $this->regenerateNibRecursive($result);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Swap birth order between two siblings
+     */
+    public function swapBirthOrder(int $personAId, int $personBId): void
+    {
+        \DB::transaction(function () use ($personAId, $personBId) {
+            $personA = $this->personRepository->findOrFail($personAId);
+            $personB = $this->personRepository->findOrFail($personBId);
+
+            // Verify they are siblings (same parent marriage)
+            if ($personA->parent_marriage_id !== $personB->parent_marriage_id) {
+                throw new \Exception("Persons are not siblings from the same marriage.");
+            }
+
+            if (!$personA->parent_marriage_id) {
+                throw new \Exception("Cannot swap root/founder members without parent marriage.");
+            }
+
+            // Get current orders from parent_child table (source of truth)
+            $orderA = \DB::table('parent_child')->where('child_id', $personAId)->value('birth_order');
+            $orderB = \DB::table('parent_child')->where('child_id', $personBId)->value('birth_order');
+
+            if ($orderA === null || $orderB === null) {
+                // Fallback to person table if not found, though should exist
+                $orderA = $orderA ?? $personA->birth_order ?? 1;
+                $orderB = $orderB ?? $personB->birth_order ?? 1;
+            }
+
+            // Temporarily nullify NIBs to avoid unique constraint violation during swap
+            $personA->update(['nib' => null]);
+            $personB->update(['nib' => null]);
+
+            // Swap in persons table
+            $personA->update(['birth_order' => $orderB]);
+            $personB->update(['birth_order' => $orderA]);
+
+            // Swap in parent_child table
+            \DB::table('parent_child')
+                ->where('child_id', $personAId)
+                ->update(['birth_order' => $orderB]);
+
+            \DB::table('parent_child')
+                ->where('child_id', $personBId)
+                ->update(['birth_order' => $orderA]);
+
+            // Regenerate NIB for both and their descendants
+            $this->regenerateNibRecursive($personA->fresh());
+            $this->regenerateNibRecursive($personB->fresh());
+        });
+    }
+
+    /**
+     * Update birth order for a person and sync everything
+     */
+    public function updateBirthOrder(int $personId, int $newOrder): void
+    {
+        $this->updatePerson($personId, ['birth_order' => $newOrder]);
+    }
+
+    /**
+     * Recursively regenerate NIB for a person and all their descendants
+     */
+    public function regenerateNibRecursive(Person $person): void
+    {
+        // 1. Regenerate for this person (if they are a bloodline member)
+        if ($person->parent_marriage_id) {
+            // ALWAYS get birth_order from parent_child (source of truth)
+            $actualBirthOrder = \DB::table('parent_child')->where('child_id', $person->id)->value('birth_order');
+            
+            if ($actualBirthOrder) {
+                $newNib = $this->generateNibForChild($person->parent_marriage_id, $actualBirthOrder);
+                if ($newNib && $newNib !== $person->nib) {
+                    // Temporarily null to avoid unique constraint
+                    $person->nib = null;
+                    $person->save();
+                    
+                    $person->nib = $newNib;
+                    $person->save();
+                }
+            }
+        }
+
+        // 2. Regenerate for spouses (their NIBs depend on the person's base NIB)
+        $this->regenerateSpouseNibs($person);
+
+        // 3. Recursively regenerate for all children
+        $marriages = Marriage::where('husband_id', $person->id)
+            ->orWhere('wife_id', $person->id)
+            ->get();
+            
+        foreach ($marriages as $marriage) {
+            foreach ($marriage->children as $parentChild) {
+                if ($parentChild->child) {
+                    $this->regenerateNibRecursive($parentChild->child);
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper to regenerate NIBs for all spouses of a person
+     */
+    protected function regenerateSpouseNibs(Person $person): void
+    {
+        if (!$person->nib || !str_ends_with($person->nib, '000')) {
+            return;
+        }
+
+        $partnerBaseNib = substr($person->nib, 0, -3);
+        
+        // Get all marriages ordered by ID for consistency in spouse suffix (001, 002...)
+        $marriages = Marriage::where('husband_id', $person->id)
+            ->orWhere('wife_id', $person->id)
+            ->orderBy('id')
+            ->get();
+
+        $spouseIndex = 1;
+        foreach ($marriages as $marriage) {
+            $spouseId = $marriage->husband_id === $person->id ? $marriage->wife_id : $marriage->husband_id;
+            $spouse = Person::find($spouseId);
+            
+            if ($spouse && (!str_ends_with($spouse->nib, '000'))) {
+                $newSpouseNib = $partnerBaseNib . str_pad((string) $spouseIndex, 3, '0', STR_PAD_LEFT);
+                if ($spouse->nib !== $newSpouseNib) {
+                    $spouse->nib = null;
+                    $spouse->save();
+                    $spouse->nib = $newSpouseNib;
+                    $spouse->save();
+                }
+                $spouseIndex++;
+            }
+        }
     }
 
 

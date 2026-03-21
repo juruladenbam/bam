@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\DB;
 class SubmissionService
 {
     public function __construct(
-        protected PersonRepositoryInterface $personRepository
+        protected PersonRepositoryInterface $personRepository,
+        protected PersonService $personService
     ) {}
 
     /**
@@ -247,7 +248,8 @@ class SubmissionService
         }
 
         if ($targetColumn) {
-            $value = $data['correct_value'];
+            $value = $data['correct_value'] ?? '';
+            if ($value === null) $value = '';
 
             // Value transformation for specific fields
             if ($targetColumn === 'gender') {
@@ -256,7 +258,27 @@ class SubmissionService
                 if (in_array($value, ['perempuan', 'wanita', 'cewek', 'female', 'p'])) $value = 'female';
             }
 
-            $this->personRepository->update($personId, [
+            // Special handling for birth_order to prevent duplicates (swap if needed)
+            if ($targetColumn === 'birth_order') {
+                $value = (int) $value;
+                $newOrder = $value;
+                $parentChild = \DB::table('parent_child')->where('child_id', $personId)->first();
+                
+                if ($parentChild) {
+                    $collidingSiblingId = \DB::table('parent_child')
+                        ->where('marriage_id', $parentChild->marriage_id)
+                        ->where('birth_order', $newOrder)
+                        ->where('child_id', '!=', $personId)
+                        ->value('child_id');
+
+                    if ($collidingSiblingId) {
+                        $this->personService->swapBirthOrder($personId, $collidingSiblingId);
+                        return;
+                    }
+                }
+            }
+
+            $this->personService->updatePerson($personId, [
                 $targetColumn => $value
             ]);
         }

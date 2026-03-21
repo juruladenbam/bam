@@ -40,6 +40,7 @@ class PersonController extends Controller
                 'photo_url' => $person->photo_url,
                 'bio' => $person->bio,
                 'generation' => $person->generation,
+                'nib' => $person->nib,
                 'branch' => $person->branch,
             ],
             'family' => [

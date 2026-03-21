@@ -32,6 +32,10 @@ Route::get('/branches/{id}', [BranchController::class, 'show']);
 // Persons CRUD
 Route::get('/persons/search', [PersonController::class, 'search']);
 Route::get('/persons/generations', [PersonController::class, 'generations']);
+Route::get('/persons/{id}/validate-birth-order', [PersonController::class, 'validateBirthOrder']);
+Route::get('/persons/{id}/siblings', [PersonController::class, 'siblings']);
+Route::post('/persons/rebuild-nibs', [PersonController::class, 'rebuildNibs']);
+Route::post('/persons/swap-order', [PersonController::class, 'swapOrder']);
 Route::apiResource('persons', PersonController::class);
 
 // Marriages CRUD

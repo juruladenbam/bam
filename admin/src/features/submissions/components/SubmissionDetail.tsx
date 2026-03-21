@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react'
 import type { Submission } from '../api/submissionApi'
+import adminApi from '../../admin/api/adminApi'
 
 interface SubmissionDetailProps {
     submission: Submission
@@ -78,6 +80,31 @@ export function SubmissionDetail({ submission }: SubmissionDetailProps) {
     }
 
     const renderCorrectionDetail = (data: any) => {
+        const isBirthOrder = data.field_select === 'Urutan Kelahiran' || data.field === 'birth_order'
+        const [conflict, setConflict] = useState<any>(null)
+        const [loading, setLoading] = useState(false)
+
+        useEffect(() => {
+            if (isBirthOrder && data.person_id && data.correct_value) {
+                const checkConflict = async () => {
+                    setLoading(true)
+                    try {
+                        const res = await adminApi.validateBirthOrder(data.person_id, parseInt(data.correct_value))
+                        if (res.data.has_conflict) {
+                            setConflict(res.data.colliding_sibling)
+                        } else {
+                            setConflict(null)
+                        }
+                    } catch (err) {
+                        console.error('Failed to validate birth order', err)
+                    } finally {
+                        setLoading(false)
+                    }
+                }
+                checkConflict()
+            }
+        }, [isBirthOrder, data.person_id, data.correct_value])
+
         return (
             <div className="space-y-6">
                 {/* 1. Who is being corrected */}
@@ -123,6 +150,31 @@ export function SubmissionDetail({ submission }: SubmissionDetailProps) {
                             </span>
                         </div>
                     </div>
+
+                    {/* Conflict Warning */}
+                    {isBirthOrder && conflict && (
+                        <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3 items-start animate-in fade-in slide-in-from-top-2 duration-300">
+                            <span className="material-symbols-outlined text-amber-600 shrink-0 mt-0.5 text-[20px]">warning</span>
+                            <div>
+                                <h5 className="font-bold text-amber-900 text-sm">Peringatan: Konflik Urutan Kelahiran</h5>
+                                <p className="text-sm text-amber-800 mt-1">
+                                    Urutan ke-<strong>{data.correct_value}</strong> sudah digunakan oleh{' '}
+                                    <strong>{conflict.full_name}</strong>.
+                                </p>
+                                <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-amber-700 bg-white/50 w-fit px-2 py-1 rounded border border-amber-200">
+                                    <span className="material-symbols-outlined text-[14px]">sync</span>
+                                    <span>Tindakan: Persetujuan akan melakukan SWAP otomatis</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {loading && (
+                        <div className="mt-2 text-xs text-gray-400 flex items-center gap-2">
+                            <div className="w-3 h-3 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                            Memeriksa konflik...
+                        </div>
+                    )}
                 </div>
 
                 {/* 3. Explanation */}

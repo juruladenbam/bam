@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
+import { adminApi } from '../../features/admin/api/adminApi';
 
 interface SettingItem {
     id: number;
@@ -170,6 +171,72 @@ export default function PortalSettingsPage() {
                                     className={`${nibClaimingEnabled ? 'translate-x-6' : 'translate-x-1'
                                         } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                                 />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Maintenance & Data Section */}
+            <section className="bg-white rounded-xl border border-[#e6dbdc] p-6 mb-6 shadow-sm overflow-hidden">
+                <div className="flex items-center gap-3 mb-5">
+                    <div className="size-10 bg-amber-50 rounded-lg flex items-center justify-center">
+                        <span className="material-symbols-outlined text-amber-600">settings_suggest</span>
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-bold text-[#181112]">Pemeliharaan Data (Database Maintenance)</h2>
+                        <p className="text-xs text-[#896165]">Alat bantu untuk memulihkan konsistensi data sistem</p>
+                    </div>
+                </div>
+
+                <div className="space-y-6">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex-1">
+                            <h3 className="text-base font-medium text-[#181112] mb-1">Membangun Ulang Seluruh NIB (Rebuild NIB Tree)</h3>
+                            <p className="text-sm text-[#896165] max-w-xl">
+                                Gunakan ini jika nomor NIB tidak sinkron dengan urutan kelahiran terbaru (biasanya karena data lama). 
+                                Seluruh NIB silsilah akan di-reset dan dibangun ulang dari tingkat Root.
+                            </p>
+                            <div className="mt-2 text-[10px] text-red-500 font-medium py-1 px-2 bg-red-50 rounded border border-red-100 inline-block">
+                                <span className="material-symbols-outlined text-[12px] align-middle mr-1">warning</span>
+                                Aksi ini bersifat permanen dan memakan waktu tergantung jumlah data.
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <div className="flex flex-col">
+                                <label className="text-[10px] text-gray-400 mb-1">Urutan Root</label>
+                                <input 
+                                    type="number" 
+                                    defaultValue={8} 
+                                    id="root_order"
+                                    className="w-16 px-2 py-1 border border-gray-200 rounded text-sm mb-2" 
+                                />
+                            </div>
+                            <button
+                                onClick={async () => {
+                                    const confirm = window.confirm("Yakin ingin membangun ulang seluruh NIB? Seluruh data akan di-reset dan di-sinkronkan ulang.");
+                                    if (!confirm) return;
+                                    
+                                    const btn = document.getElementById('rebuild-btn') as HTMLButtonElement;
+                                    const rootOrder = (document.getElementById('root_order') as HTMLInputElement).value || '8';
+                                    
+                                    btn.disabled = true;
+                                    btn.innerText = "Memproses...";
+                                    
+                                    try {
+                                        await adminApi.rebuildNibs(parseInt(rootOrder));
+                                        alert("Berhasil! Seluruh NIB telah dibangun ulang.");
+                                    } catch (err) {
+                                        alert("Terjadi kesalahan saat membangun ulang NIB.");
+                                    } finally {
+                                        btn.disabled = false;
+                                        btn.innerText = "Mulai Rebuild";
+                                    }
+                                }}
+                                id="rebuild-btn"
+                                className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-black transition-colors"
+                            >
+                                Mulai Rebuild
                             </button>
                         </div>
                     </div>

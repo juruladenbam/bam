@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { usePerson, useCreatePerson, useUpdatePerson, useInfiniteMarriages } from '../../features/admin/hooks/useAdmin'
+import { adminApi } from '../../features/admin/api/adminApi'
 import { Combobox } from '../../components/Combobox'
-import type { CreatePersonData } from '../../types'
+import type { Person, CreatePersonData } from '../../types'
 
 interface ValidationErrors {
     [key: string]: string[]
@@ -13,7 +14,9 @@ export function PersonFormPage() {
     const navigate = useNavigate()
     const isEdit = !!id
 
-    const { data: personData, isLoading: isLoadingPerson } = usePerson(Number(id))
+    const personQuery = usePerson(Number(id))
+    const personData = personQuery.data
+    const { refetch: refetchPerson } = personQuery
     const createPerson = useCreatePerson()
     const updatePerson = useUpdatePerson()
 
@@ -136,13 +139,47 @@ export function PersonFormPage() {
         }
     }
 
+    // Siblings Management
+    const [siblings, setSiblings] = useState<Person[]>([])
+    const [isLoadingSiblings, setIsLoadingSiblings] = useState(false)
+
+    const fetchSiblings = async () => {
+        if (!id) return
+        setIsLoadingSiblings(true)
+        try {
+            const res = await adminApi.getSiblings(Number(id))
+            setSiblings(res.data)
+        } catch (err) {
+            console.error('Failed to fetch siblings', err)
+        } finally {
+            setIsLoadingSiblings(false)
+        }
+    }
+
+    useEffect(() => {
+        if (isEdit && person?.parent_marriage_id) {
+            fetchSiblings()
+        }
+    }, [isEdit, person?.parent_marriage_id])
+
+    const handleSwap = async (idA: number, idB: number) => {
+        try {
+            await adminApi.swapBirthOrder(idA, idB)
+            await fetchSiblings()
+            // Also refresh current person data to reflect new birth_order
+            refetchPerson()
+        } catch (err) {
+            alert('Gagal menukar urutan')
+        }
+    }
+
     const isPending = createPerson.isPending || updatePerson.isPending
 
     const initialParentLabel = person?.parents && person.parents.length > 0
         ? person.parents.map(p => p.full_name).join(' & ')
         : '';
 
-    if (isEdit && isLoadingPerson) {
+    if (isEdit && personQuery.isLoading) {
         return (
             <div className="flex items-center justify-center h-64">
                 <span className="material-symbols-outlined animate-spin text-4xl text-[#ec1325]">progress_activity</span>
@@ -295,6 +332,74 @@ export function PersonFormPage() {
                         </div>
                     )}
                 </div>
+
+                {/* Siblings Management Section (Direct Swap Tool) */}
+                {isEdit && person?.parent_marriage_id && siblings.length > 1 && (
+                    <div className="space-y-4 pt-4 border-t border-[#e6dbdc]">
+                        <div className="flex items-center justify-between">
+                            <h2 className="font-semibold text-[#181112]">Kelola Urutan Saudara Kandung</h2>
+                            <button
+                                type="button"
+                                onClick={fetchSiblings}
+                                className="text-xs text-[#ec1325] flex items-center gap-1 hover:underline"
+                            >
+                                <span className="material-symbols-outlined text-[14px]">refresh</span>
+                                Refresh
+                            </button>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                            Urutan di bawah mencerminkan data di database. Gunakan tombol panah untuk menukar posisi antar saudara (SWAP).
+                        </p>
+
+                        <div className="bg-[#f8f6f6] border border-[#e6dbdc] rounded-lg divide-y divide-[#e6dbdc] overflow-hidden">
+                            {isLoadingSiblings ? (
+                                <div className="p-4 text-center text-gray-400 text-sm">Memuat saudara...</div>
+                            ) : (
+                                siblings.map((sibling, index) => {
+                                    const isSelf = sibling.id === Number(id)
+                                    return (
+                                        <div key={sibling.id} className={`flex items-center gap-3 p-3 ${isSelf ? 'bg-white' : ''}`}>
+                                            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0">
+                                                {sibling.birth_order || '?'}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className={`text-sm font-medium truncate ${isSelf ? 'text-[#ec1325]' : 'text-gray-900'}`}>
+                                                    {sibling.full_name} {isSelf && '(Anda)'}
+                                                </p>
+                                                <p className="text-[10px] text-gray-400">ID: {sibling.id}</p>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                {index > 0 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleSwap(sibling.id, siblings[index - 1].id)}
+                                                        className="p-1 h-8 w-8 rounded bg-white border border-[#e6dbdc] text-[#896165] hover:text-[#ec1325] hover:border-[#ec1325] transition-colors flex items-center justify-center"
+                                                        title="Tukar dengan kakak"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[18px]">arrow_upward</span>
+                                                    </button>
+                                                )}
+                                                {index < siblings.length - 1 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleSwap(sibling.id, siblings[index + 1].id)}
+                                                        className="p-1 h-8 w-8 rounded bg-white border border-[#e6dbdc] text-[#896165] hover:text-[#ec1325] hover:border-[#ec1325] transition-colors flex items-center justify-center"
+                                                        title="Tukar dengan adik"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[18px]">arrow_downward</span>
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            )}
+                        </div>
+                        <p className="text-[10px] text-amber-600 bg-amber-50 p-2 rounded border border-amber-100 italic">
+                            * Menukar urutan akan memicu regenerasi NIB otomatis untuk orang tersebut dan seluruh keturunannya.
+                        </p>
+                    </div>
+                )}
 
                 {/* Status */}
                 <div className="space-y-4 pt-4 border-t border-[#e6dbdc]">

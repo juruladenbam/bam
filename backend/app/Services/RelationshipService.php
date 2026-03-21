@@ -20,77 +20,21 @@ class RelationshipService
      */
     public function calculate(int $personAId, int $personBId): array
     {
+        $personA = $this->personRepository->findOrFail($personAId);
+        $personB = $this->personRepository->findOrFail($personBId);
+
         if ($personAId === $personBId) {
             return [
                 'relationship' => 'self',
                 'label' => 'Diri Sendiri',
                 'label_javanese' => null,
-                'path' => [],
+                'path' => $this->buildPathDescription($personA, $personB, ['id' => $personAId, 'name' => $personA->full_name], 0, 0),
                 'lca_id' => $personAId,
+                'sapaan' => $this->getSapaan('self', $personA, $personB),
             ];
         }
 
-        $personA = $this->personRepository->findOrFail($personAId);
-        $personB = $this->personRepository->findOrFail($personBId);
-
-        // Check if target (personB) is a spouse from outside the family
-        // A spouse has no branch_id (or was originally gen 0)
-        $isSpouse = $this->isExternalSpouse($personB);
-
-        if ($isSpouse) {
-            // Find the internal partner (keturunan) of this spouse
-            $internalPartner = $this->findInternalPartner($personB);
-
-            if ($internalPartner && $internalPartner->id !== $personAId) {
-                // Calculate relationship to the internal partner instead
-                $partnerResult = $this->calculate($personAId, $internalPartner->id);
-
-                if ($partnerResult['relationship'] !== 'unknown') {
-                    // Append "Ipar" to the label
-                    $iparLabel = $this->convertToIparLabel($partnerResult['label'], $personB->gender);
-                    $iparSapaan = $this->getIparSapaan($partnerResult, $personA, $personB);
-
-                    return [
-                        'relationship' => $partnerResult['relationship'] . '_ipar',
-                        'label' => $iparLabel,
-                        'label_javanese' => $partnerResult['label_javanese'] ? $partnerResult['label_javanese'] . ' (Ipar)' : null,
-                        'path' => $partnerResult['path'],
-                        'lca_id' => $partnerResult['lca_id'],
-                        'lca_name' => $partnerResult['lca_name'] ?? null,
-                        'distance_a' => $partnerResult['distance_a'] ?? null,
-                        'distance_b' => $partnerResult['distance_b'] ?? null,
-                        'sapaan' => $iparSapaan,
-                        'is_ipar' => true,
-                        'partner_name' => $internalPartner->full_name,
-                    ];
-                }
-            }
-        }
-
-        // Check if viewer (personA) is a spouse - calculate via their partner
-        $isViewerSpouse = $this->isExternalSpouse($personA);
-
-        if ($isViewerSpouse) {
-            $viewerPartner = $this->findInternalPartner($personA);
-
-            if ($viewerPartner && $viewerPartner->id !== $personBId) {
-                $partnerResult = $this->calculate($viewerPartner->id, $personBId);
-
-                if ($partnerResult['relationship'] !== 'unknown') {
-                    // For viewer being spouse, the relationship label should be
-                    // from the partner's perspective with "Ipar" context
-                    $iparLabel = $this->convertToIparLabel($partnerResult['label'], $personB->gender);
-
-                    return array_merge($partnerResult, [
-                        'relationship' => $partnerResult['relationship'] . '_ipar',
-                        'label' => $iparLabel,
-                        'is_ipar' => true,
-                    ]);
-                }
-            }
-        }
-
-        // Standard calculation for descendants
+        // 1. Standard calculation for descendants
         // Build ancestor paths
         $pathA = $this->buildAncestorPath($personAId);
         $pathB = $this->buildAncestorPath($personBId);
@@ -98,7 +42,78 @@ class RelationshipService
         // Find LCA
         $lca = $this->findLCA($pathA, $pathB);
 
+        // 2. If no LCA found, check for external spouse relationships
         if (!$lca) {
+            // Check if target (personB) is a spouse from outside the family
+            $isSpouse = $this->isExternalSpouse($personB);
+            if ($isSpouse) {
+                $internalPartner = $this->findInternalPartner($personB);
+                if ($internalPartner) {
+                    if ($internalPartner->id === $personAId) {
+                        return [
+                            'relationship' => $personB->gender === 'male' ? 'husband' : 'wife',
+                            'label' => $personB->gender === 'male' ? 'Suami' : 'Istri',
+                            'label_javanese' => null,
+                            'path' => [
+                                'description' => "{$personB->full_name} adalah pasangan dari {$personA->full_name}.",
+                            ],
+                            'lca_id' => $personAId,
+                            'sapaan' => $personB->gender === 'male' ? 'Suami / Mas' : 'Istri / Adek',
+                        ];
+                    }
+
+                    $partnerResult = $this->calculate($personAId, $internalPartner->id);
+
+                    if ($partnerResult['relationship'] !== 'unknown') {
+                        $iparLabel = $this->convertToIparLabel($partnerResult['label'], $personB->gender);
+                        $iparSapaan = $this->getIparSapaan($partnerResult, $personA, $personB);
+
+                        // Enhance path description for marital relationship
+                        $path = $partnerResult['path'];
+                        $marriageWord = $personB->gender === 'male' ? 'Suami' : 'Istri';
+                        $path['description'] = "{$personB->full_name} adalah {$marriageWord} dari {$internalPartner->full_name}. " . ($path['description'] ?? '');
+
+                        return [
+                            'relationship' => $partnerResult['relationship'] . '_ipar',
+                            'label' => $iparLabel,
+                            'label_javanese' => $partnerResult['label_javanese'] ? $partnerResult['label_javanese'] . ' (Ipar)' : null,
+                            'path' => $path,
+                            'lca_id' => $partnerResult['lca_id'] ?? null,
+                            'lca_name' => $partnerResult['lca_name'] ?? null,
+                            'distance_a' => $partnerResult['distance_a'] ?? null,
+                            'distance_b' => $partnerResult['distance_b'] ?? null,
+                            'sapaan' => $iparSapaan,
+                            'is_ipar' => true,
+                            'partner_name' => $internalPartner->full_name,
+                        ];
+                    }
+                }
+            }
+
+
+            // Check if viewer (personA) is a spouse
+            $isViewerSpouse = $this->isExternalSpouse($personA);
+
+            if ($isViewerSpouse) {
+                $viewerPartner = $this->findInternalPartner($personA);
+
+                if ($viewerPartner && $viewerPartner->id !== $personBId) {
+                    $partnerResult = $this->calculate($viewerPartner->id, $personBId);
+
+                    if ($partnerResult['relationship'] !== 'unknown') {
+                        $iparLabel = $this->convertToIparLabel($partnerResult['label'], $personB->gender);
+                        $iparSapaan = $this->getIparSapaan($partnerResult, $personA, $personB);
+
+                        return array_merge($partnerResult, [
+                            'relationship' => $partnerResult['relationship'] . '_ipar',
+                            'label' => $iparLabel,
+                            'sapaan' => $iparSapaan,
+                            'is_ipar' => true,
+                        ]);
+                    }
+                }
+            }
+
             return [
                 'relationship' => 'unknown',
                 'label' => 'Tidak diketahui',
@@ -108,6 +123,7 @@ class RelationshipService
             ];
         }
 
+        // 3. Standard relationship based on LCA
         // Calculate distances
         $distA = $this->getDistanceToAncestor($personAId, $lca['id']);
         $distB = $this->getDistanceToAncestor($personBId, $lca['id']);
@@ -131,6 +147,7 @@ class RelationshipService
             'distance_b' => $distB,
             'sapaan' => $this->getSapaan($relationship, $personA, $personB),
         ];
+
     }
 
     /**
@@ -184,16 +201,29 @@ class RelationshipService
             'Anak Perempuan' => $gender === 'male' ? 'Menantu Laki-laki' : 'Menantu Perempuan',
             'Ayah' => $gender === 'male' ? 'Mertua Laki-laki' : 'Mertua Perempuan',
             'Ibu' => $gender === 'male' ? 'Mertua Laki-laki' : 'Mertua Perempuan',
+            'Kakek' => 'Mertua (Kakek)',
+            'Nenek' => 'Mertua (Nenek)',
             'Saudara Laki-laki' => $gender === 'male' ? 'Ipar Laki-laki' : 'Ipar Perempuan',
             'Saudara Perempuan' => $gender === 'male' ? 'Ipar Laki-laki' : 'Ipar Perempuan',
+            'Paman' => 'Bibi (Ipar)',
+            'Bibi' => 'Paman (Ipar)',
+            'Keponakan Laki-laki' => 'Keponakan (Ipar)',
+            'Keponakan Perempuan' => 'Keponakan (Ipar)',
         ];
+
 
         if (isset($iparMap[$label])) {
             return $iparMap[$label];
         }
 
+        // If it's already an Ipar label, don't append it again
+        if (str_contains($label, 'Ipar') || str_contains($label, 'Mertua') || str_contains($label, 'Menantu')) {
+            return $label;
+        }
+
         // For other relationships, append "(Ipar)"
         return $label . ' (Ipar)';
+
     }
 
     /**
@@ -207,6 +237,11 @@ class RelationshipService
             ? $target->birth_date < $viewer->birth_date
             : null;
 
+        // Direct spouse of viewer or viewer's partner
+        if ($baseRelationship === 'self') {
+            return $category === 'male' ? 'Mas / Suami' : 'Mbak / Istri';
+        }
+
         // Direct spouse of viewer's sibling/cousin = Ipar
         if (in_array($baseRelationship, ['sibling', 'cousin'])) {
             if ($isOlder === true) {
@@ -215,15 +250,41 @@ class RelationshipService
             return $category === 'male' ? 'Mas (Ipar)' : 'Mbak (Ipar)';
         }
 
-        // Spouse of uncle/aunt = use same sapaan
+        // Spouse of uncle/aunt = use appropriate counterpart title
         if ($baseRelationship === 'uncle_aunt') {
-            return $partnerResult['sapaan'] ? $partnerResult['sapaan'] . ' (Ipar)' : ($category === 'male' ? 'Paman (Ipar)' : 'Bibi (Ipar)');
+            $partnerSapaan = $partnerResult['sapaan'] ?? '';
+            
+            // Map Javanese titles to their counterparts
+            $counterparts = [
+                'Pakde' => 'Bude',
+                'Bude' => 'Pakde',
+                'Om' => 'Tante',
+                'Tante' => 'Om',
+                'Paman' => 'Bibi',
+                'Bibi' => 'Paman',
+                'Lilik' => 'Lilik',
+            ];
+
+            foreach ($counterparts as $source => $target_title) {
+                if (str_contains($partnerSapaan, $source)) {
+                    return $target_title;
+                }
+            }
+
+            return $category === 'male' ? 'Paman (Ipar)' : 'Bibi (Ipar)';
+        }
+
+
+        // Spouse of parent = Mertua
+        if ($baseRelationship === 'parent') {
+            return $category === 'male' ? 'Bapak Mertua' : 'Ibu Mertua';
         }
 
         // Spouse of child = Menantu
         if ($baseRelationship === 'child') {
             return $category === 'male' ? 'Mas / Nama (Menantu)' : 'Mbak / Nama (Menantu)';
         }
+
 
         // Spouse of nephew/niece
         if ($baseRelationship === 'niece_nephew') {
@@ -361,16 +422,40 @@ class RelationshipService
         }
 
         // The LCA is the first common ancestor (closest to both)
-        // We need the one that appears earliest in both paths
         foreach ($pathA as $ancestorId) {
             if ($common->contains($ancestorId)) {
                 $person = $this->personRepository->find($ancestorId);
+                
+                // Try to find if their spouse is also a common ancestor to represent them as a couple
+                $marriage = Marriage::where('husband_id', $ancestorId)
+                    ->orWhere('wife_id', $ancestorId)
+                    ->first();
+                
+                if ($marriage) {
+                    $spouseId = $marriage->husband_id === $ancestorId ? $marriage->wife_id : $marriage->husband_id;
+                    if ($spouseId && $common->contains($spouseId)) {
+                        $spouse = $this->personRepository->find($spouseId);
+                        
+                        // Sort names consistently: husband first then wife (or use gender/convention)
+                        $p1 = $person->gender === 'male' ? $person : $spouse;
+                        $p2 = $person->gender === 'male' ? $spouse : $person;
+
+                        return [
+                            'id' => $ancestorId,
+                            'name' => "{$p1->full_name} & {$p2->full_name}",
+                            'spouse_id' => $spouseId,
+                            'is_couple' => true,
+                        ];
+                    }
+                }
+
                 return [
                     'id' => $ancestorId,
                     'name' => $person?->full_name ?? 'Unknown',
                 ];
             }
         }
+
 
         return null;
     }
@@ -546,15 +631,47 @@ class RelationshipService
      */
     protected function buildPathDescription(Person $personA, Person $personB, array $lca, int $distA, int $distB): array
     {
+        $description = "";
+
+        if ($distB === 0) {
+            // Target is LCA (Ancestor)
+            if ($distA === 0) {
+                $description = "Diri Sendiri.";
+            } elseif ($distA === 1) {
+                $description = "{$personB->full_name} adalah " . ($personB->gender === 'male' ? 'Ayah' : 'Ibu') . " dari {$personA->full_name}.";
+            } else {
+                $description = "{$personB->full_name} adalah leluhur dari {$personA->full_name}, berjarak {$distA} generasi.";
+            }
+        } elseif ($distA === 0) {
+            // Viewer is LCA (Descendant is target)
+            if ($distB === 1) {
+                $description = "{$personB->full_name} adalah anak dari {$personA->full_name}.";
+            } else {
+                $description = "{$personB->full_name} adalah keturunan dari {$personA->full_name}, berjarak {$distB} generasi.";
+            }
+        } elseif ($distA === 1 && $distB === 1) {
+            // Siblings
+            $description = "{$personB->full_name} adalah saudara dari {$personA->full_name}. Mereka adalah anak dari {$lca['name']}.";
+        } elseif ($distA === 2 && $distB === 2) {
+            // First Cousins
+            $description = "{$personB->full_name} adalah sepupu dari {$personA->full_name}. Mereka adalah cucu dari {$lca['name']}.";
+        } else {
+            // Other Sibling/Cousin etc.
+            $relationshipName = $this->determineRelationship($distB, $distA);
+            $label = strtolower($this->getRelationshipLabel($relationshipName, $personB->gender, $distA, $distB));
+            
+            $description = "{$personB->full_name} adalah {$label} dari {$personA->full_name}. " .
+                           "Mereka memiliki leluhur yang sama yaitu {$lca['name']}.";
+        }
+
         return [
             'from' => $personA->full_name,
             'to' => $personB->full_name,
             'via' => $lca['name'],
-            'description' => "{$personB->full_name} adalah keturunan dari {$lca['name']}, " .
-                           "berjarak {$distB} generasi. Sedangkan {$personA->full_name} " .
-                           "berjarak {$distA} generasi dari {$lca['name']}.",
+            'description' => $description,
         ];
     }
+
 
     /**
      * Calculate relationship from a specific perspective person.
