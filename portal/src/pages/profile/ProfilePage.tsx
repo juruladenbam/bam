@@ -63,7 +63,7 @@ export function ProfilePage() {
         return (
             <div className="text-center mb-8">
                 <div
-                    className="size-24 mx-auto rounded-full bg-gradient-to-br from-[#ec1325] to-[#181112] flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg"
+                    className="size-24 mx-auto rounded-full bg-linear-to-br from-[#ec1325] to-[#181112] flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg"
                 >
                     {initial}
                 </div>
@@ -159,6 +159,23 @@ export function ProfilePage() {
 
                     {/* Menu Items */}
                     <div className="bg-white border border-[#e6dbdc] rounded-xl overflow-hidden divide-y divide-[#f4f0f0]">
+                        {/* Submissions / Reports History (Auth or NIB Linked) */}
+                        {(isAuthenticated || isNibLinked) && (
+                            <Link
+                                to="/submissions"
+                                className="flex items-center gap-3 p-4 hover:bg-[#f8f6f6] transition-colors"
+                            >
+                                <div className="size-10 rounded-full bg-blue-50 flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-blue-600">history_edu</span>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-medium text-[#181112]">Riwayat Laporan</p>
+                                    <p className="text-xs text-[#896165]">Pantau status laporan data keluarga</p>
+                                </div>
+                                <span className="material-symbols-outlined text-[#e6dbdc]">chevron_right</span>
+                            </Link>
+                        )}
+
                         {/* Admin Dashboard Link (Only Auth) */}
                         {isAuthenticated && user?.role === 'admin' && (
                             <a
@@ -208,7 +225,7 @@ export function ProfilePage() {
 
             {/* Logout Confirmation Modal */}
             {showLogoutConfirm && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+                <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
                     <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 animate-in fade-in zoom-in duration-200 whitespace-normal">
                         <div className="mb-4">
                             <span className="material-symbols-outlined text-4xl text-[#ec1325]">logout</span>

@@ -277,6 +277,14 @@ export function PortalHeader() {
                                         )}
 
                                         <Link
+                                            to="/submissions"
+                                            className="flex items-center gap-2 px-4 py-2 text-sm text-[#181112] hover:bg-[#f8f6f6] transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px]">history_edu</span>
+                                            Riwayat Laporan
+                                        </Link>
+
+                                        <Link
                                             to="/profile"
                                             className="flex items-center gap-2 px-4 py-2 text-sm text-[#181112] hover:bg-[#f8f6f6] transition-colors"
                                         >
@@ -344,6 +352,11 @@ export function PortalHeader() {
                                         </div>
                                     </div>
 
+                                    <Link to="/submissions" className="flex items-center gap-3 py-3 text-sm text-[#181112] border-t border-[#f4f0f0]">
+                                        <span className="material-symbols-outlined text-[20px]">history_edu</span>
+                                        Riwayat Laporan
+                                    </Link>
+
                                     <Link to="/profile" className="flex items-center gap-3 py-3 text-sm text-[#181112] border-t border-[#f4f0f0]">
                                         <span className="material-symbols-outlined text-[20px]">person</span>
                                         Profil Saya
@@ -398,7 +411,7 @@ export function PortalHeader() {
 
             {/* Logout Confirmation Modal */}
             {showLogoutConfirm && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+                <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
                     <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 animate-in fade-in zoom-in duration-200 whitespace-normal">
                         <div className="mb-4">
                             <span className="material-symbols-outlined text-4xl text-[#ec1325]">logout</span>
