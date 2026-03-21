@@ -124,13 +124,13 @@ export function BranchPrintPage() {
 
             <div className="tree-container overflow-auto pb-20 mt-8">
                 {/* Generation 1: Root */}
-                <div className="flex flex-col items-center mb-16 relative">
-                    <div className="text-center p-5 border-4 border-[#181112] rounded-4xl bg-white shadow-xl min-w-[300px] z-10">
-                        <p className="text-xs font-black text-[#ec1325] uppercase tracking-[0.2em] mb-2">Poro Leluhur / Gen 1</p>
-                        <h1 className="text-2xl font-black mb-2">{tree.person.full_name.toUpperCase()}</h1>
+                <div className="flex flex-col items-center relative">
+                    <div className="text-center min-w-[300px] z-10 pb-4 border-b-2 border-[#181112]">
+                        <p className="text-xs font-black text-[#ec1325] uppercase tracking-[0.2em] mb-1">Poro Leluhur / Gen 1</p>
+                        <h1 className="text-2xl font-black">{tree.person.full_name.toUpperCase()}</h1>
                         {tree.spouses.length > 0 && (
-                            <div className="text-base font-bold text-[#896165] pt-2 border-t-2 border-dashed border-[#e6dbdc]">
-                                {tree.spouses.map(s => s.full_name).join(' & ')}
+                            <div className="text-sm font-bold text-[#896165] mt-1 italic">
+                                ∞ {tree.spouses.map(s => s.full_name).join(' & ')}
                             </div>
                         )}
                     </div>
@@ -150,18 +150,18 @@ export function BranchPrintPage() {
 
                             <div className="w-full flex flex-col items-center">
                                 {/* Branch Box (Gen 2) */}
-                                <div className="p-4 border-2 border-[#ec1325] rounded-2xl bg-white shadow-lg text-center min-w-[220px] mb-8 ring-4 ring-red-50">
-                                    <p className="text-[10px] uppercase font-black text-[#ec1325] tracking-widest mb-1">Qobilah {idx + 1}</p>
-                                    <h2 className="text-lg font-black text-[#181112] wrap-break-word">{childNode.person.full_name}</h2>
+                                <div className="text-center min-w-[200px] mb-6">
+                                    <p className="text-[10px] uppercase font-black text-[#ec1325] tracking-widest mb-0.5">Qobilah {idx + 1}</p>
+                                    <h2 className="text-md font-black text-[#181112] wrap-break-word">{childNode.person.full_name}</h2>
                                     {childNode.spouses.length > 0 && (
-                                        <div className="mt-2 text-[10px] font-bold text-[#896165] pt-2 border-t border-red-100 italic">
-                                            {childNode.spouses.map(s => s.full_name).join(', ')}
+                                        <div className="mt-1 text-[10px] font-bold text-[#896165] italic">
+                                            ∞ {childNode.spouses.map(s => s.full_name).join(', ')}
                                         </div>
                                     )}
                                 </div>
 
                                 {/* Vertical Descendants (Gen 3+) */}
-                                <div className="w-full border-t border-dashed border-[#e6dbdc] pt-6">
+                                <div className="w-full">
                                     <VerticalDescendants nodes={childNode.children} level={3} />
                                 </div>
                             </div>
@@ -175,9 +175,6 @@ export function BranchPrintPage() {
                     .no-print { display: none !important; }
                     body { margin: 0; padding: 0.5cm; }
                     .tree-container { overflow: visible !important; height: auto !important; margin-top: 0 !important; }
-                    .bg-red-50 { background-color: #fef2f2 !important; }
-                    .bg-blue-50 { background-color: #eff6ff !important; }
-                    .bg-pink-50 { background-color: #fdf2f8 !important; }
                     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                 }
                 .tree-container {
@@ -192,39 +189,38 @@ function VerticalDescendants({ nodes, level }: { nodes: TreeNode[], level: numbe
     if (!nodes || nodes.length === 0) return null
 
     return (
-        <div className="flex flex-col gap-4 pl-4 border-l-2 border-[#e6dbdc]">
+        <div className="flex flex-col gap-1.5 pl-4 border-l-2 border-[#e6dbdc]">
             {nodes.map(node => (
                 <div key={node.person.id} className="relative group">
                     {/* Horizontal connector line */}
-                    <div className="absolute -left-4 top-4 w-4 h-[2px] bg-[#e6dbdc]"></div>
+                    <div className="absolute -left-4 top-2.5 w-4 h-[2px] bg-[#e6dbdc]"></div>
 
-                    <div className="flex flex-col">
-                        <div className={`p-2.5 border-2 rounded-xl text-xs inline-block shadow-sm transition-all hover:shadow-md ${node.person.gender === 'male'
-                            ? 'bg-blue-50 border-blue-200 text-blue-900'
-                            : 'bg-pink-50 border-pink-200 text-pink-900'
-                            }`}>
-                            <div className="flex items-center gap-2">
-                                <span className={`size-5 rounded-full flex items-center justify-center text-[10px] font-bold ${node.person.gender === 'male' ? 'bg-blue-200' : 'bg-pink-200'
-                                    }`}>
-                                    {node.person.gender === 'male' ? '♂' : '♀'}
+                    <div className="flex flex-col py-0.5">
+                        <div className="flex items-start gap-1.5">
+                            <span className={`text-[11px] font-bold mt-0.5 ${node.person.gender === 'male' ? 'text-blue-500' : 'text-pink-500'
+                                }`}>
+                                {node.person.gender === 'male' ? '♂' : '♀'}
+                            </span>
+
+                            <div className="flex flex-col">
+                                <span className="font-bold text-[13px] text-[#181112] leading-tight flex items-center gap-1">
+                                    {node.person.full_name}
+                                    {!node.person.is_alive && (
+                                        <span className="text-[14px] text-gray-400 font-normal" title="Almarhum">☪</span>
+                                    )}
                                 </span>
-                                <span className="font-black text-[13px] leading-tight">{node.person.full_name}</span>
-                                {!node.person.is_alive && (
-                                    <span className="text-[14px] text-gray-400" title="Almarhum">☪</span>
+
+                                {node.spouses.length > 0 && (
+                                    <span className="text-[10px] text-[#896165] italic leading-tight mt-0.5">
+                                        ∞ {node.spouses.map(s => s.full_name).join(', ')}
+                                    </span>
                                 )}
                             </div>
-
-                            {node.spouses.length > 0 && (
-                                <div className={`text-[10px] font-bold mt-2 pt-2 border-t italic ${node.person.gender === 'male' ? 'border-blue-100 text-blue-700/70' : 'border-pink-100 text-pink-700/70'
-                                    }`}>
-                                    ∞ {node.spouses.map(s => s.full_name).join(', ')}
-                                </div>
-                            )}
                         </div>
 
                         {/* Children recursive */}
                         {node.children.length > 0 && (
-                            <div className="mt-4">
+                            <div className="mt-1">
                                 <VerticalDescendants nodes={node.children} level={level + 1} />
                             </div>
                         )}
