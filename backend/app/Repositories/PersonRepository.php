@@ -19,12 +19,14 @@ class PersonRepository implements PersonRepositoryInterface
     {
         $query = $this->model->query();
 
-        if (isset($filters['branch_id'])) {
-            $query->where('branch_id', $filters['branch_id']);
+        if (!empty($filters['branch_id'])) {
+            $branchIds = is_array($filters['branch_id']) ? $filters['branch_id'] : explode(',', $filters['branch_id']);
+            $query->whereIn('branch_id', $branchIds);
         }
 
-        if (isset($filters['generation'])) {
-            $query->where('generation', $filters['generation']);
+        if (!empty($filters['generation'])) {
+            $generations = is_array($filters['generation']) ? $filters['generation'] : explode(',', $filters['generation']);
+            $query->whereIn('generation', $generations);
         }
 
         if (isset($filters['gender'])) {
@@ -42,8 +44,22 @@ class PersonRepository implements PersonRepositoryInterface
             });
         }
 
-        $sortBy = $filters['sort_by'] ?? 'full_name';
+        $sortBy = $filters['sort_by'] ?? null;
         $sortDir = $filters['sort_dir'] ?? 'asc';
+
+        $query->leftJoin('branches', 'persons.branch_id', '=', 'branches.id')
+            ->select('persons.*');
+
+        if ($sortBy) {
+            $query->orderBy($sortBy, $sortDir);
+        } else {
+            // Default sorting: qobilah -> generasi -> kelahiran
+            $query->orderBy('branches.order')
+                ->orderBy('persons.generation')
+                ->orderBy('persons.birth_order')
+                ->orderBy('persons.birth_date');
+        }
+
         return $query->with([
             'branch',
             'marriagesAsHusband.wife.branch',
@@ -164,6 +180,14 @@ class PersonRepository implements PersonRepositoryInterface
                 }
             }
         }
+    }
+
+    public function getGenerations(): Collection
+    {
+        return $this->model->distinct()
+            ->whereNotNull('generation')
+            ->orderBy('generation')
+            ->pluck('generation');
     }
 
     public function getWithRelationships(int $id): Person

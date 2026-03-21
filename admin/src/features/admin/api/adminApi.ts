@@ -44,6 +44,10 @@ export async function searchPersons(query: string, limit = 10, offset = 0): Prom
     return api.get(`/persons/search?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`) as unknown as ApiResponse<{ data: Person[]; has_more: boolean }>
 }
 
+export async function getGenerations(): Promise<ApiResponse<number[]>> {
+    return api.get('/persons/generations') as unknown as ApiResponse<number[]>
+}
+
 // ==================== MARRIAGES ====================
 
 export async function getMarriages(filters: MarriageFilters = {}): Promise<PaginatedResponse<Marriage>> {
@@ -126,6 +130,7 @@ export const adminApi = {
     // Persons
     getPersons,
     getPerson,
+    getGenerations,
     createPerson,
     updatePerson,
     deletePerson,

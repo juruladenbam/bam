@@ -63,12 +63,18 @@ class StatisticsService
             'marriagesAsWife.husband.branch'
         ]);
 
+        if (!empty($filters['ids'])) {
+            $query->whereIn('id', $filters['ids']);
+        }
+
         if (!empty($filters['branch_id'])) {
-            $query->where('branch_id', $filters['branch_id']);
+            $branchIds = is_array($filters['branch_id']) ? $filters['branch_id'] : explode(',', $filters['branch_id']);
+            $query->whereIn('branch_id', $branchIds);
         }
 
         if (!empty($filters['generation'])) {
-            $query->where('generation', $filters['generation']);
+            $generations = is_array($filters['generation']) ? $filters['generation'] : explode(',', $filters['generation']);
+            $query->whereIn('generation', $generations);
         }
 
         if (isset($filters['gender'])) {
@@ -88,7 +94,15 @@ class StatisticsService
             });
         }
 
-        return $query->orderBy('generation')->orderBy('full_name')->get();
+        $query->leftJoin('branches', 'persons.branch_id', '=', 'branches.id')
+            ->select('persons.*');
+
+        return $query->orderBy('branches.order')
+            ->orderBy('persons.generation')
+            ->orderBy('persons.birth_order')
+            ->orderBy('persons.birth_date')
+            ->orderBy('persons.full_name')
+            ->get();
     }
 
     /**
@@ -98,22 +112,12 @@ class StatisticsService
     {
         $query = Marriage::with(['husband.branch', 'wife.branch']);
 
+        if (!empty($filters['ids'])) {
+            $query->whereIn('id', $filters['ids']);
+        }
+
         if (isset($filters['is_active'])) {
-            $query->where('is_active', $filters['is_active']);
-        }
-
-        if (isset($filters['is_internal'])) {
-            $query->where('is_internal', $filters['is_internal']);
-        }
-
-        if (isset($filters['branch_id'])) {
-            $query->whereHas('husband', function ($q) use ($filters) {
-                $q->where('branch_id', $filters['branch_id']);
-            });
-        }
-
-        if (isset($filters['is_complete'])) {
-            if ($filters['is_complete']) {
+            if ($filters['is_active']) {
                 $query->where('is_active', true)
                     ->whereHas('husband', function($q) { $q->where('is_alive', true); })
                     ->whereHas('wife', function($q) { $q->where('is_alive', true); });
@@ -126,6 +130,43 @@ class StatisticsService
             }
         }
 
-        return $query->latest()->get();
+        if (isset($filters['is_internal'])) {
+            $query->where('is_internal', $filters['is_internal']);
+        }
+
+        if (isset($filters['branch_id'])) {
+            $branchIds = is_array($filters['branch_id']) ? $filters['branch_id'] : explode(',', $filters['branch_id']);
+            $query->where(function($q) use ($branchIds) {
+                $q->whereHas('husband', function ($q2) use ($branchIds) {
+                    $q2->whereIn('branch_id', $branchIds);
+                })->orWhereHas('wife', function ($q2) use ($branchIds) {
+                    $q2->whereIn('branch_id', $branchIds);
+                });
+            });
+        }
+
+        if (isset($filters['generation'])) {
+            $generations = is_array($filters['generation']) ? $filters['generation'] : explode(',', $filters['generation']);
+            $query->where(function($q) use ($generations) {
+                $q->whereHas('husband', function ($q2) use ($generations) {
+                    $q2->whereIn('generation', $generations);
+                })->orWhereHas('wife', function ($q2) use ($generations) {
+                    $q2->whereIn('generation', $generations);
+                });
+            });
+        }
+
+        // Join with both spouses and their branches for sorting
+        $query->leftJoin('persons as h', 'marriages.husband_id', '=', 'h.id')
+            ->leftJoin('branches as hb', 'h.branch_id', '=', 'hb.id')
+            ->leftJoin('persons as w', 'marriages.wife_id', '=', 'w.id')
+            ->leftJoin('branches as wb', 'w.branch_id', '=', 'wb.id')
+            ->select('marriages.*');
+
+        return $query->orderByRaw('COALESCE(hb.order, wb.order)')
+            ->orderByRaw('COALESCE(h.generation, w.generation)')
+            ->orderByRaw('COALESCE(h.birth_order, w.birth_order)')
+            ->orderByRaw('COALESCE(h.birth_date, w.birth_date)')
+            ->get();
     }
 }

@@ -211,6 +211,14 @@ class PersonService
     }
 
     /**
+     * Get all unique generation numbers
+     */
+    public function getGenerations(): Collection
+    {
+        return $this->personRepository->getGenerations();
+    }
+
+    /**
      * Search persons
      */
     public function searchPersons(string $query, int $limit = 10, int $offset = 0, ?string $gender = null): Collection

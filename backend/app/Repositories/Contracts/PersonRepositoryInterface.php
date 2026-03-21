@@ -59,6 +59,11 @@ interface PersonRepositoryInterface
     public function getDescendants(int $personId): Collection;
 
     /**
+     * Get all unique generation numbers from persons
+     */
+    public function getGenerations(): Collection;
+
+    /**
      * Get person with all relationships loaded
      */
     public function getWithRelationships(int $id): Person;

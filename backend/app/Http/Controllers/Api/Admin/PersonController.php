@@ -107,4 +107,13 @@ class PersonController extends Controller
             'has_more' => count($results) === $limit,
         ]);
     }
+    /**
+     * Get all unique generations
+     * GET /api/admin/persons/generations
+     */
+    public function generations()
+    {
+        $generations = $this->personService->getGenerations();
+        return $this->success($generations, 'Daftar generasi berhasil dimuat');
+    }
 }

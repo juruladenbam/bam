@@ -59,6 +59,13 @@ export function useSearchPersons(query: string, enabled = true) {
     })
 }
 
+export function useGenerations() {
+    return useQuery({
+        queryKey: ['persons', 'generations'],
+        queryFn: () => adminApi.getGenerations(),
+    })
+}
+
 // ==================== MARRIAGES HOOKS ====================
 
 export function useMarriages(filters: MarriageFilters = {}) {

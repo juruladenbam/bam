@@ -18,35 +18,48 @@ class MarriageRepository implements MarriageRepositoryInterface
     public function all(array $filters = []): LengthAwarePaginator
     {
         $query = $this->model->query()
-            ->with(['husband', 'wife'])
+            ->select('marriages.*')
+            ->with(['husband.branch', 'wife.branch'])
             ->withCount('children');
 
         if (isset($filters['is_active'])) {
-            $query->where('is_active', $filters['is_active']);
+            if ($filters['is_active']) {
+                $query->where('marriages.is_active', true)
+                    ->whereHas('husband', function($q) { $q->where('is_alive', true); })
+                    ->whereHas('wife', function($q) { $q->where('is_alive', true); });
+            } else {
+                $query->where(function($q) {
+                    $q->where('marriages.is_active', false)
+                      ->orWhereHas('husband', function($q2) { $q2->where('is_alive', false); })
+                      ->orWhereHas('wife', function($q2) { $q2->where('is_alive', false); });
+                });
+            }
         }
 
         if (isset($filters['is_internal'])) {
             $query->where('is_internal', $filters['is_internal']);
         }
 
-        if (isset($filters['branch_id'])) {
-            $query->whereHas('husband', function ($q) use ($filters) {
-                $q->where('branch_id', $filters['branch_id']);
+        if (!empty($filters['branch_id'])) {
+            $branchIds = is_array($filters['branch_id']) ? $filters['branch_id'] : explode(',', $filters['branch_id']);
+            $query->where(function($q) use ($branchIds) {
+                $q->whereHas('husband', function ($q2) use ($branchIds) {
+                    $q2->whereIn('branch_id', $branchIds);
+                })->orWhereHas('wife', function ($q2) use ($branchIds) {
+                    $q2->whereIn('branch_id', $branchIds);
+                });
             });
         }
 
-        if (isset($filters['is_complete'])) {
-            if ($filters['is_complete']) {
-                $query->where('is_active', true)
-                    ->whereHas('husband', function($q) { $q->where('is_alive', true); })
-                    ->whereHas('wife', function($q) { $q->where('is_alive', true); });
-            } else {
-                $query->where(function($q) {
-                    $q->where('is_active', false)
-                      ->orWhereHas('husband', function($q2) { $q2->where('is_alive', false); })
-                      ->orWhereHas('wife', function($q2) { $q2->where('is_alive', false); });
+        if (!empty($filters['generation'])) {
+            $generations = is_array($filters['generation']) ? $filters['generation'] : explode(',', $filters['generation']);
+            $query->where(function($q) use ($generations) {
+                $q->whereHas('husband', function ($q2) use ($generations) {
+                    $q2->whereIn('generation', $generations);
+                })->orWhereHas('wife', function ($q2) use ($generations) {
+                    $q2->whereIn('generation', $generations);
                 });
-            }
+            });
         }
 
         if (isset($filters['year'])) {
@@ -66,7 +79,27 @@ class MarriageRepository implements MarriageRepositoryInterface
             });
         }
 
-        return $query->orderByDesc('marriage_date')->paginate($filters['per_page'] ?? 15);
+        $sortBy = $filters['sort_by'] ?? null;
+        $sortDir = $filters['sort_dir'] ?? 'asc';
+
+        // Join with both spouses and their branches for sorting
+        $query->leftJoin('persons as h', 'marriages.husband_id', '=', 'h.id')
+            ->leftJoin('branches as hb', 'h.branch_id', '=', 'hb.id')
+            ->leftJoin('persons as w', 'marriages.wife_id', '=', 'w.id')
+            ->leftJoin('branches as wb', 'w.branch_id', '=', 'wb.id');
+
+        if ($sortBy) {
+            $query->orderBy($sortBy, $sortDir);
+        } else {
+            // Default sorting: qobilah -> generasi -> kelahiran
+            // Prioritize husband's branch/gen if exists, otherwise wife's
+            $query->orderByRaw('COALESCE(hb.order, wb.order)')
+                ->orderByRaw('COALESCE(h.generation, w.generation)')
+                ->orderByRaw('COALESCE(h.birth_order, w.birth_order)')
+                ->orderByRaw('COALESCE(h.birth_date, w.birth_date)');
+        }
+
+        return $query->paginate($filters['per_page'] ?? 15);
     }
 
     public function find(int $id): ?Marriage

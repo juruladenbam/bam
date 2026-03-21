@@ -20,7 +20,11 @@ class ExportController extends Controller
     public function persons(Request $request): StreamedResponse
     {
         $filters = $request->only(['branch_id', 'generation', 'gender', 'search']);
-        
+
+        if ($request->has('ids')) {
+            $filters['ids'] = is_array($request->ids) ? $request->ids : explode(',', $request->ids);
+        }
+
         if ($request->has('is_alive')) {
             $filters['is_alive'] = $request->boolean('is_alive');
         }
@@ -37,7 +41,7 @@ class ExportController extends Controller
 
             // Header
             fputcsv($handle, [
-                'ID',
+                'No.',
                 'NIB',
                 'Nama Lengkap',
                 'Nama Panggilan',
@@ -53,9 +57,10 @@ class ExportController extends Controller
                 'Telepon'
             ]);
 
+            $counter = 1;
             foreach ($persons as $p) {
                 fputcsv($handle, [
-                    $p->id,
+                    $counter++,
                     $p->nib,
                     $p->full_name,
                     $p->nickname,
@@ -84,18 +89,20 @@ class ExportController extends Controller
      */
     public function marriages(Request $request): StreamedResponse
     {
-        $filters = [];
+        if ($request->has('ids')) {
+            $filters['ids'] = is_array($request->ids) ? $request->ids : explode(',', $request->ids);
+        }
         if ($request->has('is_active')) {
             $filters['is_active'] = $request->boolean('is_active');
         }
         if ($request->has('is_internal')) {
             $filters['is_internal'] = $request->boolean('is_internal');
         }
-        if ($request->has('is_complete')) {
-            $filters['is_complete'] = $request->boolean('is_complete');
-        }
         if ($request->has('branch_id')) {
             $filters['branch_id'] = (int) $request->branch_id;
+        }
+        if ($request->has('generation')) {
+            $filters['generation'] = (int) $request->generation;
         }
 
         $marriages = $this->statisticsService->getFilteredMarriages($filters);
@@ -108,26 +115,25 @@ class ExportController extends Controller
 
             // Header
             fputcsv($handle, [
-                'ID',
+                'No.',
                 'Suami',
                 'Qobilah Suami',
                 'Istri',
                 'Qobilah Istri',
                 'Tanggal Nikah',
-                'Status Aktif',
-                'Tipe Pernikahan'
+                'Status Aktif'
             ]);
 
+            $counter = 1;
             foreach ($marriages as $m) {
                 fputcsv($handle, [
-                    $m->id,
+                    $counter++,
                     $m->husband?->full_name ?: '-',
                     $m->husband?->branch?->name ?: 'Luar',
                     $m->wife?->full_name ?: '-',
                     $m->wife?->branch?->name ?: 'Luar',
                     $m->marriage_date,
-                    $m->is_active ? 'Aktif' : 'Tidak Aktif',
-                    $m->is_internal ? 'Internal (Kerabat)' : 'Eksternal'
+                    $m->is_active ? 'Aktif' : 'Tidak Aktif'
                 ]);
             }
 

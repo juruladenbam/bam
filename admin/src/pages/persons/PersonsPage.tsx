@@ -1,22 +1,28 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { usePersons, useBranches, useDeletePerson } from '../../features/admin/hooks/useAdmin'
+import { usePersons, useBranches, useDeletePerson, useGenerations } from '../../features/admin/hooks/useAdmin'
 import type { PersonFilters, Person, Branch } from '../../types'
+import { MultiSelect } from '../../components/MultiSelect'
 import api from '../../lib/api'
 
 export function PersonsPage() {
     const [filters, setFilters] = useState<PersonFilters>({
+        branch_id: [],
+        generation: [],
         per_page: 15,
         page: 1,
     })
     const [search, setSearch] = useState('')
+    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
     const [isExporting, setIsExporting] = useState(false)
 
     const { data, isLoading, error } = usePersons(filters)
     const { data: branchesData } = useBranches()
+    const { data: generationsData } = useGenerations()
     const deletePerson = useDeletePerson()
 
     const branches: Branch[] = branchesData?.data || []
+    const generations: number[] = generationsData?.data || []
     const persons: Person[] = data?.data || []
     const meta = data?.meta
 
@@ -40,6 +46,29 @@ export function PersonsPage() {
         }
     }
 
+    const toggleSelectAll = () => {
+        const pageIds = persons.map(p => p.id)
+        const allPageSelected = pageIds.length > 0 && pageIds.every(id => selectedIds.has(id))
+        
+        const next = new Set(selectedIds)
+        if (allPageSelected) {
+            pageIds.forEach(id => next.delete(id))
+        } else {
+            pageIds.forEach(id => next.add(id))
+        }
+        setSelectedIds(next)
+    }
+
+    const toggleSelect = (id: number) => {
+        const next = new Set(selectedIds)
+        if (next.has(id)) {
+            next.delete(id)
+        } else {
+            next.add(id)
+        }
+        setSelectedIds(next)
+    }
+
     const handlePageChange = (newPage: number) => {
         setFilters(prev => ({ ...prev, page: newPage }))
     }
@@ -48,9 +77,14 @@ export function PersonsPage() {
         try {
             setIsExporting(true)
             const params = new URLSearchParams()
-            Object.entries({ ...filters, search: search || undefined }).forEach(([k, v]) => {
-                if (v !== undefined && v !== '') params.append(k, String(v))
-            })
+            
+            if (selectedIds.size > 0) {
+                params.append('ids', Array.from(selectedIds).join(','))
+            } else {
+                Object.entries({ ...filters, search: search || undefined }).forEach(([k, v]) => {
+                    if (v !== undefined && v !== '') params.append(k, String(v))
+                })
+            }
 
             const response = await api.get(`/export/persons?${params.toString()}`, {
                 responseType: 'blob'
@@ -101,26 +135,18 @@ export function PersonsPage() {
                         className="w-full px-4 py-2 border border-[#e6dbdc] rounded-lg focus:outline-none focus:border-[#ec1325]/50"
                     />
                 </div>
-                <select
-                    value={filters.branch_id || ''}
-                    onChange={(e) => handleFilterChange('branch_id', e.target.value ? Number(e.target.value) : undefined)}
-                    className="px-4 py-2 border border-[#e6dbdc] rounded-lg bg-white focus:outline-none focus:border-[#ec1325]/50"
-                >
-                    <option value="">Semua Qobilah</option>
-                    {branches.map((b) => (
-                        <option key={b.id} value={b.id}>{b.name}</option>
-                    ))}
-                </select>
-                <select
-                    value={filters.generation || ''}
-                    onChange={(e) => handleFilterChange('generation', e.target.value ? Number(e.target.value) : undefined)}
-                    className="px-4 py-2 border border-[#e6dbdc] rounded-lg bg-white focus:outline-none focus:border-[#ec1325]/50"
-                >
-                    <option value="">Semua Gen</option>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(g => (
-                        <option key={g} value={g}>Gen {g}</option>
-                    ))}
-                </select>
+                <MultiSelect
+                    label="Semua Qobilah"
+                    options={branches.map(b => ({ id: b.id, name: b.name }))}
+                    selected={Array.isArray(filters.branch_id) ? filters.branch_id : []}
+                    onChange={(ids) => handleFilterChange('branch_id', ids)}
+                />
+                <MultiSelect
+                    label="Semua Gen"
+                    options={generations.map(g => ({ id: g, name: `Gen ${g}` }))}
+                    selected={Array.isArray(filters.generation) ? filters.generation : []}
+                    onChange={(ids) => handleFilterChange('generation', ids)}
+                />
                 <select
                     value={filters.gender || ''}
                     onChange={(e) => handleFilterChange('gender', (e.target.value || undefined) as 'male' | 'female' | undefined)}
@@ -150,7 +176,13 @@ export function PersonsPage() {
                     <span className={`material-symbols-outlined text-[18px] ${isExporting ? 'animate-spin' : ''}`}>
                         {isExporting ? 'progress_activity' : 'download'}
                     </span>
-                    {isExporting ? 'Mengekspor...' : 'Ekspor'}
+                    {isExporting && selectedIds.size > 0 
+                        ? `Ekspor ${selectedIds.size}` 
+                        : selectedIds.size > 0 
+                        ? `Ekspor Terpilih (${selectedIds.size})` 
+                        : isExporting 
+                        ? 'Mengekspor...' 
+                        : 'Ekspor Semua'}
                 </button>
             </div>
 
@@ -159,6 +191,14 @@ export function PersonsPage() {
                 <table className="w-full">
                     <thead>
                         <tr className="bg-[#f8f6f6] border-b border-[#e6dbdc]">
+                            <th className="w-10 px-4 py-3">
+                                <input
+                                    type="checkbox"
+                                    checked={persons.length > 0 && persons.every(p => selectedIds.has(p.id))}
+                                    onChange={toggleSelectAll}
+                                    className="rounded border-[#e6dbdc] text-[#ec1325] focus:ring-[#ec1325]"
+                                />
+                            </th>
                             <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Nama</th>
                             <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Qobilah</th>
                             <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Gen</th>
@@ -170,28 +210,36 @@ export function PersonsPage() {
                     <tbody>
                         {isLoading ? (
                             <tr>
-                                <td colSpan={6} className="px-4 py-8 text-center text-[#896165]">
+                                <td colSpan={7} className="px-4 py-8 text-center text-[#896165]">
                                     <span className="material-symbols-outlined animate-spin text-2xl mb-2 block">progress_activity</span>
                                     Memuat data...
                                 </td>
                             </tr>
                         ) : error ? (
                             <tr>
-                                <td colSpan={6} className="px-4 py-8 text-center text-red-500">
+                                <td colSpan={7} className="px-4 py-8 text-center text-red-500">
                                     <span className="material-symbols-outlined text-2xl mb-2 block">error</span>
                                     Gagal memuat data
                                 </td>
                             </tr>
                         ) : persons.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="px-4 py-8 text-center text-[#896165]">
+                                <td colSpan={7} className="px-4 py-8 text-center text-[#896165]">
                                     <span className="material-symbols-outlined text-2xl mb-2 block">search_off</span>
                                     Data tidak ditemukan
                                 </td>
                             </tr>
                         ) : (
                             persons.map((person) => (
-                                <tr key={person.id} className="border-b border-[#e6dbdc] hover:bg-[#f8f6f6]/50">
+                                <tr key={person.id} className={`border-b border-[#e6dbdc] hover:bg-[#f8f6f6]/50 transition-colors ${selectedIds.has(person.id) ? 'bg-[#ec1325]/5' : ''}`}>
+                                    <td className="px-4 py-3">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.has(person.id)}
+                                            onChange={() => toggleSelect(person.id)}
+                                            className="rounded border-[#e6dbdc] text-[#ec1325] focus:ring-[#ec1325]"
+                                        />
+                                    </td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-3">
                                             <div className={`size-8 rounded-full flex items-center justify-center text-xs font-bold ${person.gender === 'male' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'

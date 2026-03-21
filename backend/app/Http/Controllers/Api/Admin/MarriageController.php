@@ -24,7 +24,7 @@ class MarriageController extends Controller
      */
     public function index(Request $request)
     {
-        $filters = $request->only(['year', 'per_page', 'search']);
+        $filters = $request->only(['year', 'per_page', 'search', 'sort_by', 'sort_dir']);
 
         if ($request->has('is_active')) {
             $filters['is_active'] = $request->boolean('is_active');
@@ -39,7 +39,11 @@ class MarriageController extends Controller
         }
 
         if ($request->has('branch_id')) {
-            $filters['branch_id'] = (int) $request->branch_id;
+            $filters['branch_id'] = $request->branch_id;
+        }
+
+        if ($request->has('generation')) {
+            $filters['generation'] = $request->generation;
         }
 
         $marriages = $this->marriageService->getAllMarriages($filters);

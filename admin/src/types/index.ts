@@ -67,8 +67,8 @@ export interface ApiResponse<T> {
 }
 
 export interface PersonFilters {
-    branch_id?: number
-    generation?: number
+    branch_id?: number | number[]
+    generation?: number | number[]
     gender?: 'male' | 'female'
     is_alive?: boolean
     is_complete?: boolean
@@ -82,12 +82,14 @@ export interface PersonFilters {
 export interface MarriageFilters {
     is_active?: boolean
     is_internal?: boolean
-    is_complete?: boolean
-    branch_id?: number
+    generation?: number | number[]
+    branch_id?: number | number[]
     year?: number
     search?: string
     per_page?: number
     page?: number
+    sort_by?: string
+    sort_dir?: 'asc' | 'desc'
 }
 
 export interface CreatePersonData {

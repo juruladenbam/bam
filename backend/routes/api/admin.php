@@ -31,6 +31,7 @@ Route::get('/branches/{id}', [BranchController::class, 'show']);
 
 // Persons CRUD
 Route::get('/persons/search', [PersonController::class, 'search']);
+Route::get('/persons/generations', [PersonController::class, 'generations']);
 Route::apiResource('persons', PersonController::class);
 
 // Marriages CRUD
