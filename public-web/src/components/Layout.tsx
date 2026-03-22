@@ -29,8 +29,8 @@ export default function Layout() {
             {/* Header */}
             <header className="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-[#e6dbdc] bg-white/90 backdrop-blur-md px-4 sm:px-10 py-3">
                 <Link to="/" className="flex items-center gap-3 text-[#181112]">
-                    <div className="size-10 flex items-center justify-center rounded-full bg-[#ec1325]/10 text-[#ec1325]">
-                        <span className="material-symbols-outlined text-2xl">diversity_2</span>
+                    <div className="size-10 flex items-center justify-center rounded-lg overflow-hidden bg-[#ec1325]/10 p-1">
+                        <img src="/icon.png" alt="Bani Abdul Manan Logo" className="w-full h-full object-contain" />
                     </div>
                     <h2 className="text-lg font-bold leading-tight tracking-tight">Bani Abdul Manan</h2>
                 </Link>
@@ -131,7 +131,9 @@ export default function Layout() {
                 <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between gap-10">
                     <div className="flex flex-col gap-4 max-w-sm">
                         <div className="flex items-center gap-2 text-[#181112]">
-                            <span className="material-symbols-outlined text-[#ec1325]">diversity_2</span>
+                            <div className="size-8 flex items-center justify-center rounded-md overflow-hidden bg-[#ec1325]/10 p-1">
+                                <img src="/icon.png" alt="Bani Abdul Manan Logo" className="w-full h-full object-contain" />
+                            </div>
                             <span className="font-bold text-lg">Bani Abdul Manan</span>
                         </div>
                         <p className="text-[#896165] text-sm">
