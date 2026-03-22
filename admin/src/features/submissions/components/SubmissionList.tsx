@@ -83,7 +83,7 @@ export function SubmissionList({ submissions, isLoading }: SubmissionListProps) 
                                 </span>
                             </div>
                             <p className="text-sm text-gray-500">
-                                Diajukan oleh <span className="font-medium">{submission.user?.name || 'Unknown'}</span>
+                                Diajukan oleh <span className="font-medium">{submission.user?.name || submission.submitter?.full_name || 'Unknown'}</span>
                             </p>
                             <p className="text-xs text-gray-400 mt-1">
                                 {new Date(submission.created_at).toLocaleDateString('id-ID', {

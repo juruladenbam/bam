@@ -202,7 +202,7 @@ export function SubmissionDetail({ submission }: SubmissionDetailProps) {
                             {typeLabels[submission.type]}
                         </h2>
                         <p className="text-sm text-gray-500 mt-1">
-                            Diajukan oleh {submission.user?.name || 'Unknown'} ({submission.user?.email})
+                            Diajukan oleh {submission.user?.name || submission.submitter?.full_name || 'Unknown'} {submission.user?.email ? `(${submission.user.email})` : '(NIB Linked)'}
                         </p>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${submission.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :

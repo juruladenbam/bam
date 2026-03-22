@@ -22,7 +22,7 @@ class SubmissionController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Submission::with('user:id,name,email');
+        $query = Submission::with(['user:id,name,email', 'submitter:id,full_name']);
         
         // Filter by status
         if ($request->has('status')) {
@@ -47,7 +47,7 @@ class SubmissionController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $submission = Submission::with(['user:id,name,email', 'reviewer:id,name'])
+        $submission = Submission::with(['user:id,name,email', 'submitter:id,full_name', 'reviewer:id,name'])
             ->findOrFail($id);
         
         return $this->success($submission);

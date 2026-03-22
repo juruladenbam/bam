@@ -2,7 +2,8 @@ import api from '../../../lib/api'
 
 export interface Submission {
     id: number
-    user_id: number
+    user_id: number | null
+    submitter_person_id: number | null
     type: 'birth' | 'marriage' | 'death' | 'correction'
     data: Record<string, any>
     status: 'pending' | 'approved' | 'rejected'
@@ -15,6 +16,10 @@ export interface Submission {
         id: number
         name: string
         email: string
+    }
+    submitter?: {
+        id: number
+        full_name: string
     }
     reviewer?: {
         id: number
