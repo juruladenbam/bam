@@ -170,6 +170,12 @@ export function BranchPrintPage() {
                 </div>
             </div>
 
+            {/* Footer */}
+            <div className="text-center mt-16 pb-8 text-5xl font-bold tracking-widest text-[#896165]/80 uppercase">
+                <span>Lengkapnya cek di</span>
+                bamseribuputu.my.id
+            </div>
+
             <style>{`
                 @media print {
                     .no-print { display: none !important; }

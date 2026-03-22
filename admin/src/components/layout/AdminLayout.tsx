@@ -86,8 +86,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 {/* Logo */}
                 <div className="p-6 border-b border-white/10">
                     <Link to="/" className="flex items-center gap-3">
-                        <div className="size-10 bg-[#ec1325] rounded-lg flex items-center justify-center">
-                            <span className="material-symbols-outlined text-white">settings</span>
+                        <div className="size-10 rounded-lg flex items-center justify-center overflow-hidden">
+                            <img src="/icon_admin.png" alt="BAM Admin Logo" className="w-full h-full object-contain drop-shadow" />
                         </div>
                         <div>
                             <h1 className="font-bold text-lg">BAM Admin</h1>

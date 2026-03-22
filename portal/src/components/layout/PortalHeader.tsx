@@ -125,10 +125,8 @@ export function PortalHeader() {
                 <div className="flex items-center gap-8">
                     {/* Logo Area */}
                     <Link to="/" className="flex items-center gap-3 group">
-                        <div className="size-8 flex items-center justify-center bg-[#ec1325]/10 rounded-lg group-hover:bg-[#ec1325] transition-colors">
-                            <span className="material-symbols-outlined text-[#ec1325] group-hover:text-white transition-colors">
-                                account_tree
-                            </span>
+                        <div className="size-8 flex items-center justify-center rounded-lg overflow-hidden">
+                            <img src="/icon.png" alt="BAM Portal Logo" className="w-full h-full object-contain" />
                         </div>
                         <h2 className="text-[#181112] text-lg font-bold leading-tight tracking-tight">
                             BAM Portal
