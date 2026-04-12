@@ -188,24 +188,59 @@ class SubmissionService
 
     /**
      * Apply marriage submission - create new marriage
+     * 
+     * Handles two input modes from frontend:
+     * - Picker mode: husband_id/wife_id is provided (existing person)
+     * - Manual mode: only husband_name/wife_name is provided (new person to create)
      */
     protected function applyMarriageSubmission(array $data): void
     {
-        if (empty($data['husband_id']) || empty($data['wife_id'])) {
-            \Log::error('Marriage submission data missing husband_id or wife_id', [
-                'received_keys' => array_keys($data),
-                'data' => $data
+        $husbandId = $data['husband_id'] ?? null;
+        $wifeId = $data['wife_id'] ?? null;
+
+        // If husband_id missing but husband_name provided, create new person
+        if (empty($husbandId) && !empty($data['husband_name'])) {
+            $husband = $this->personRepository->create([
+                'full_name' => $data['husband_name'],
+                'gender' => 'male',
+                'is_alive' => true,
             ]);
-            throw new \InvalidArgumentException('Data pernikahan tidak lengkap (husband_id atau wife_id kosong).');
+            $husbandId = $husband->id;
         }
 
-        Marriage::create([
-            'husband_id' => $data['husband_id'],
-            'wife_id' => $data['wife_id'],
+        // If wife_id missing but wife_name provided, create new person
+        if (empty($wifeId) && !empty($data['wife_name'])) {
+            $wife = $this->personRepository->create([
+                'full_name' => $data['wife_name'],
+                'gender' => 'female',
+                'is_alive' => true,
+            ]);
+            $wifeId = $wife->id;
+        }
+
+        // Final validation: both must exist now 
+        if (empty($husbandId) || empty($wifeId)) {
+            \Log::error('Marriage submission: could not resolve husband or wife', [
+                'received_keys' => array_keys($data),
+                'data' => $data,
+                'resolved_husband_id' => $husbandId,
+                'resolved_wife_id' => $wifeId,
+            ]);
+            throw new \InvalidArgumentException(
+                'Data pernikahan tidak lengkap. Diperlukan husband_id/husband_name dan wife_id/wife_name.'
+            );
+        }
+
+        $marriage = Marriage::create([
+            'husband_id' => $husbandId,
+            'wife_id' => $wifeId,
             'marriage_date' => $data['marriage_date'] ?? null,
             'marriage_order' => $data['marriage_order'] ?? 1,
             'is_current' => $data['is_current'] ?? true,
         ]);
+
+        // Auto-generate spouse NIB if the BAM member partner has one
+        $this->personService->generateAndAssignSpouseNib($husbandId, $wifeId);
     }
 
     /**

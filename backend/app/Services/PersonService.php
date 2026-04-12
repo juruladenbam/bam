@@ -144,6 +144,40 @@ class PersonService
     }
 
     /**
+     * Generate and assign spouse NIB for a marriage pair.
+     * Determines which partner is the BAM member (NIB ending '000')
+     * and assigns a spouse NIB to the other partner.
+     */
+    public function generateAndAssignSpouseNib(int $husbandId, int $wifeId): void
+    {
+        $husband = $this->personRepository->find($husbandId);
+        $wife = $this->personRepository->find($wifeId);
+
+        // Try husband as BAM member → assign NIB to wife
+        if ($husband && $husband->nib && str_ends_with($husband->nib, '000')) {
+            if ($wife && !$wife->nib) {
+                $spouseNib = $this->generateNibForSpouse($husbandId);
+                if ($spouseNib) {
+                    $wife->nib = $spouseNib;
+                    $wife->save();
+                }
+            }
+            return;
+        }
+
+        // Try wife as BAM member → assign NIB to husband
+        if ($wife && $wife->nib && str_ends_with($wife->nib, '000')) {
+            if ($husband && !$husband->nib) {
+                $spouseNib = $this->generateNibForSpouse($wifeId);
+                if ($spouseNib) {
+                    $husband->nib = $spouseNib;
+                    $husband->save();
+                }
+            }
+        }
+    }
+
+    /**
      * Update person
      */
     public function updatePerson(int $id, array $data): Person
