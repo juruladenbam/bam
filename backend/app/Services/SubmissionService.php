@@ -191,6 +191,14 @@ class SubmissionService
      */
     protected function applyMarriageSubmission(array $data): void
     {
+        if (empty($data['husband_id']) || empty($data['wife_id'])) {
+            \Log::error('Marriage submission data missing husband_id or wife_id', [
+                'received_keys' => array_keys($data),
+                'data' => $data
+            ]);
+            throw new \InvalidArgumentException('Data pernikahan tidak lengkap (husband_id atau wife_id kosong).');
+        }
+
         Marriage::create([
             'husband_id' => $data['husband_id'],
             'wife_id' => $data['wife_id'],

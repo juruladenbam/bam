@@ -228,6 +228,14 @@ class PersonService
                 throw new \Exception("Cannot swap root/founder members without parent marriage.");
             }
 
+            // Get all descendant IDs to nullify NIBs first (prevents collision during swap)
+            $allIdsA = $this->collectDescendantIds($personAId);
+            $allIdsB = $this->collectDescendantIds($personBId);
+            $allSubtreeIds = array_unique(array_merge($allIdsA, $allIdsB));
+
+            // Nullify NIBs of everyone in the subtrees
+            Person::whereIn('id', $allSubtreeIds)->update(['nib' => null]);
+
             // Get current orders from parent_child table (source of truth)
             $orderA = \DB::table('parent_child')->where('child_id', $personAId)->value('birth_order');
             $orderB = \DB::table('parent_child')->where('child_id', $personBId)->value('birth_order');
@@ -237,10 +245,6 @@ class PersonService
                 $orderA = $orderA ?? $personA->birth_order ?? 1;
                 $orderB = $orderB ?? $personB->birth_order ?? 1;
             }
-
-            // Temporarily nullify NIBs to avoid unique constraint violation during swap
-            $personA->update(['nib' => null]);
-            $personB->update(['nib' => null]);
 
             // Swap in persons table
             $personA->update(['birth_order' => $orderB]);
@@ -472,5 +476,27 @@ class PersonService
         }
 
         return null; // Fallback: manual selection needed (e.g. child of root)
+    }
+
+    /**
+     * Collect all descendant IDs of a person recursively
+     */
+    protected function collectDescendantIds(int $personId): array
+    {
+        $ids = [$personId];
+        
+        $marriages = Marriage::where('husband_id', $personId)
+            ->orWhere('wife_id', $personId)
+            ->get();
+            
+        foreach ($marriages as $marriage) {
+            foreach ($marriage->children as $parentChild) {
+                if ($parentChild->child_id) {
+                    $ids = array_merge($ids, $this->collectDescendantIds($parentChild->child_id));
+                }
+            }
+        }
+        
+        return array_unique($ids);
     }
 }
