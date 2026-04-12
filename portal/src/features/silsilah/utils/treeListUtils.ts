@@ -233,3 +233,91 @@ export function filterTree(
 
     return { filteredTree, expandedIds }
 }
+
+/**
+ * Generate formatted plain text for copying to clipboard
+ * Starting from children of Gen 1 (root)
+ */
+export function generateCopyText(tree: TreeListNode[]): string {
+    const lines: string[] = []
+
+    function collectAllChildren(node: TreeListNode): TreeListNode[] {
+        const children: TreeListNode[] = []
+        // Collect direct children (single parent case)
+        node.children.forEach(nodeChild => {
+            if (nodeChild.type === 'child') {
+                children.push(nodeChild)
+            } else if (nodeChild.type === 'spouse') {
+                // Collect children via spouse
+                nodeChild.children.forEach(spouseChild => {
+                    if (spouseChild.type === 'child') {
+                        children.push(spouseChild)
+                    }
+                })
+            }
+        })
+        // Sort by birth order
+        return children.sort((a, b) => (a.person.birth_order ?? 999) - (b.person.birth_order ?? 999))
+    }
+
+    function traverse(node: TreeListNode, parentNumber: string, level: number) {
+        const children = collectAllChildren(node)
+
+        children.forEach((child, index) => {
+            const orderNum = index + 1
+            const currentNumber = parentNumber ? `${parentNumber}.${orderNum}` : `${orderNum}`
+
+            // Find spouse (if any)
+            const spouse = child.children.find(c => c.type === 'spouse')
+            const namePart = spouse 
+                ? `*${currentNumber} ${child.person.full_name} + ${spouse.person.full_name}*`
+                : `${currentNumber} ${child.person.full_name}`
+
+            lines.push(namePart)
+
+            const grandchildren = collectAllChildren(child)
+            if (grandchildren.length > 0) {
+                traverse(child, currentNumber, level + 1)
+            }
+
+            // Spacing between entries
+            if (index < children.length - 1) {
+                const hasFamily = spouse || grandchildren.length > 0
+                if (hasFamily) {
+                    if (level === 1) {
+                        // 2 empty lines between top-level (Gen 2) families
+                        lines.push('', '')
+                    } else {
+                        // 1 empty line between deeper level siblings/families
+                        lines.push('')
+                    }
+                }
+                // No empty line for single siblings (berdempet)
+            }
+        })
+    }
+
+    // Start from each root node (Gen 1)
+    tree.forEach((root, rootIdx) => {
+        const rootOrder = root.person.birth_order ?? (rootIdx + 1)
+        const rootNumber = `${rootOrder}`
+
+        // Find root's spouse
+        const rootSpouse = root.children.find(c => c.type === 'spouse')
+        const rootLine = rootSpouse
+            ? `*${rootNumber} ${root.person.full_name} + ${rootSpouse.person.full_name}*`
+            : `${rootNumber} ${root.person.full_name}`
+
+        lines.push(rootLine)
+
+        // Traverse children with root's number as prefix
+        traverse(root, rootNumber, 1)
+
+        // If multiple roots, separate them
+        if (rootIdx < tree.length - 1) {
+            lines.push('', '', '')
+        }
+    })
+
+    return lines.join('\n')
+}

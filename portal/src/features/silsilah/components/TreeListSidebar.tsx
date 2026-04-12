@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import type { Person } from '../types'
-import { buildNestedTree, filterTree, type TreeListNode } from '../utils/treeListUtils'
+import { buildNestedTree, filterTree, generateCopyText, type TreeListNode } from '../utils/treeListUtils'
 
 interface ParentChildLink {
     child_id: number
@@ -43,6 +43,7 @@ export function TreeListSidebar({
     const [searchTerm, setSearchTerm] = useState('')
     const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set())
     const [initializedExpanded, setInitializedExpanded] = useState(false)
+    const [isCopied, setIsCopied] = useState(false)
 
     // Build tree structure
     const tree = useMemo(() =>
@@ -111,6 +112,17 @@ export function TreeListSidebar({
 
     const clearSearch = () => {
         setSearchTerm('')
+    }
+
+    const handleCopy = async () => {
+        try {
+            const copyText = generateCopyText(tree)
+            await navigator.clipboard.writeText(copyText)
+            setIsCopied(true)
+            setTimeout(() => setIsCopied(false), 2000)
+        } catch (err) {
+            console.error('Failed to copy text: ', err)
+        }
     }
 
     // Render a single tree node
@@ -222,7 +234,21 @@ export function TreeListSidebar({
                 >
                     {/* Header */}
                     <div className="flex items-center justify-between p-4 border-b border-[#e6dbdc]">
-                        <h3 className="text-base font-bold text-[#181112]">Daftar Anggota</h3>
+                        <div className="flex items-center gap-2">
+                            <h3 className="text-base font-bold text-[#181112]">Daftar Anggota</h3>
+                            <button
+                                onClick={handleCopy}
+                                className={`
+                                    flex items-center justify-center p-1.5 rounded-lg transition-all
+                                    ${isCopied ? 'bg-green-50 text-green-600' : 'hover:bg-[#f8f6f6] text-[#896165] hover:text-[#ec1325]'}
+                                `}
+                                title="Salin Silsilah (Teks)"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">
+                                    {isCopied ? 'check' : 'content_copy'}
+                                </span>
+                            </button>
+                        </div>
                         <button
                             onClick={onToggle}
                             className="p-2 rounded hover:bg-[#f8f6f6] text-[#896165]"
@@ -285,6 +311,22 @@ export function TreeListSidebar({
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-[#e6dbdc]">
                     <h3 className="text-base font-bold text-[#181112]">Daftar Anggota</h3>
+                    <button
+                        onClick={handleCopy}
+                        className={`
+                            flex items-center gap-1.5 px-2 py-1.5 rounded-lg transition-all text-xs font-medium
+                            ${isCopied 
+                                ? 'bg-green-50 text-green-600' 
+                                : 'hover:bg-[#f8f6f6] text-[#896165] hover:text-[#ec1325] border border-[#e6dbdc] hover:border-[#ec1325]'
+                            }
+                        `}
+                        title="Salin Silsilah (Teks)"
+                    >
+                        <span className="material-symbols-outlined text-[16px]">
+                            {isCopied ? 'check' : 'content_copy'}
+                        </span>
+                        {isCopied ? 'Tersalin' : 'Salin'}
+                    </button>
                 </div>
 
                 {/* Search */}
