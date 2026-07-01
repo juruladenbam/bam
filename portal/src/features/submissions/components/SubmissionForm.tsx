@@ -405,10 +405,18 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
                             </label>
                             <input
                                 type="text"
+                                list="burial_places"
                                 value={formData.burial_place || ''}
                                 onChange={(e) => handleInputChange('burial_place', e.target.value)}
+                                placeholder="Pilih atau ketik tempat makam..."
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
                             />
+                            <datalist id="burial_places">
+                                <option value="SURATAN" />
+                                <option value="MIJI BARU" />
+                                <option value="PLOSOSARI" />
+                                <option value="MEDALI" />
+                            </datalist>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -462,6 +470,7 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
                                 <option value="Tempat Lahir">Tempat Lahir</option>
                                 <option value="Urutan Kelahiran">Urutan Kelahiran</option>
                                 <option value="Tanggal Wafat">Tanggal Wafat (jika sudah wafat)</option>
+                                <option value="Tempat Dimakamkan">Tempat Dimakamkan</option>
                                 <option value="Qobilah">Qobilah</option>
                                 <option value="Ayah/Ibu">Data Ayah / Ibu</option>
                                 <option value="Pasangan">Data Pasangan</option>
@@ -494,6 +503,26 @@ export function SubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
                                             required
                                         />
+                                    )
+                                } else if (fieldSelect === 'Tempat Dimakamkan') {
+                                    return (
+                                        <>
+                                            <input
+                                                type="text"
+                                                list="burial_places"
+                                                value={formData.correct_value || ''}
+                                                onChange={(e) => handleInputChange('correct_value', e.target.value)}
+                                                placeholder="Pilih atau ketik tempat makam..."
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ec1325] focus:border-[#ec1325] outline-none"
+                                                required
+                                            />
+                                            <datalist id="burial_places">
+                                                <option value="SURATAN" />
+                                                <option value="MIJI BARU" />
+                                                <option value="PLOSOSARI" />
+                                                <option value="MEDALI" />
+                                            </datalist>
+                                        </>
                                     )
                                 } else if (fieldSelect === 'Jenis Kelamin') {
                                     return (

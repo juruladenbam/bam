@@ -12,6 +12,8 @@ export interface Person {
     branch_id?: number // nullable for external spouses
     parent_marriage_id?: number // derived from parent_child relation
     parents?: Person[] // derived from getParentsAttribute
+    spouses?: Person[] // derived from getSpousesAttribute
+    burial_place?: string
     photo_url?: string
     branch?: Branch
     qobilah_name?: string
@@ -105,6 +107,7 @@ export interface CreatePersonData {
     birth_order?: number
     branch_id?: number | null // optional for external spouses
     parent_marriage_id?: number // for auto-detect branch/generation
+    burial_place?: string
 }
 
 export interface CreateMarriageData {

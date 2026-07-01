@@ -32,6 +32,7 @@ class Person extends Model
         'generation',
         'birth_order',
         'branch_id',
+        'burial_place',
     ];
 
     protected $casts = [

@@ -54,6 +54,7 @@ class PersonController extends Controller
 
         // Append parents accessor for the detail view
         $person->append('parents');
+        $person->append('spouses');
 
         return $this->success([
             'person' => $person,

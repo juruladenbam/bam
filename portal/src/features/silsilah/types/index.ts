@@ -14,6 +14,7 @@ export interface Person {
     branch_id: number
     branch?: Branch
     nib?: string
+    burial_place?: string
 }
 
 export interface Branch {

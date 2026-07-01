@@ -216,13 +216,24 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false, linke
                                     </div>
                                 </div>
                                 {isDeceased && (
-                                    <div className="flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-[#896165] text-[18px]">church</span>
-                                        <div>
-                                            <p className="text-xs text-[#896165]">Death</p>
-                                            <p className="text-sm font-medium text-[#181112]">{formatDate(person.death_date)}</p>
+                                    <>
+                                        <div className="flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-[#896165] text-[18px]">church</span>
+                                            <div>
+                                                <p className="text-xs text-[#896165]">Death</p>
+                                                <p className="text-sm font-medium text-[#181112]">{formatDate(person.death_date)}</p>
+                                            </div>
                                         </div>
-                                    </div>
+                                        {person.burial_place && (
+                                            <div className="flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-[#896165] text-[18px]">location_on</span>
+                                                <div>
+                                                    <p className="text-xs text-[#896165]">Burial Place</p>
+                                                    <p className="text-sm font-medium text-[#181112]">{person.burial_place}</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -390,18 +401,31 @@ export function MemberSidebar({ person, isOpen, onClose, isMobile = false, linke
                                         </p>
                                     </div>
                                 </div>
-                                {/* Death if deceased */}
-                                {isDeceased && (
-                                    <div className="flex items-start gap-3">
-                                        <span className="material-symbols-outlined text-[#896165] text-[20px] mt-0.5">church</span>
-                                        <div>
-                                            <p className="text-xs text-[#896165]">Death</p>
-                                            <p className="text-sm font-medium text-[#181112]">
-                                                {formatDate(person.death_date)}
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
+                                 {/* Death if deceased */}
+                                 {isDeceased && (
+                                     <>
+                                         <div className="flex items-start gap-3">
+                                             <span className="material-symbols-outlined text-[#896165] text-[20px] mt-0.5">church</span>
+                                             <div>
+                                                 <p className="text-xs text-[#896165]">Death</p>
+                                                 <p className="text-sm font-medium text-[#181112]">
+                                                     {formatDate(person.death_date)}
+                                                 </p>
+                                             </div>
+                                         </div>
+                                         {person.burial_place && (
+                                             <div className="flex items-start gap-3">
+                                                 <span className="material-symbols-outlined text-[#896165] text-[20px] mt-0.5">location_on</span>
+                                                 <div>
+                                                     <p className="text-xs text-[#896165]">Burial Place</p>
+                                                     <p className="text-sm font-medium text-[#181112]">
+                                                         {person.burial_place}
+                                                     </p>
+                                                 </div>
+                                             </div>
+                                         )}
+                                     </>
+                                 )}
                                 {/* Gender */}
                                 <div className="flex items-start gap-3">
                                     <span className="material-symbols-outlined text-[#896165] text-[20px] mt-0.5">wc</span>

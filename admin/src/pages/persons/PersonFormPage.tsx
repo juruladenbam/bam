@@ -29,6 +29,7 @@ export function PersonFormPage() {
         branch_id: undefined,
         birth_date: '',
         death_date: '',
+        burial_place: '',
         is_alive: true,
         generation: undefined,
         birth_order: undefined,
@@ -74,6 +75,7 @@ export function PersonFormPage() {
                 branch_id: person.branch_id,
                 birth_date: formatDateForInput(person.birth_date),
                 death_date: formatDateForInput(person.death_date),
+                burial_place: person.burial_place || '',
                 is_alive: person.is_alive,
                 generation: person.generation,
                 birth_order: person.birth_order,
@@ -96,6 +98,7 @@ export function PersonFormPage() {
             ...prev,
             is_alive: isAlive,
             death_date: isAlive ? '' : prev.death_date,
+            burial_place: isAlive ? '' : prev.burial_place,
         }))
     }
 
@@ -261,6 +264,34 @@ export function PersonFormPage() {
 
                 {/* Basic Info */}
                 <div className="space-y-4 pt-4 border-t border-[#e6dbdc]">
+                    {isEdit && person && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[#f8f6f6] rounded-lg border border-[#e6dbdc]">
+                            <div>
+                                <span className="block text-xs font-semibold text-[#896165] uppercase tracking-wider">Generasi</span>
+                                <span className="text-sm font-medium text-[#181112] mt-1 block">Generasi {person.generation}</span>
+                            </div>
+                            <div>
+                                <span className="block text-xs font-semibold text-[#896165] uppercase tracking-wider">Pasangan</span>
+                                {person.spouses && person.spouses.length > 0 ? (
+                                    <div className="flex flex-wrap gap-2 mt-1">
+                                        {person.spouses.map(spouse => (
+                                            <Link
+                                                key={spouse.id}
+                                                to={`/persons/${spouse.id}/edit`}
+                                                className="inline-flex items-center gap-1 text-sm font-medium text-[#ec1325] hover:underline"
+                                            >
+                                                <span className="material-symbols-outlined text-[16px]">favorite</span>
+                                                {spouse.full_name}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <span className="text-sm text-gray-500 italic mt-1 block">Belum tercatat</span>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
                     <h2 className="font-semibold text-[#181112]">Informasi Dasar</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -429,15 +460,38 @@ export function PersonFormPage() {
                     </div>
 
                     {!formData.is_alive && (
-                        <div>
-                            <label className="block text-sm font-medium text-[#181112] mb-1">Tanggal Wafat</label>
-                            <input
-                                type="date"
-                                name="death_date"
-                                value={formData.death_date}
-                                onChange={handleChange}
-                                className="w-full md:w-1/2 px-4 py-2 border border-[#e6dbdc] rounded-lg focus:outline-none focus:border-[#ec1325]/50"
-                            />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-[#181112] mb-1">Tanggal Wafat</label>
+                                <input
+                                    type="date"
+                                    name="death_date"
+                                    value={formData.death_date}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border border-[#e6dbdc] rounded-lg focus:outline-none focus:border-[#ec1325]/50"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-[#181112] mb-1">Tempat Makam</label>
+                                <input
+                                    type="text"
+                                    name="burial_place"
+                                    list="burial_places"
+                                    value={formData.burial_place || ''}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border border-[#e6dbdc] rounded-lg focus:outline-none focus:border-[#ec1325]/50"
+                                    placeholder="Pilih atau ketik tempat makam..."
+                                />
+                                <datalist id="burial_places">
+                                    <option value="SURATAN" />
+                                    <option value="MIJI BARU" />
+                                    <option value="PLOSOSARI" />
+                                    <option value="MEDALI" />
+                                </datalist>
+                                <p className="text-[11px] text-[#896165] mt-1">
+                                    Pilih dari daftar di atas atau ketik tempat baru secara langsung.
+                                </p>
+                            </div>
                         </div>
                     )}
                 </div>

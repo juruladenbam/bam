@@ -20,6 +20,7 @@ class StorePersonRequest extends FormRequest
             'birth_date' => ['nullable', 'date'],
             'birth_place' => ['nullable', 'string', 'max:255'],
             'death_date' => ['nullable', 'date', 'after_or_equal:birth_date'],
+            'burial_place' => ['nullable', 'string', 'max:255'],
             'is_alive' => ['boolean'],
             'photo_url' => ['nullable', 'url'],
             'bio' => ['nullable', 'string'],
