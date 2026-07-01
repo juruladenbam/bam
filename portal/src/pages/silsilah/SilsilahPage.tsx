@@ -1,10 +1,12 @@
-import { useNavigate } from 'react-router-dom'
-import { useBranches, type Branch } from '../../features/silsilah'
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { useBranches, useCemeteryPersons, type Branch } from '../../features/silsilah'
 import { MobileLayout } from '../../components/layout/MobileLayout'
 
 export function SilsilahPage() {
     const navigate = useNavigate()
     const { data, isLoading, error } = useBranches()
+    const [selectedCemetery, setSelectedCemetery] = useState<string | null>(null)
 
     if (isLoading) {
         return (
@@ -246,11 +248,15 @@ export function SilsilahPage() {
                                 <tbody className="divide-y divide-[#f4f0f0]">
                                     {stats.burial_place_stats?.map((item: { place: string; total: number }) => {
                                         return (
-                                            <tr key={item.place} className="hover:bg-gray-50/50 transition-colors">
-                                                <td className="px-5 py-3 font-bold text-[#181112]">
+                                            <tr 
+                                                key={item.place} 
+                                                onClick={() => setSelectedCemetery(item.place)}
+                                                className="hover:bg-gray-50/50 transition-colors cursor-pointer group/row"
+                                            >
+                                                <td className="px-5 py-3 font-bold text-[#181112] group-hover/row:text-[#ec1325] transition-colors">
                                                     {item.place}
                                                 </td>
-                                                <td className="px-4 py-3 text-center font-mono">{item.total}</td>
+                                                <td className="px-4 py-3 text-center font-mono group-hover/row:text-[#ec1325] transition-colors">{item.total}</td>
                                             </tr>
                                         )
                                     })}
@@ -259,6 +265,13 @@ export function SilsilahPage() {
                         </div>
                     </details>
                 </div>
+
+                {selectedCemetery && (
+                    <CemeteryDetailModal
+                        place={selectedCemetery}
+                        onClose={() => setSelectedCemetery(null)}
+                    />
+                )}
 
                 {/* Branches Grid */}
                 <div>
@@ -315,5 +328,88 @@ export function SilsilahPage() {
                 </div>
             </div>
         </MobileLayout>
+    )
+}
+
+interface CemeteryDetailModalProps {
+    place: string
+    onClose: () => void
+}
+
+function CemeteryDetailModal({ place, onClose }: CemeteryDetailModalProps) {
+    const { data: persons, isLoading, error } = useCemeteryPersons(place)
+
+    // Helper for formatting date
+    const formatDate = (dateStr?: string | null): string => {
+        if (!dateStr) return '-'
+        try {
+            const date = new Date(dateStr)
+            return date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })
+        } catch {
+            return dateStr
+        }
+    }
+
+    return (
+        <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-3xl max-w-md w-full max-h-[75vh] flex flex-col shadow-2xl overflow-hidden border border-[#e6dbdc] animate-in zoom-in-95 duration-200">
+                {/* Header */}
+                <div className="flex items-center justify-between p-5 border-b border-[#f4f0f0] bg-[#f8f6f6]">
+                    <div>
+                        <h3 className="font-bold text-lg text-[#181112]">Anggota di Makam</h3>
+                        <p className="text-xs text-orange-600 font-bold uppercase tracking-wider mt-0.5">{place}</p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="p-2 rounded-xl hover:bg-white text-[#896165] hover:text-[#ec1325] transition-colors border border-transparent hover:border-[#e6dbdc] flex items-center justify-center"
+                    >
+                        <span className="material-symbols-outlined block text-[20px]">close</span>
+                    </button>
+                </div>
+
+                {/* Body */}
+                <div className="flex-1 overflow-y-auto p-5 space-y-3">
+                    {isLoading ? (
+                        <div className="flex items-center justify-center py-10">
+                            <span className="material-symbols-outlined animate-spin text-[#ec1325] text-3xl">
+                                progress_activity
+                            </span>
+                        </div>
+                    ) : error ? (
+                        <div className="text-center py-6 text-red-500 text-sm">
+                            Gagal memuat data anggota makam.
+                        </div>
+                    ) : !persons || persons.length === 0 ? (
+                        <div className="text-center py-6 text-gray-500 text-sm italic">
+                            Tidak ada data anggota di makam ini.
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-[#f4f0f0]">
+                            {persons.map((person) => (
+                                <div key={person.id} className="py-3 flex items-center justify-between gap-4">
+                                    <div className="min-w-0">
+                                        <p className="font-bold text-sm text-[#181112] truncate">{person.full_name}</p>
+                                        <div className="flex items-center gap-2 mt-0.5 text-[11px] text-[#896165]">
+                                            <span className="font-medium">Wafat: {formatDate(person.death_date)}</span>
+                                            <span>•</span>
+                                            <span>{person.gender === 'male' ? 'Laki-laki' : 'Perempuan'}</span>
+                                        </div>
+                                    </div>
+                                    {person.focus_branch_id && (
+                                        <Link
+                                            to={`/silsilah/branch/${person.focus_branch_id}?focus=${person.id}`}
+                                            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 bg-[#ec1325]/10 hover:bg-[#ec1325] text-[#ec1325] hover:text-white rounded-lg text-xs font-bold transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-[14px]">account_tree</span>
+                                            Bagan
+                                        </Link>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
     )
 }

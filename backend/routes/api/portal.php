@@ -39,6 +39,7 @@ Route::middleware('optional.auth')->group(function () {
     Route::get('/silsilah/branch/{id}', [SilsilahController::class, 'branch']);
     Route::get('/silsilah/tree', [SilsilahController::class, 'tree']);
     Route::get('/silsilah/search', [SilsilahController::class, 'search']);
+    Route::get('/silsilah/cemetery', [SilsilahController::class, 'cemeteryPersons']);
 
     // Persons
     Route::get('/persons/{id}', [PersonController::class, 'show']);

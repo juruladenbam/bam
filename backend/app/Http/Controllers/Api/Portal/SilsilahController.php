@@ -338,4 +338,51 @@ class SilsilahController extends Controller
 
         return $this->success($results, 'Hasil pencarian');
     }
+
+    /**
+     * Get persons by burial place
+     * GET /api/portal/silsilah/cemetery
+     */
+    public function cemeteryPersons(\Illuminate\Http\Request $request)
+    {
+        $place = $request->query('place');
+        
+        if (empty($place)) {
+            return $this->error('Parameter tempat makam wajib diisi', 400);
+        }
+
+        $persons = \App\Models\Person::where('is_alive', 0)
+            ->where('burial_place', $place)
+            ->with(['branch', 'marriagesAsHusband.wife', 'marriagesAsWife.husband'])
+            ->orderBy('full_name')
+            ->get();
+
+        // For each person, attach the branch_id to focus on
+        $persons->each(function($p) {
+            $focusBranchId = $p->branch_id;
+            
+            if (!$focusBranchId) {
+                // Try to find branch from spouse
+                foreach ($p->marriagesAsHusband as $m) {
+                    if ($m->wife && $m->wife->branch_id) {
+                        $focusBranchId = $m->wife->branch_id;
+                        break;
+                    }
+                }
+                if (!$focusBranchId) {
+                    foreach ($p->marriagesAsWife as $m) {
+                        if ($m->husband && $m->husband->branch_id) {
+                            $focusBranchId = $m->husband->branch_id;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Convert to integer or null
+            $p->focus_branch_id = $focusBranchId ? (int) $focusBranchId : null;
+        });
+
+        return $this->success($persons, 'Daftar anggota keluarga di makam ' . $place);
+    }
 }

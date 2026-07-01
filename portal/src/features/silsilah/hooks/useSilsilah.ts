@@ -47,3 +47,11 @@ export function useMe() {
         retry: false,
     })
 }
+
+export function useCemeteryPersons(place: string) {
+    return useQuery({
+        queryKey: ['silsilah', 'cemetery', place],
+        queryFn: () => silsilahApi.getCemeteryPersons(place),
+        enabled: !!place,
+    })
+}

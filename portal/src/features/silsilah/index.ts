@@ -12,6 +12,7 @@ export {
     usePerson,
     useRelationship,
     useMe,
+    useCemeteryPersons,
 } from './hooks/useSilsilah'
 
 // API

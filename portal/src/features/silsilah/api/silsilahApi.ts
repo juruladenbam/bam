@@ -177,6 +177,11 @@ export const silsilahApi = {
         `/portal/silsilah/search?q=${encodeURIComponent(query)}${gender ? `&gender=${gender}` : ''}`
     ),
 
+    // Get cemetery persons
+    getCemeteryPersons: (place: string) => fetchApi<import('../types').Person[]>(
+        `/portal/silsilah/cemetery?place=${encodeURIComponent(place)}`
+    ),
+
     // Get person detail
     getPerson: (id: number) => fetchApi<{
         person: import('../types').Person
