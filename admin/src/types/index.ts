@@ -71,6 +71,7 @@ export interface PersonFilters {
     generation?: number | number[]
     gender?: 'male' | 'female'
     is_alive?: boolean
+    is_married?: boolean
     is_complete?: boolean
     search?: string
     page?: number

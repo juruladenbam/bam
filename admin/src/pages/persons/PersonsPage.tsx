@@ -165,6 +165,15 @@ export function PersonsPage() {
                     <option value="1">Masih Hidup</option>
                     <option value="0">Almarhum</option>
                 </select>
+                <select
+                    value={filters.is_married === undefined ? '' : filters.is_married ? '1' : '0'}
+                    onChange={(e) => handleFilterChange('is_married', e.target.value === '' ? undefined : e.target.value === '1')}
+                    className="px-4 py-2 border border-[#e6dbdc] rounded-lg bg-white focus:outline-none focus:border-[#ec1325]/50"
+                >
+                    <option value="">Semua Status Nikah</option>
+                    <option value="1">Sudah Menikah</option>
+                    <option value="0">Belum Menikah</option>
+                </select>
 
                 <div className="h-8 w-px bg-[#e6dbdc] mx-1 hidden lg:block"></div>
 

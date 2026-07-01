@@ -34,6 +34,10 @@ class PersonController extends Controller
             $filters['is_alive'] = $request->boolean('is_alive');
         }
 
+        if ($request->has('is_married')) {
+            $filters['is_married'] = $request->boolean('is_married');
+        }
+
         $persons = $this->personService->getAllPersons($filters);
 
         return $this->paginated($persons, 'Daftar person berhasil dimuat');

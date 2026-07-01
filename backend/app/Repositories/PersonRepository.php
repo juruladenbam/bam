@@ -37,6 +37,16 @@ class PersonRepository implements PersonRepositoryInterface
             $query->where('is_alive', $filters['is_alive']);
         }
 
+        if (isset($filters['is_married'])) {
+            if ($filters['is_married']) {
+                $query->where(function ($q) {
+                    $q->has('marriagesAsHusband')->orHas('marriagesAsWife');
+                });
+            } else {
+                $query->whereDoesntHave('marriagesAsHusband')->whereDoesntHave('marriagesAsWife');
+            }
+        }
+
         if (isset($filters['search'])) {
             $query->where(function ($q) use ($filters) {
                 $q->where('full_name', 'like', "%{$filters['search']}%")
