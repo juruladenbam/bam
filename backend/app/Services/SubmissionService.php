@@ -200,21 +200,39 @@ class SubmissionService
 
         // If husband_id missing but husband_name provided, create new person
         if (empty($husbandId) && !empty($data['husband_name'])) {
-            $husband = $this->personRepository->create([
+            $husbandData = [
                 'full_name' => $data['husband_name'],
                 'gender' => 'male',
                 'is_alive' => true,
-            ]);
+            ];
+
+            if (!empty($wifeId)) {
+                $wife = Person::find($wifeId);
+                if ($wife && $wife->generation) {
+                    $husbandData['generation'] = $wife->generation;
+                }
+            }
+
+            $husband = $this->personRepository->create($husbandData);
             $husbandId = $husband->id;
         }
 
         // If wife_id missing but wife_name provided, create new person
         if (empty($wifeId) && !empty($data['wife_name'])) {
-            $wife = $this->personRepository->create([
+            $wifeData = [
                 'full_name' => $data['wife_name'],
                 'gender' => 'female',
                 'is_alive' => true,
-            ]);
+            ];
+
+            if (!empty($husbandId)) {
+                $husband = Person::find($husbandId);
+                if ($husband && $husband->generation) {
+                    $wifeData['generation'] = $husband->generation;
+                }
+            }
+
+            $wife = $this->personRepository->create($wifeData);
             $wifeId = $wife->id;
         }
 
