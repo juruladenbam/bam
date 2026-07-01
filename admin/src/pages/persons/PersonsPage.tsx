@@ -33,11 +33,17 @@ export function PersonsPage() {
     }
 
     const handleFilterChange = (key: keyof PersonFilters, value: any) => {
-        setFilters(prev => ({
-            ...prev,
-            [key]: value,
-            page: 1,
-        }))
+        setFilters(prev => {
+            const next = {
+                ...prev,
+                [key]: value,
+                page: 1,
+            }
+            if (key === 'is_alive' && value === true) {
+                delete next.burial_place
+            }
+            return next
+        })
     }
 
     const handleDelete = async (id: number, name: string) => {
@@ -174,6 +180,19 @@ export function PersonsPage() {
                     <option value="1">Sudah Menikah</option>
                     <option value="0">Belum Menikah</option>
                 </select>
+                {filters.is_alive !== true && (
+                    <select
+                        value={filters.burial_place || ''}
+                        onChange={(e) => handleFilterChange('burial_place', e.target.value || undefined)}
+                        className="px-4 py-2 border border-[#e6dbdc] rounded-lg bg-white focus:outline-none focus:border-[#ec1325]/50 animate-in fade-in duration-200"
+                    >
+                        <option value="">Semua Tempat Makam</option>
+                        <option value="SURATAN">SURATAN</option>
+                        <option value="MIJI BARU">MIJI BARU</option>
+                        <option value="PLOSOSARI">PLOSOSARI</option>
+                        <option value="MEDALI">MEDALI</option>
+                    </select>
+                )}
 
                 <div className="h-8 w-px bg-[#e6dbdc] mx-1 hidden lg:block"></div>
 

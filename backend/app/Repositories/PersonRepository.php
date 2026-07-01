@@ -47,6 +47,10 @@ class PersonRepository implements PersonRepositoryInterface
             }
         }
 
+        if (isset($filters['burial_place'])) {
+            $query->where('burial_place', $filters['burial_place']);
+        }
+
         if (isset($filters['search'])) {
             $query->where(function ($q) use ($filters) {
                 $q->where('full_name', 'like', "%{$filters['search']}%")

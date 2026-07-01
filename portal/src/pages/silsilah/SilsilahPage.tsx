@@ -42,7 +42,8 @@ export function SilsilahPage() {
         total_kk_utuh: 0,
         total_male: 0,
         total_female: 0,
-        generation_stats: []
+        generation_stats: [],
+        burial_place_stats: []
     }
 
     const deadCount = stats.total_persons - stats.total_living
@@ -210,6 +211,46 @@ export function SilsilahPage() {
                                                         <span className="text-[10px] font-bold text-gray-500 w-7">{ratio}%</span>
                                                     </div>
                                                 </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+
+                    {/* Per Cemetery Table */}
+                    <details className="group bg-white border border-[#e6dbdc] rounded-2xl overflow-hidden shadow-sm">
+                        <summary className="flex items-center justify-between p-5 cursor-pointer hover:bg-gray-50 transition-colors list-none">
+                            <div className="flex items-center gap-3">
+                                <div className="size-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
+                                    <span className="material-symbols-outlined">location_on</span>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-[#181112]">Sebaran Makam Keluarga</h3>
+                                    <p className="text-[10px] text-[#896165]">Rincian tempat pemakaman anggota keluarga yang telah wafat</p>
+                                </div>
+                            </div>
+                            <span className="material-symbols-outlined text-[#896165] transition-transform group-open:rotate-180">
+                                keyboard_arrow_down
+                            </span>
+                        </summary>
+                        <div className="p-0 border-t border-[#f4f0f0] overflow-x-auto">
+                            <table className="w-full text-left text-sm whitespace-nowrap">
+                                <thead className="bg-[#f8f6f6] text-[#896165] text-xs font-bold uppercase tracking-wider">
+                                    <tr>
+                                        <th className="px-5 py-3 border-b border-[#e6dbdc]">Tempat Makam</th>
+                                        <th className="px-4 py-3 border-b border-[#e6dbdc] text-center">Jumlah Wafat</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-[#f4f0f0]">
+                                    {stats.burial_place_stats?.map((item: { place: string; total: number }) => {
+                                        return (
+                                            <tr key={item.place} className="hover:bg-gray-50/50 transition-colors">
+                                                <td className="px-5 py-3 font-bold text-[#181112]">
+                                                    {item.place}
+                                                </td>
+                                                <td className="px-4 py-3 text-center font-mono">{item.total}</td>
                                             </tr>
                                         )
                                     })}

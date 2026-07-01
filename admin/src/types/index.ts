@@ -74,6 +74,7 @@ export interface PersonFilters {
     gender?: 'male' | 'female'
     is_alive?: boolean
     is_married?: boolean
+    burial_place?: string
     is_complete?: boolean
     search?: string
     page?: number

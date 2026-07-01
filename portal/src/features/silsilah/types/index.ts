@@ -40,6 +40,11 @@ export interface GenerationStat {
     female: number
 }
 
+export interface BurialPlaceStat {
+    place: string
+    total: number
+}
+
 export interface Marriage {
     id: number
     husband_id: number

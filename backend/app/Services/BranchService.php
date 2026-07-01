@@ -63,6 +63,15 @@ class BranchService
             ->orderBy('generation')
             ->get();
 
+        // Calculate burial place stats for deceased members
+        $burialPlaceStats = \App\Models\Person::where('is_alive', 0)
+            ->whereNotNull('burial_place')
+            ->whereRaw('TRIM(burial_place) != ""')
+            ->selectRaw('TRIM(burial_place) as place, COUNT(*) as total')
+            ->groupBy('place')
+            ->orderByDesc('total')
+            ->get();
+
         return [
             'branches' => $branches,
             'total_descendants' => (int) $branches->sum('persons_count'),
@@ -75,6 +84,7 @@ class BranchService
             'total_male' => (int) $branches->sum('male_count'),
             'total_female' => (int) $branches->sum('female_count'),
             'generation_stats' => $generationStats,
+            'burial_place_stats' => $burialPlaceStats,
         ];
     }
 }

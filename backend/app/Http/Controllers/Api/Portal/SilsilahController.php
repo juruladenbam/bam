@@ -39,6 +39,7 @@ class SilsilahController extends Controller
                 'total_male' => $data['total_male'],
                 'total_female' => $data['total_female'],
                 'generation_stats' => $data['generation_stats'],
+                'burial_place_stats' => $data['burial_place_stats'],
             ],
         ], 'Data silsilah berhasil dimuat');
     }

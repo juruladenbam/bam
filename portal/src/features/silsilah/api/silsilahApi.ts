@@ -143,6 +143,7 @@ export const silsilahApi = {
             total_male: number
             total_female: number
             generation_stats: import('../types').GenerationStat[]
+            burial_place_stats: import('../types').BurialPlaceStat[]
         }
     }>('/portal/silsilah'),
 

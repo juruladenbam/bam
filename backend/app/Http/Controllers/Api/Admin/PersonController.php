@@ -26,7 +26,7 @@ class PersonController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only([
-            'branch_id', 'generation', 'gender',
+            'branch_id', 'generation', 'gender', 'burial_place',
             'search', 'sort_by', 'sort_dir', 'per_page'
         ]);
 
