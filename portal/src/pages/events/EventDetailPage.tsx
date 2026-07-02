@@ -117,12 +117,19 @@ export function EventDetailPage() {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                            <Link
+                                to={`/events/${event.id}/rsvp`}
+                                className="flex h-12 items-center justify-center rounded-lg px-8 bg-white text-[#ec1325] text-base font-bold hover:bg-gray-100 transition-all shadow-lg gap-2"
+                            >
+                                <span className="material-symbols-outlined">how_to_reg</span>
+                                RSVP Sekarang
+                            </Link>
                             {event.location_maps_url && (
                                 <a
                                     href={event.location_maps_url}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="flex h-12 items-center justify-center rounded-lg px-8 bg-[#ec1325] text-white text-base font-bold hover:bg-red-700 transition-all shadow-lg hover:shadow-red-500/30 gap-2"
+                                    className="flex h-12 items-center justify-center rounded-lg px-8 bg-[#ec1325] text-white text-base font-bold hover:bg-red-700 transition-all shadow-lg hover:shadow-red-500/30 gap-2 border border-white/10"
                                 >
                                     <span className="material-symbols-outlined">map</span>
                                     Lihat Lokasi
@@ -238,7 +245,14 @@ export function EventDetailPage() {
                                         ))}
                                     </ul>
 
-                                    <div className="pt-2 space-y-3">
+                                    <div className="pt-2 space-y-3 border-t border-gray-100 mt-4">
+                                        <Link
+                                            to={`/events/${event.id}/rsvp`}
+                                            className="flex items-center justify-center gap-2 w-full py-3 bg-[#ec1325] text-white rounded-lg font-bold hover:bg-red-700 transition-colors shadow-lg hover:shadow-red-500/20 text-center"
+                                        >
+                                            <span className="material-symbols-outlined text-[20px]">how_to_reg</span>
+                                            RSVP / Konfirmasi Kehadiran
+                                        </Link>
                                         {event.meta_data.filter((item: any) => item.type === 'button').map((item: any) => (
                                             <div key={item.id}>
                                                 <a

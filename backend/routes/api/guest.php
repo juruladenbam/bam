@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Guest\NewsController;
 use App\Http\Controllers\Api\Guest\HomeController;
 use App\Http\Controllers\Api\Guest\AboutController;
 use App\Http\Controllers\Api\Guest\HomeContentController;
+use App\Http\Controllers\Api\Guest\RsvpController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 | Guest API Routes
 |--------------------------------------------------------------------------
 | Routes accessible without authentication (public-web frontend)
-*/
+| */
 
 // Authentication
 Route::post('/login', [AuthController::class, 'login']);
@@ -29,6 +30,11 @@ Route::get('/home-content', [HomeContentController::class, 'index']);
 // Events
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{slug}', [EventController::class, 'show']);
+
+// RSVP
+Route::get('/events/{slug}/rsvp/participants', [RsvpController::class, 'getParticipants']);
+Route::post('/events/{slug}/rsvp', [RsvpController::class, 'submitRsvp']);
+Route::get('/rsvp/branches', [RsvpController::class, 'getBranches']);
 
 // News
 Route::get('/news/headlines', [NewsController::class, 'headlines']);

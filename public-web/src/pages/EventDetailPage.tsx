@@ -2,6 +2,8 @@ import { useParams, Link } from 'react-router-dom';
 import { useEvent } from '@/features/events';
 import SEO from '@/components/SEO';
 
+const PORTAL_URL = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5174';
+
 export default function EventDetailPage() {
     const { slug } = useParams<{ slug: string }>();
     const { data, isLoading, error } = useEvent(slug || '');
@@ -99,25 +101,36 @@ export default function EventDetailPage() {
                         Kembali ke Daftar Acara
                     </Link>
                     <h1 className="text-4xl font-bold mb-4">{event.name}</h1>
-                    <div className="flex flex-wrap gap-4 text-white/80">
-                        <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-sm">calendar_month</span>
-                            <span>{formatDate(event.start_date)}</span>
-                            {event.end_date && event.end_date !== event.start_date && (
-                                <span> - {formatDate(event.end_date)}</span>
-                            )}
-                        </div>
-                        {event.location_name && (
+                    <div className="flex flex-wrap items-center justify-between gap-6">
+                        <div className="flex flex-wrap gap-4 text-white/80">
                             <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-sm">location_on</span>
-                                {event.location_maps_url ? (
-                                    <a href={event.location_maps_url} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                        {event.location_name}
-                                    </a>
-                                ) : (
-                                    <span>{event.location_name}</span>
+                                <span className="material-symbols-outlined text-sm">calendar_month</span>
+                                <span>{formatDate(event.start_date)}</span>
+                                {event.end_date && event.end_date !== event.start_date && (
+                                    <span> - {formatDate(event.end_date)}</span>
                                 )}
                             </div>
+                            {event.location_name && (
+                                <div className="flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-sm">location_on</span>
+                                    {event.location_maps_url ? (
+                                        <a href={event.location_maps_url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                            {event.location_name}
+                                        </a>
+                                    ) : (
+                                        <span>{event.location_name}</span>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        {event.is_active && (
+                            <a
+                                href={`${PORTAL_URL}/events/${event.id}/rsvp`}
+                                className="px-6 py-3 bg-white text-[#ec1325] rounded-xl font-bold hover:bg-gray-100 transition-all shadow-md flex items-center gap-2"
+                            >
+                                <span className="material-symbols-outlined text-[20px]">how_to_reg</span>
+                                RSVP Sekarang
+                            </a>
                         )}
                     </div>
                 </div>
@@ -170,7 +183,22 @@ export default function EventDetailPage() {
                         </div>
 
                         {/* Sidebar - Schedules */}
-                        <div className="lg:col-span-1">
+                        <div className="lg:col-span-1 space-y-6">
+                            {event.is_active && (
+                                <div className="bg-gradient-to-br from-[#ec1325]/10 to-transparent border border-[#ec1325]/20 rounded-xl p-6 text-center space-y-4">
+                                    <h3 className="font-bold text-[#181112]">Konfirmasi Kehadiran Anda</h3>
+                                    <p className="text-xs text-[#896165]">
+                                        Silakan lakukan RSVP untuk memudahkan panitia mempersiapkan konsumsi, akomodasi, dan transportasi.
+                                    </p>
+                                    <a
+                                        href={`${PORTAL_URL}/events/${event.id}/rsvp`}
+                                        className="inline-block w-full py-3 bg-[#ec1325] text-white rounded-xl font-bold hover:bg-red-700 transition-colors shadow-md shadow-red-100 text-center"
+                                    >
+                                        Mulai RSVP
+                                    </a>
+                                </div>
+                            )}
+
                             {schedulesByDay && Object.keys(schedulesByDay).length > 0 && (
                                 <div className="bg-white rounded-xl p-6 shadow-sm border border-[#e6dbdc]">
                                     <h2 className="text-lg font-bold text-[#181112] mb-4 flex items-center gap-2">

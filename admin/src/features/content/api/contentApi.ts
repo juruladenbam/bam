@@ -83,6 +83,9 @@ export const contentApi = {
     // Events
     getEvents: (params?: any) => api.get('/events', { params }).then((res: any) => res.data),
     getEvent: (id: number) => api.get(`/events/${id}`).then((res: any) => res.data),
+    getEventRegistrations: (id: number) => api.get(`/events/${id}/registrations`).then((res: any) => res.data),
+    updateEventRegistration: (id: number, regId: number, data: any) =>
+        api.put(`/events/${id}/registrations/${regId}`, data).then((res: any) => res.data),
     createEvent: (data: CreateEventData) => api.post('/events', data).then((res: any) => res.data),
     updateEvent: (id: number, data: UpdateEventData) => api.put(`/events/${id}`, data).then((res: any) => res.data),
     deleteEvent: (id: number) => api.delete(`/events/${id}`).then((res: any) => res.data),

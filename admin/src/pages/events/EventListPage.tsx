@@ -100,6 +100,13 @@ export function EventListPage() {
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             <Link
+                                                to={`/events/${event.id}/detail`}
+                                                className="p-1 text-green-600 hover:bg-green-50 rounded"
+                                                title="Dashboard Peserta"
+                                            >
+                                                <span className="material-symbols-outlined text-[18px]">group</span>
+                                            </Link>
+                                            <Link
                                                 to={`/events/${event.id}/edit`}
                                                 className="p-1 text-blue-600 hover:bg-blue-50 rounded"
                                                 title="Edit"

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Portal\SilsilahController;
 use App\Http\Controllers\Api\Portal\PersonController;
 use App\Http\Controllers\Api\Portal\RelationshipController;
 use App\Http\Controllers\Api\Portal\NibController;
+use App\Http\Controllers\Api\Portal\RsvpController;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,7 @@ Route::middleware('optional.auth')->group(function () {
     Route::get('/silsilah/cemetery', [SilsilahController::class, 'cemeteryPersons']);
 
     // Persons
+    Route::get('/persons/search-advanced', [RsvpController::class, 'searchPersonsAdvanced']);
     Route::get('/persons/{id}', [PersonController::class, 'show']);
 
     // Relationship
@@ -63,6 +65,10 @@ Route::middleware('optional.auth')->group(function () {
     Route::get('/submissions', [\App\Http\Controllers\Api\Portal\SubmissionController::class, 'index']);
     Route::post('/submissions', [\App\Http\Controllers\Api\Portal\SubmissionController::class, 'store']);
     Route::get('/submissions/{id}', [\App\Http\Controllers\Api\Portal\SubmissionController::class, 'show']);
+
+    // RSVP
+    Route::get('/events/{id}/rsvp/participants', [RsvpController::class, 'getParticipants']);
+    Route::post('/events/{id}/rsvp', [RsvpController::class, 'submitRsvp']);
 });
 
 // Strictly protected routes (always require auth, regardless of login_enabled setting)

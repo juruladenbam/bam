@@ -10,6 +10,7 @@ import { BranchPage } from './pages/silsilah/BranchPage'
 import { PersonDetailPage } from './pages/silsilah/PersonDetailPage'
 import { EventsPage } from './pages/events/EventsPage'
 import { EventDetailPage } from './pages/events/EventDetailPage'
+import { EventRsvpPage } from './pages/events/EventRsvpPage'
 import { ArchivesPage } from './pages/archives/ArchivesPage'
 import { NewsDetailPage } from './pages/news/NewsDetailPage'
 import { NewsListPage } from './pages/news/NewsListPage'
@@ -35,6 +36,7 @@ function App() {
       <Route path="/submissions" element={<AuthGuard><SubmissionsPage /></AuthGuard>} />
       <Route path="/events" element={<AuthGuard><EventsPage /></AuthGuard>} />
       <Route path="/events/:id" element={<AuthGuard><EventDetailPage /></AuthGuard>} />
+      <Route path="/events/:id/rsvp" element={<AuthGuard><EventRsvpPage /></AuthGuard>} />
       <Route path="/news" element={<AuthGuard><NewsListPage /></AuthGuard>} />
       <Route path="/news/:id" element={<AuthGuard><NewsDetailPage /></AuthGuard>} />
       <Route path="/archives" element={<AuthGuard><ArchivesPage /></AuthGuard>} />

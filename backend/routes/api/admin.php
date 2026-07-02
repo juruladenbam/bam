@@ -45,6 +45,8 @@ Route::post('/marriages/{id}/children', [MarriageController::class, 'addChild'])
 Route::apiResource('marriages', MarriageController::class);
 
 // Portal Content Management
+Route::get('/events/{id}/registrations', [\App\Http\Controllers\Api\Admin\EventController::class, 'registrations']);
+Route::put('/events/{id}/registrations/{registrationId}', [\App\Http\Controllers\Api\Admin\EventController::class, 'updateRegistration']);
 Route::apiResource('events', \App\Http\Controllers\Api\Admin\EventController::class);
 Route::apiResource('news', \App\Http\Controllers\Api\Admin\NewsController::class);
 Route::apiResource('media', \App\Http\Controllers\Api\Admin\MediaController::class);

@@ -8,6 +8,7 @@ import { MarriageFormPage } from './pages/marriages/MarriageFormPage'
 import { BranchesPage } from './pages/branches/BranchesPage'
 import { EventListPage } from './pages/events/EventListPage'
 import { EventFormPage } from './pages/events/EventFormPage'
+import { EventDetailPage } from './pages/events/EventDetailPage'
 import { NewsListPage } from './pages/news/NewsListPage'
 import { NewsFormPage } from './pages/news/NewsFormPage'
 import { MediaListPage } from './pages/media/MediaListPage'
@@ -58,6 +59,7 @@ function App() {
               <Route path="/events" element={<EventListPage />} />
               <Route path="/events/create" element={<EventFormPage />} />
               <Route path="/events/:id/edit" element={<EventFormPage />} />
+              <Route path="/events/:id/detail" element={<EventDetailPage />} />
 
               {/* News */}
               <Route path="/news" element={<NewsListPage />} />
