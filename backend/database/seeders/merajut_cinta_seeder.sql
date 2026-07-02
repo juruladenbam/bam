@@ -1,3 +1,18 @@
+-- PASTIKAN DATABASE 'bamb3276_portal' DIPILIH TERLEBIH DAHULU
+USE bamb3276_portal;
+
+-- 1. UPDATE STRUKTUR TABEL (MIGRASI STRUKTUR RSVP)
+-- Menambahkan kolom-kolom baru untuk fitur RSVP pada tabel event_registrations
+ALTER TABLE event_registrations MODIFY user_id BIGINT UNSIGNED NULL;
+ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS person_id BIGINT UNSIGNED NULL AFTER user_id;
+ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS name VARCHAR(255) NULL AFTER person_id;
+ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS email VARCHAR(255) NULL AFTER name;
+ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS whatsapp VARCHAR(20) NULL AFTER email;
+ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS attendance ENUM('hadir', 'tidak_hadir') NULL AFTER whatsapp;
+
+-- Catat status migrasi di Laravel agar sinkron
+INSERT IGNORE INTO migrations (migration, batch) VALUES ('2026_07_02_000002_modify_event_registrations_for_rsvp', 99);
+
 -- Clean up existing data for Merajut Cinta 2026 to ensure idempotency
 DELETE FROM event_schedules WHERE event_id IN (SELECT id FROM events WHERE slug = 'merajut-cinta-2026');
 DELETE FROM event_registrations WHERE event_id IN (SELECT id FROM events WHERE slug = 'merajut-cinta-2026');
