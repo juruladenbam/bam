@@ -104,9 +104,7 @@ export function RsvpForm({ eventIdOrSlug }: RsvpFormProps) {
         const newErrors: Record<string, string> = {}
         if (!selectedRegId) newErrors.participant = 'Nama pendaftar wajib dipilih'
         if (!branchId) newErrors.branch = 'Qobilah wajib diisi'
-        if (!email) {
-            newErrors.email = 'Email wajib diisi'
-        } else if (!/\S+@\S+\.\S+/.test(email)) {
+        if (email && !/\S+@\S+\.\S+/.test(email)) {
             newErrors.email = 'Format email tidak valid'
         }
         if (!whatsapp) {
@@ -343,7 +341,7 @@ export function RsvpForm({ eventIdOrSlug }: RsvpFormProps) {
                                 {/* Email */}
                                 <div>
                                     <label className="block text-sm font-semibold text-[#181112] mb-1.5">
-                                        Alamat Email
+                                        Alamat Email (Opsional)
                                     </label>
                                     <input
                                         type="email"

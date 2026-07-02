@@ -97,7 +97,7 @@ class RsvpController extends Controller
             'registration_id' => 'required|exists:event_registrations,id',
             'person_id' => 'nullable|exists:persons,id',
             'branch_id' => 'required|exists:branches,id',
-            'email' => 'required|email|max:255',
+            'email' => 'nullable|email|max:255',
             'whatsapp' => ['required', 'string', 'regex:/^62[0-9]{8,15}$/'],
             'attendance' => ['required', Rule::in(['hadir', 'tidak_hadir'])],
             'confirmed' => 'boolean',
