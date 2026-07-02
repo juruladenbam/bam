@@ -68,7 +68,7 @@ export const contentApi = {
     getEvents: (type: 'upcoming' | 'past' = 'upcoming') =>
         fetchApi<EventItem[]>(`/portal/events?type=${type}`),
 
-    getEventDetail: (id: number) => fetchApi<EventItem>(`/portal/events/${id}`),
+    getEventDetail: (idOrSlug: string | number) => fetchApi<EventItem>(`/portal/events/${idOrSlug}`),
 
     getNewsDetail: (id: number) => fetchApi<NewsItem>(`/portal/news/${id}`),
 
@@ -84,7 +84,7 @@ export const contentApi = {
         method: 'POST'
     }),
 
-    getEvent: (id: number) => fetchApi<EventItem>(`/portal/events/${id}`),
+    getEvent: (idOrSlug: string | number) => fetchApi<EventItem>(`/portal/events/${idOrSlug}`),
 
     getArchives: (params?: { type?: string, year?: number }) => {
         const query = new URLSearchParams(params as any).toString()

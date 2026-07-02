@@ -52,7 +52,7 @@ Route::middleware('optional.auth')->group(function () {
     // Content
     Route::get('/home', [\App\Http\Controllers\Api\Portal\HomeController::class, 'index']);
     Route::get('/events', [\App\Http\Controllers\Api\Portal\EventController::class, 'index']);
-    Route::get('/events/{id}', [\App\Http\Controllers\Api\Portal\EventController::class, 'show']);
+    Route::get('/events/{slug}', [\App\Http\Controllers\Api\Portal\EventController::class, 'show']);
     Route::get('/news', [\App\Http\Controllers\Api\Portal\NewsController::class, 'index']);
     Route::get('/news/{id}', [\App\Http\Controllers\Api\Portal\NewsController::class, 'show']);
     Route::post('/news/{id}/clap', [\App\Http\Controllers\Api\Portal\NewsController::class, 'clap']);
@@ -67,8 +67,8 @@ Route::middleware('optional.auth')->group(function () {
     Route::get('/submissions/{id}', [\App\Http\Controllers\Api\Portal\SubmissionController::class, 'show']);
 
     // RSVP
-    Route::get('/events/{id}/rsvp/participants', [RsvpController::class, 'getParticipants']);
-    Route::post('/events/{id}/rsvp', [RsvpController::class, 'submitRsvp']);
+    Route::get('/events/{slug}/rsvp/participants', [RsvpController::class, 'getParticipants']);
+    Route::post('/events/{slug}/rsvp', [RsvpController::class, 'submitRsvp']);
 });
 
 // Strictly protected routes (always require auth, regardless of login_enabled setting)

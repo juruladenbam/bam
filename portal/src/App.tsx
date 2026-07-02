@@ -35,8 +35,8 @@ function App() {
       <Route path="/silsilah/person/:id" element={<AuthGuard><PersonDetailPage /></AuthGuard>} />
       <Route path="/submissions" element={<AuthGuard><SubmissionsPage /></AuthGuard>} />
       <Route path="/events" element={<AuthGuard><EventsPage /></AuthGuard>} />
-      <Route path="/events/:id" element={<AuthGuard><EventDetailPage /></AuthGuard>} />
-      <Route path="/events/:id/rsvp" element={<AuthGuard><EventRsvpPage /></AuthGuard>} />
+      <Route path="/events/:slug" element={<AuthGuard><EventDetailPage /></AuthGuard>} />
+      <Route path="/events/:slug/rsvp" element={<AuthGuard><EventRsvpPage /></AuthGuard>} />
       <Route path="/news" element={<AuthGuard><NewsListPage /></AuthGuard>} />
       <Route path="/news/:id" element={<AuthGuard><NewsDetailPage /></AuthGuard>} />
       <Route path="/archives" element={<AuthGuard><ArchivesPage /></AuthGuard>} />

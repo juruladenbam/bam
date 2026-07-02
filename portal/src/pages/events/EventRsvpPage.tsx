@@ -6,14 +6,14 @@ import { contentApi } from '../../features/content/api/contentApi'
 import { RsvpForm } from '../../features/rsvp'
 
 export function EventRsvpPage() {
-    const { id } = useParams<{ id: string }>()
+    const { slug } = useParams<{ slug: string }>()
     const navigate = useNavigate()
     const isMobile = useIsMobile()
 
     const { data: eventData, isLoading: eventLoading } = useQuery({
-        queryKey: ['portal', 'event', id],
-        queryFn: () => contentApi.getEvent(Number(id)),
-        enabled: !!id
+        queryKey: ['portal', 'event', slug],
+        queryFn: () => contentApi.getEvent(slug as string),
+        enabled: !!slug
     })
 
     const event = eventData as any
@@ -117,7 +117,7 @@ export function EventRsvpPage() {
                 </div>
 
                 {/* RSVP Form */}
-                <RsvpForm eventIdOrSlug={event.id} />
+                <RsvpForm eventIdOrSlug={event.slug || event.id} />
             </div>
         </MobileLayout>
     )

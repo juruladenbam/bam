@@ -27,7 +27,7 @@ export function EventCard({ event, variant = 'default' }: EventCardProps) {
     if (variant === 'compact') {
         return (
             <Link
-                to={`/events/${event.id}`}
+                to={`/events/${event.slug || event.id}`}
                 className="flex items-center gap-4 p-4 bg-white rounded-xl border border-[#e6dbdc] hover:border-[#ec1325] hover:shadow-md transition-all group"
             >
                 <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0`}>
@@ -54,7 +54,7 @@ export function EventCard({ event, variant = 'default' }: EventCardProps) {
 
     return (
         <Link
-            to={`/events/${event.id}`}
+            to={`/events/${event.slug || event.id}`}
             className={`block bg-white rounded-xl shadow-sm overflow-hidden border border-[#e6dbdc] hover:shadow-lg hover:border-[#ec1325]/30 transition-all group ${isPast ? 'opacity-75' : ''}`}
         >
             <div className={`bg-gradient-to-br ${gradient} h-32 flex items-center justify-center relative`}>

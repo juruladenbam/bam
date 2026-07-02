@@ -11,6 +11,7 @@ interface EventRepositoryInterface
     public function all(array $filters = []): LengthAwarePaginator;
     public function find(int $id): ?Event;
     public function findOrFail(int $id): Event;
+    public function findBySlugOrId(string|int $idOrSlug): Event;
     public function create(array $data): Event;
     public function update(int $id, array $data): Event;
     public function delete(int $id): bool;

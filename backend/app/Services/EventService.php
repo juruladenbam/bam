@@ -42,8 +42,8 @@ class EventService
         return $this->eventRepository->delete($id);
     }
 
-    public function getEvent(int $id): \App\Models\Event
+    public function getEvent(string|int $idOrSlug): \App\Models\Event
     {
-        return $this->eventRepository->findOrFail($id);
+        return $this->eventRepository->findBySlugOrId($idOrSlug);
     }
 }

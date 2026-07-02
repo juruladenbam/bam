@@ -218,7 +218,7 @@ export function HomePage() {
                         <div className="space-y-4">
                             {(homeData?.upcoming_events || []).length > 0 ? (
                                 homeData?.upcoming_events.map((event: any) => (
-                                    <Link key={event.id} to={`/events/${event.id}`} className="block bg-white border border-[#e6dbdc] rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
+                                    <Link key={event.id} to={`/events/${event.slug || event.id}`} className="block bg-white border border-[#e6dbdc] rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
                                         <div className="bg-[#ec1325] px-4 py-2 text-white flex items-center justify-between">
                                             <div className="flex flex-col leading-tight">
                                                 <span className="text-xs opacity-80">

@@ -29,10 +29,10 @@ class EventController extends Controller
         return $this->success($events);
     }
     
-    public function show($id)
+    public function show($slug)
     {
-        // Allow fetching detail by ID if needed
-        $event = $this->service->getEvent($id);
+        // Allow fetching detail by ID or slug
+        $event = $this->service->getEvent($slug);
         return $this->success($event);
     }
 }

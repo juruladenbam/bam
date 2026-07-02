@@ -5,14 +5,14 @@ import { useIsMobile } from '../../hooks/useIsMobile'
 import { contentApi } from '../../features/content/api/contentApi'
 
 export function EventDetailPage() {
-    const { id } = useParams()
+    const { slug } = useParams()
     const navigate = useNavigate()
     const isMobile = useIsMobile()
 
     const { data: eventData, isLoading } = useQuery({
-        queryKey: ['portal', 'event', id],
-        queryFn: () => contentApi.getEvent(Number(id)),
-        enabled: !!id
+        queryKey: ['portal', 'event', slug],
+        queryFn: () => contentApi.getEvent(slug as string),
+        enabled: !!slug
     })
 
     const event = eventData as any
@@ -118,7 +118,7 @@ export function EventDetailPage() {
 
                         <div className="flex flex-col sm:flex-row gap-4 mt-4">
                             <Link
-                                to={`/events/${event.id}/rsvp`}
+                                to={`/events/${event.slug}/rsvp`}
                                 className="flex h-12 items-center justify-center rounded-lg px-8 bg-white text-[#ec1325] text-base font-bold hover:bg-gray-100 transition-all shadow-lg gap-2"
                             >
                                 <span className="material-symbols-outlined">how_to_reg</span>
@@ -247,7 +247,7 @@ export function EventDetailPage() {
 
                                     <div className="pt-2 space-y-3 border-t border-gray-100 mt-4">
                                         <Link
-                                            to={`/events/${event.id}/rsvp`}
+                                            to={`/events/${event.slug}/rsvp`}
                                             className="flex items-center justify-center gap-2 w-full py-3 bg-[#ec1325] text-white rounded-lg font-bold hover:bg-red-700 transition-colors shadow-lg hover:shadow-red-500/20 text-center"
                                         >
                                             <span className="material-symbols-outlined text-[20px]">how_to_reg</span>

@@ -47,6 +47,14 @@ class EventRepository implements EventRepositoryInterface
         return $this->model->with('schedules')->findOrFail($id);
     }
 
+    public function findBySlugOrId(string|int $idOrSlug): Event
+    {
+        return $this->model->with('schedules')
+            ->where('slug', $idOrSlug)
+            ->orWhere('id', $idOrSlug)
+            ->firstOrFail();
+    }
+
     public function create(array $data): Event
     {
         return $this->model->create($data);

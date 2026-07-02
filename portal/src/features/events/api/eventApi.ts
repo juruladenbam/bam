@@ -50,16 +50,16 @@ export const eventApi = {
         fetchApi<Event[]>(`/portal/events?type=${type}`),
 
     /**
-     * Get event detail by ID
+     * Get event detail by ID or Slug
      */
-    getEventDetail: (id: number) =>
-        fetchApi<Event>(`/portal/events/${id}`),
+    getEventDetail: (idOrSlug: string | number) =>
+        fetchApi<Event>(`/portal/events/${idOrSlug}`),
 
     /**
      * Register for an event
      */
-    register: (id: number, data: EventRegistration) =>
-        fetchApi<{ success: boolean }>(`/portal/events/${id}/register`, {
+    register: (idOrSlug: string | number, data: EventRegistration) =>
+        fetchApi<{ success: boolean }>(`/portal/events/${idOrSlug}/register`, {
             method: 'POST',
             body: JSON.stringify(data),
         }),
