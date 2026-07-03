@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { ActionMenu } from '../../components/ActionMenu';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contentApi } from '../../features/content/api/contentApi';
 import { useBranches, useSearchPersons } from '../../features/admin/hooks/useAdmin';
@@ -206,87 +207,92 @@ export function EventDetailPage() {
 
                 {/* Table list */}
                 <div className="border border-[#e6dbdc] rounded-xl overflow-hidden">
-                    <table className="w-full text-left text-sm">
-                        <thead className="bg-[#fcf8f8] text-[#181112] font-semibold border-b border-[#e6dbdc]">
-                            <tr>
-                                <th className="px-6 py-4">Nama</th>
-                                <th className="px-6 py-4">Qobilah</th>
-                                <th className="px-6 py-4">Status Awal (Transport)</th>
-                                <th className="px-6 py-4">Kontak</th>
-                                <th className="px-6 py-4">Kehadiran</th>
-                                <th className="px-6 py-4 text-right">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[#e6dbdc]">
-                            {filteredRegistrations.length === 0 ? (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-[#fcf8f8] text-[#181112] font-semibold border-b border-[#e6dbdc]">
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                                        Tidak ada peserta yang cocok dengan filter pencarian.
-                                    </td>
+                                    <th className="px-6 py-4">Nama</th>
+                                    <th className="px-6 py-4">Qobilah</th>
+                                    <th className="px-6 py-4">Status Awal (Transport)</th>
+                                    <th className="px-6 py-4">Kontak</th>
+                                    <th className="px-6 py-4">Kehadiran</th>
+                                    <th className="px-6 py-4 sticky right-0 bg-[#fcf8f8] md:static md:bg-transparent border-l border-[#e6dbdc] md:border-l-0 z-10 text-right">Aksi</th>
                                 </tr>
-                            ) : (
-                                filteredRegistrations.map((r: any) => {
-                                    const transportStatus = r.custom_data?.transport_status ?? '-';
-                                    const name = r.name || r.person?.full_name || '';
-                                    return (
-                                        <tr key={r.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4">
-                                                {r.person_id ? (
-                                                    <Link
-                                                        to={`/persons/${r.person_id}/edit`}
-                                                        className="font-semibold text-red-655 hover:text-red-750 hover:underline inline-block"
-                                                    >
-                                                        {name}
-                                                    </Link>
-                                                ) : (
-                                                    <p className="font-semibold text-gray-900">{name}</p>
-                                                )}
-                                                {r.person?.nickname && (
-                                                    <p className="text-xs text-gray-500 mt-0.5">Alias: {r.person.nickname}</p>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 text-gray-600">
-                                                {r.person?.branch?.name || branches.find((b: any) => b.id === r.branch_id)?.name || '-'}
-                                            </td>
-                                            <td className="px-6 py-4 text-gray-600 font-medium capitalize">
-                                                {transportStatus}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <p className="text-xs text-gray-600">{r.email || '-'}</p>
-                                                <p className="text-xs text-gray-500 mt-0.5">{r.whatsapp || '-'}</p>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                {r.attendance === 'hadir' && (
-                                                    <span className="px-2 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full border border-green-200">
-                                                        Ikut (Hadir)
-                                                    </span>
-                                                )}
-                                                {r.attendance === 'tidak_hadir' && (
-                                                    <span className="px-2 py-1 bg-red-50 text-red-700 text-xs font-semibold rounded-full border border-red-200">
-                                                        Tidak Ikut
-                                                    </span>
-                                                )}
-                                                {!r.attendance && (
-                                                    <span className="px-2 py-1 bg-gray-50 text-gray-500 text-xs font-semibold rounded-full border border-gray-200">
-                                                        Belum RSVP
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <button
-                                                    onClick={() => handleEditClick(r)}
-                                                    className="text-gray-500 hover:text-[#ec1325] transition-colors p-1.5 hover:bg-gray-100 rounded-lg"
-                                                    title="Edit RSVP"
-                                                >
-                                                    <span className="material-symbols-outlined text-[18px] align-middle">edit</span>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    );
-                                })
-                            )}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-[#e6dbdc]">
+                                {filteredRegistrations.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                                            Tidak ada peserta yang cocok dengan filter pencarian.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredRegistrations.map((r: any) => {
+                                        const transportStatus = r.custom_data?.transport_status ?? '-';
+                                        const name = r.name || r.person?.full_name || '';
+                                        return (
+                                            <tr key={r.id} className="bg-white hover:bg-gray-50 transition-colors">
+                                                <td className="px-6 py-4">
+                                                    {r.person_id ? (
+                                                        <Link
+                                                            to={`/persons/${r.person_id}/edit`}
+                                                            className="font-semibold text-red-655 hover:text-red-750 hover:underline inline-block whitespace-nowrap"
+                                                        >
+                                                            {name}
+                                                        </Link>
+                                                    ) : (
+                                                        <p className="font-semibold text-gray-900 whitespace-nowrap">{name}</p>
+                                                    )}
+                                                    {r.person?.nickname && (
+                                                        <p className="text-xs text-gray-500 mt-0.5 whitespace-nowrap">Alias: {r.person.nickname}</p>
+                                                    )}
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-600 whitespace-nowrap">
+                                                    {r.person?.branch?.name || branches.find((b: any) => b.id === r.branch_id)?.name || '-'}
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-600 font-medium capitalize">
+                                                    {transportStatus}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <p className="text-xs text-gray-600">{r.email || '-'}</p>
+                                                    <p className="text-xs text-gray-500 mt-0.5">{r.whatsapp || '-'}</p>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    {r.attendance === 'hadir' && (
+                                                        <span className="px-2 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full border border-green-200 whitespace-nowrap">
+                                                            Ikut (Hadir)
+                                                        </span>
+                                                    )}
+                                                    {r.attendance === 'tidak_hadir' && (
+                                                        <span className="px-2 py-1 bg-red-50 text-red-700 text-xs font-semibold rounded-full border border-red-200 whitespace-nowrap">
+                                                            Tidak Ikut
+                                                        </span>
+                                                    )}
+                                                    {!r.attendance && (
+                                                        <span className="px-2 py-1 bg-gray-50 text-gray-500 text-xs font-semibold rounded-full border border-gray-200 whitespace-nowrap">
+                                                            Belum RSVP
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className="px-6 py-4 sticky right-0 bg-inherit md:static md:bg-transparent border-l border-[#e6dbdc] md:border-l-0 z-10 text-right">
+                                                    <ActionMenu>
+                                                        <button
+                                                            onClick={() => handleEditClick(r)}
+                                                            className="text-gray-500 hover:text-[#ec1325] transition-colors p-1.5 hover:bg-gray-100 rounded-lg flex items-center gap-2 md:justify-center w-full"
+                                                            title="Edit RSVP"
+                                                        >
+                                                            <span className="material-symbols-outlined text-[18px] align-middle">edit</span>
+                                                            <span className="md:hidden text-sm font-medium">Edit RSVP</span>
+                                                        </button>
+                                                    </ActionMenu>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 

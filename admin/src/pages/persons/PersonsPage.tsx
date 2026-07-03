@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ActionMenu } from '../../components/ActionMenu'
 import { usePersons, useBranches, useDeletePerson, useGenerations } from '../../features/admin/hooks/useAdmin'
 import type { PersonFilters, Person, Branch } from '../../types'
 import { MultiSelect } from '../../components/MultiSelect'
@@ -55,7 +56,7 @@ export function PersonsPage() {
     const toggleSelectAll = () => {
         const pageIds = persons.map(p => p.id)
         const allPageSelected = pageIds.length > 0 && pageIds.every(id => selectedIds.has(id))
-        
+
         const next = new Set(selectedIds)
         if (allPageSelected) {
             pageIds.forEach(id => next.delete(id))
@@ -83,7 +84,7 @@ export function PersonsPage() {
         try {
             setIsExporting(true)
             const params = new URLSearchParams()
-            
+
             if (selectedIds.size > 0) {
                 params.append('ids', Array.from(selectedIds).join(','))
             } else {
@@ -204,130 +205,134 @@ export function PersonsPage() {
                     <span className={`material-symbols-outlined text-[18px] ${isExporting ? 'animate-spin' : ''}`}>
                         {isExporting ? 'progress_activity' : 'download'}
                     </span>
-                    {isExporting && selectedIds.size > 0 
-                        ? `Ekspor ${selectedIds.size}` 
-                        : selectedIds.size > 0 
-                        ? `Ekspor Terpilih (${selectedIds.size})` 
-                        : isExporting 
-                        ? 'Mengekspor...' 
-                        : 'Ekspor Semua'}
+                    {isExporting && selectedIds.size > 0
+                        ? `Ekspor ${selectedIds.size}`
+                        : selectedIds.size > 0
+                            ? `Ekspor Terpilih (${selectedIds.size})`
+                            : isExporting
+                                ? 'Mengekspor...'
+                                : 'Ekspor Semua'}
                 </button>
             </div>
 
             {/* Table */}
             <div className="bg-white rounded-xl border border-[#e6dbdc] overflow-hidden">
-                <table className="w-full">
-                    <thead>
-                        <tr className="bg-[#f8f6f6] border-b border-[#e6dbdc]">
-                            <th className="w-10 px-4 py-3">
-                                <input
-                                    type="checkbox"
-                                    checked={persons.length > 0 && persons.every(p => selectedIds.has(p.id))}
-                                    onChange={toggleSelectAll}
-                                    className="rounded border-[#e6dbdc] text-[#ec1325] focus:ring-[#ec1325]"
-                                />
-                            </th>
-                            <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Nama</th>
-                            <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Qobilah</th>
-                            <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Gen</th>
-                            <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Gender</th>
-                            <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Status</th>
-                            <th className="text-right px-4 py-3 text-sm font-semibold text-[#181112]">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {isLoading ? (
-                            <tr>
-                                <td colSpan={7} className="px-4 py-8 text-center text-[#896165]">
-                                    <span className="material-symbols-outlined animate-spin text-2xl mb-2 block">progress_activity</span>
-                                    Memuat data...
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="bg-[#f8f6f6] border-b border-[#e6dbdc]">
+                                <th className="w-10 px-4 py-3">
+                                    <input
+                                        type="checkbox"
+                                        checked={persons.length > 0 && persons.every(p => selectedIds.has(p.id))}
+                                        onChange={toggleSelectAll}
+                                        className="rounded border-[#e6dbdc] text-[#ec1325] focus:ring-[#ec1325]"
+                                    />
+                                </th>
+                                <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Nama</th>
+                                <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Qobilah</th>
+                                <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Gen</th>
+                                <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Gender</th>
+                                <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Status</th>
+                                <th className="text-right px-4 py-3 text-sm font-semibold text-[#181112] sticky right-0 bg-[#f8f6f6] border-l border-[#e6dbdc] md:border-l-0 z-10">Aksi</th>
                             </tr>
-                        ) : error ? (
-                            <tr>
-                                <td colSpan={7} className="px-4 py-8 text-center text-red-500">
-                                    <span className="material-symbols-outlined text-2xl mb-2 block">error</span>
-                                    Gagal memuat data
-                                </td>
-                            </tr>
-                        ) : persons.length === 0 ? (
-                            <tr>
-                                <td colSpan={7} className="px-4 py-8 text-center text-[#896165]">
-                                    <span className="material-symbols-outlined text-2xl mb-2 block">search_off</span>
-                                    Data tidak ditemukan
-                                </td>
-                            </tr>
-                        ) : (
-                            persons.map((person) => (
-                                <tr key={person.id} className={`border-b border-[#e6dbdc] hover:bg-[#f8f6f6]/50 transition-colors ${selectedIds.has(person.id) ? 'bg-[#ec1325]/5' : ''}`}>
-                                    <td className="px-4 py-3">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedIds.has(person.id)}
-                                            onChange={() => toggleSelect(person.id)}
-                                            className="rounded border-[#e6dbdc] text-[#ec1325] focus:ring-[#ec1325]"
-                                        />
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`size-8 rounded-full flex items-center justify-center text-xs font-bold ${person.gender === 'male' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'
-                                                }`}>
-                                                {person.full_name.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <p className="font-medium text-[#181112]">{person.full_name}</p>
-                                                {person.nickname && (
-                                                    <p className="text-xs text-[#896165]">{person.nickname}</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3 text-sm text-[#181112]">
-                                        {person.qobilah_name || '-'}
-                                    </td>
-                                    <td className="px-4 py-3 text-sm text-[#181112]">
-                                        {person.generation}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${person.gender === 'male'
-                                            ? 'bg-blue-50 text-blue-700'
-                                            : 'bg-pink-50 text-pink-700'
-                                            }`}>
-                                            {person.gender === 'male' ? 'L' : 'P'}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${person.is_alive
-                                            ? 'bg-green-50 text-green-700'
-                                            : 'bg-gray-100 text-gray-600'
-                                            }`}>
-                                            {person.is_alive ? 'Hidup' : 'Almarhum'}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3 text-right">
-                                        <div className="flex items-center justify-end gap-1">
-                                            <Link
-                                                to={`/persons/${person.id}/edit`}
-                                                className="p-1.5 hover:bg-[#f8f6f6] rounded transition-colors"
-                                                title="Edit"
-                                            >
-                                                <span className="material-symbols-outlined text-[18px] text-[#896165]">edit</span>
-                                            </Link>
-                                            <button
-                                                onClick={() => handleDelete(person.id, person.full_name)}
-                                                className="p-1.5 hover:bg-red-50 rounded transition-colors"
-                                                title="Hapus"
-                                                disabled={deletePerson.isPending}
-                                            >
-                                                <span className="material-symbols-outlined text-[18px] text-red-500">delete</span>
-                                            </button>
-                                        </div>
+                        </thead>
+                        <tbody>
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={7} className="px-4 py-8 text-center text-[#896165]">
+                                        <span className="material-symbols-outlined animate-spin text-2xl mb-2 block">progress_activity</span>
+                                        Memuat data...
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            ) : error ? (
+                                <tr>
+                                    <td colSpan={7} className="px-4 py-8 text-center text-red-500">
+                                        <span className="material-symbols-outlined text-2xl mb-2 block">error</span>
+                                        Gagal memuat data
+                                    </td>
+                                </tr>
+                            ) : persons.length === 0 ? (
+                                <tr>
+                                    <td colSpan={7} className="px-4 py-8 text-center text-[#896165]">
+                                        <span className="material-symbols-outlined text-2xl mb-2 block">search_off</span>
+                                        Data tidak ditemukan
+                                    </td>
+                                </tr>
+                            ) : (
+                                persons.map((person) => (
+                                    <tr key={person.id} className={`border-b border-[#e6dbdc] bg-white hover:bg-[#f8f6f6]/50 transition-colors ${selectedIds.has(person.id) ? 'bg-[#ec1325]/5' : ''}`}>
+                                        <td className="px-4 py-3">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.has(person.id)}
+                                                onChange={() => toggleSelect(person.id)}
+                                                className="rounded border-[#e6dbdc] text-[#ec1325] focus:ring-[#ec1325]"
+                                            />
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`size-8 rounded-full flex items-center justify-center text-xs font-bold ${person.gender === 'male' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'
+                                                    }`}>
+                                                    {person.full_name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-[#181112] whitespace-nowrap">{person.full_name}</p>
+                                                    {person.nickname && (
+                                                        <p className="text-xs text-[#896165] whitespace-nowrap">{person.nickname}</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-[#181112] whitespace-nowrap">
+                                            {person.qobilah_name || '-'}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-[#181112]">
+                                            {person.generation}
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${person.gender === 'male'
+                                                ? 'bg-blue-50 text-blue-700'
+                                                : 'bg-pink-50 text-pink-700'
+                                                }`}>
+                                                {person.gender === 'male' ? 'L' : 'P'}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${person.is_alive
+                                                ? 'bg-green-50 text-green-700'
+                                                : 'bg-gray-100 text-gray-600'
+                                                }`}>
+                                                {person.is_alive ? 'Hidup' : 'Almarhum'}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-right sticky right-0 bg-inherit border-l border-[#e6dbdc] md:border-l-0 z-10">
+                                            <ActionMenu>
+                                                <Link
+                                                    to={`/persons/${person.id}/edit`}
+                                                    className="p-1.5 hover:bg-[#f8f6f6] rounded transition-colors flex items-center gap-2 md:justify-center w-full"
+                                                    title="Edit"
+                                                >
+                                                    <span className="material-symbols-outlined text-[18px] text-[#896165]">edit</span>
+                                                    <span className="md:hidden text-sm font-medium text-[#896165]">Edit</span>
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDelete(person.id, person.full_name)}
+                                                    className="p-1.5 hover:bg-red-50 rounded transition-colors flex items-center gap-2 md:justify-center w-full"
+                                                    title="Hapus"
+                                                    disabled={deletePerson.isPending}
+                                                >
+                                                    <span className="material-symbols-outlined text-[18px] text-red-500">delete</span>
+                                                    <span className="md:hidden text-sm font-medium text-red-500">Hapus</span>
+                                                </button>
+                                            </ActionMenu>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Pagination */}

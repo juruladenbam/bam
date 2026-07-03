@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ActionMenu } from '../../components/ActionMenu'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { contentApi } from '../../features/content/api/contentApi'
 
@@ -56,77 +57,82 @@ export function EventListPage() {
             </div>
 
             <div className="bg-white border border-[#e6dbdc] rounded-xl overflow-hidden shadow-sm">
-                <table className="w-full text-left text-sm">
-                    <thead className="bg-[#fcf8f8] text-[#181112] font-semibold border-b border-[#e6dbdc]">
-                        <tr>
-                            <th className="px-6 py-4">Nama Acara</th>
-                            <th className="px-6 py-4">Tipe</th>
-                            <th className="px-6 py-4">Tanggal</th>
-                            <th className="px-6 py-4">Lokasi</th>
-                            <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4 text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#e6dbdc]">
-                        {events.length === 0 ? (
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-[#fcf8f8] text-[#181112] font-semibold border-b border-[#e6dbdc]">
                             <tr>
-                                <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                                    Belum ada acara yang ditambahkan.
-                                </td>
+                                <th className="px-6 py-4">Nama Acara</th>
+                                <th className="px-6 py-4">Tipe</th>
+                                <th className="px-6 py-4">Tanggal</th>
+                                <th className="px-6 py-4">Lokasi</th>
+                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4 sticky right-0 bg-[#fcf8f8] md:static md:bg-transparent border-l border-[#e6dbdc] md:border-l-0 z-10 text-right">Aksi</th>
                             </tr>
-                        ) : (
-                            events.map((event: any) => (
-                                <tr key={event.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 font-medium text-[#181112]">
-                                        {event.name}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-600 capitalize">
-                                        {event.type.replace('_', ' ')}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-600">
-                                        {formatDate(event.start_date)}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-600 truncate max-w-[200px]">
-                                        {event.location_name || '-'}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${event.is_active
-                                                ? 'bg-green-50 text-green-700'
-                                                : 'bg-gray-100 text-gray-500'
-                                            }`}>
-                                            {event.is_active ? 'Aktif' : 'Non-Aktif'}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <Link
-                                                to={`/events/${event.id}/detail`}
-                                                className="p-1 text-green-600 hover:bg-green-50 rounded"
-                                                title="Dashboard Peserta"
-                                            >
-                                                <span className="material-symbols-outlined text-[18px]">group</span>
-                                            </Link>
-                                            <Link
-                                                to={`/events/${event.id}/edit`}
-                                                className="p-1 text-blue-600 hover:bg-blue-50 rounded"
-                                                title="Edit"
-                                            >
-                                                <span className="material-symbols-outlined text-[18px]">edit</span>
-                                            </Link>
-                                            <button
-                                                onClick={() => handleDelete(event.id)}
-                                                className="p-1 text-red-600 hover:bg-red-50 rounded"
-                                                title="Hapus"
-                                            >
-                                                <span className="material-symbols-outlined text-[18px]">delete</span>
-                                            </button>
-                                        </div>
+                        </thead>
+                        <tbody className="divide-y divide-[#e6dbdc]">
+                            {events.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                                        Belum ada acara yang ditambahkan.
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            ) : (
+                                events.map((event: any) => (
+                                    <tr key={event.id} className="bg-white hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4 font-medium text-[#181112]">
+                                            {event.name}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-600 capitalize">
+                                            {event.type.replace('_', ' ')}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-600">
+                                            {formatDate(event.start_date)}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-600 truncate max-w-[200px]">
+                                            {event.location_name || '-'}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2 py-1 rounded text-xs font-medium ${event.is_active
+                                                    ? 'bg-green-50 text-green-700'
+                                                    : 'bg-gray-100 text-gray-500'
+                                                }`}>
+                                                {event.is_active ? 'Aktif' : 'Non-Aktif'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 sticky right-0 bg-inherit md:static md:bg-transparent border-l border-[#e6dbdc] md:border-l-0 z-10 text-right">
+                                            <ActionMenu>
+                                                <Link
+                                                    to={`/events/${event.id}/detail`}
+                                                    className="p-1 text-green-600 hover:bg-green-50 rounded flex items-center gap-2 md:justify-center w-full"
+                                                    title="Dashboard Peserta"
+                                                >
+                                                    <span className="material-symbols-outlined text-[18px]">group</span>
+                                                    <span className="md:hidden text-sm font-medium">Peserta</span>
+                                                </Link>
+                                                <Link
+                                                    to={`/events/${event.id}/edit`}
+                                                    className="p-1 text-blue-600 hover:bg-blue-50 rounded flex items-center gap-2 md:justify-center w-full"
+                                                    title="Edit"
+                                                >
+                                                    <span className="material-symbols-outlined text-[18px]">edit</span>
+                                                    <span className="md:hidden text-sm font-medium">Edit</span>
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDelete(event.id)}
+                                                    className="p-1 text-red-600 hover:bg-red-50 rounded flex items-center gap-2 md:justify-center w-full"
+                                                    title="Hapus"
+                                                >
+                                                    <span className="material-symbols-outlined text-[18px]">delete</span>
+                                                    <span className="md:hidden text-sm font-medium">Hapus</span>
+                                                </button>
+                                            </ActionMenu>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Simple Pagination */}

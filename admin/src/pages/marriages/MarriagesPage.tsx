@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ActionMenu } from '../../components/ActionMenu'
 import { useMarriages, useDeleteMarriage, useBranches, useGenerations } from '../../features/admin/hooks/useAdmin'
 import type { MarriageFilters, Marriage } from '../../types'
 import { MultiSelect } from '../../components/MultiSelect'
@@ -49,7 +50,7 @@ export function MarriagesPage() {
     const toggleSelectAll = () => {
         const pageIds = marriages.map(m => m.id)
         const allPageSelected = pageIds.length > 0 && pageIds.every(id => selectedIds.has(id))
-        
+
         const next = new Set(selectedIds)
         if (allPageSelected) {
             pageIds.forEach(id => next.delete(id))
@@ -77,7 +78,7 @@ export function MarriagesPage() {
         try {
             setIsExporting(true)
             const params = new URLSearchParams()
-            
+
             if (selectedIds.size > 0) {
                 params.append('ids', Array.from(selectedIds).join(','))
             } else {
@@ -176,146 +177,150 @@ export function MarriagesPage() {
                     <span className={`material-symbols-outlined text-[18px] ${isExporting ? 'animate-spin' : ''}`}>
                         {isExporting ? 'progress_activity' : 'download'}
                     </span>
-                    {isExporting && selectedIds.size > 0 
-                        ? `Ekspor ${selectedIds.size}` 
-                        : selectedIds.size > 0 
-                        ? `Ekspor Terpilih (${selectedIds.size})` 
-                        : isExporting 
-                        ? 'Mengekspor...' 
-                        : 'Ekspor Semua'}
+                    {isExporting && selectedIds.size > 0
+                        ? `Ekspor ${selectedIds.size}`
+                        : selectedIds.size > 0
+                            ? `Ekspor Terpilih (${selectedIds.size})`
+                            : isExporting
+                                ? 'Mengekspor...'
+                                : 'Ekspor Semua'}
                 </button>
             </div>
 
             {/* Table */}
             <div className="bg-white rounded-xl border border-[#e6dbdc] overflow-hidden">
-                <table className="w-full">
-                    <thead>
-                        <tr className="bg-[#f8f6f6] border-b border-[#e6dbdc]">
-                            <th className="w-10 px-4 py-3">
-                                <input
-                                    type="checkbox"
-                                    checked={marriages.length > 0 && marriages.every(m => selectedIds.has(m.id))}
-                                    onChange={toggleSelectAll}
-                                    className="rounded border-[#e6dbdc] text-[#ec1325] focus:ring-[#ec1325]"
-                                />
-                            </th>
-                            <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Suami</th>
-                            <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Istri</th>
-                            <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Qobilah</th>
-                            <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Tahun</th>
-                            <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Anak</th>
-                            <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Status</th>
-                            <th className="text-right px-4 py-3 text-sm font-semibold text-[#181112]">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {isLoading ? (
-                            <tr>
-                                <td colSpan={8} className="px-4 py-8 text-center text-[#896165]">
-                                    <span className="material-symbols-outlined animate-spin text-2xl mb-2 block">progress_activity</span>
-                                    Memuat data...
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="bg-[#f8f6f6] border-b border-[#e6dbdc]">
+                                <th className="w-10 px-4 py-3">
+                                    <input
+                                        type="checkbox"
+                                        checked={marriages.length > 0 && marriages.every(m => selectedIds.has(m.id))}
+                                        onChange={toggleSelectAll}
+                                        className="rounded border-[#e6dbdc] text-[#ec1325] focus:ring-[#ec1325]"
+                                    />
+                                </th>
+                                <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Suami</th>
+                                <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Istri</th>
+                                <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Qobilah</th>
+                                <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Tahun</th>
+                                <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Anak</th>
+                                <th className="text-left px-4 py-3 text-sm font-semibold text-[#181112]">Status</th>
+                                <th className="text-right px-4 py-3 text-sm font-semibold text-[#181112]">Aksi</th>
                             </tr>
-                        ) : error ? (
-                            <tr>
-                                <td colSpan={8} className="px-4 py-8 text-center text-red-500">
-                                    <span className="material-symbols-outlined text-2xl mb-2 block">error</span>
-                                    Gagal memuat data
-                                </td>
-                            </tr>
-                        ) : marriages.length === 0 ? (
-                            <tr>
-                                <td colSpan={8} className="px-4 py-8 text-center text-[#896165]">
-                                    <span className="material-symbols-outlined text-2xl mb-2 block">search_off</span>
-                                    Data tidak ditemukan
-                                </td>
-                            </tr>
-                        ) : (
-                            marriages.map((marriage) => (
-                                <tr key={marriage.id} className={`border-b border-[#e6dbdc] hover:bg-[#f8f6f6]/50 transition-colors ${selectedIds.has(marriage.id) ? 'bg-[#ec1325]/5' : ''}`}>
-                                    <td className="px-4 py-3">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedIds.has(marriage.id)}
-                                            onChange={() => toggleSelect(marriage.id)}
-                                            className="rounded border-[#e6dbdc] text-[#ec1325] focus:ring-[#ec1325]"
-                                        />
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="size-8 rounded-full flex items-center justify-center text-xs font-bold bg-blue-50 text-blue-600">
-                                                {marriage.husband?.full_name?.charAt(0) || '?'}
-                                            </div>
-                                            <span className="font-medium text-[#181112]">
-                                                {marriage.husband?.full_name || 'Tidak diketahui'}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="size-8 rounded-full flex items-center justify-center text-xs font-bold bg-pink-50 text-pink-600">
-                                                {marriage.wife?.full_name?.charAt(0) || '?'}
-                                            </div>
-                                            <span className="font-medium text-[#181112]">
-                                                {marriage.wife?.full_name || 'Tidak diketahui'}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3 text-sm text-[#181112]">
-                                        {marriage.husband?.qobilah_name || '-'}
-                                    </td>
-                                    <td className="px-4 py-3 text-sm text-[#181112]">
-                                        {marriage.marriage_date ? new Date(marriage.marriage_date).getFullYear() : '-'}
-                                    </td>
-                                    <td className="px-4 py-3 text-sm text-[#181112]">
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#f8f6f6] rounded text-xs">
-                                            <span className="material-symbols-outlined text-[14px]">child_care</span>
-                                            {marriage.children_count || 0}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex flex-col gap-1">
-                                            <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium w-fit ${marriage.is_active
-                                                ? 'bg-green-50 text-green-700'
-                                                : 'bg-gray-100 text-gray-600'
-                                                }`}>
-                                                {marriage.is_active ? 'Aktif' : 'Tidak Aktif'}
-                                            </span>
-                                            {marriage.is_internal && (
-                                                <span className="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-purple-50 text-purple-700 w-fit">
-                                                    Internal
-                                                </span>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3 text-right">
-                                        <div className="flex items-center justify-end gap-1">
-                                            <Link
-                                                to={`/marriages/${marriage.id}/edit`}
-                                                className="p-1.5 hover:bg-[#f8f6f6] rounded transition-colors"
-                                                title="Edit"
-                                            >
-                                                <span className="material-symbols-outlined text-[18px] text-[#896165]">edit</span>
-                                            </Link>
-                                            <button
-                                                onClick={() => handleDelete(
-                                                    marriage.id,
-                                                    marriage.husband?.full_name || '',
-                                                    marriage.wife?.full_name || ''
-                                                )}
-                                                className="p-1.5 hover:bg-red-50 rounded transition-colors"
-                                                title="Hapus"
-                                                disabled={deleteMarriage.isPending}
-                                            >
-                                                <span className="material-symbols-outlined text-[18px] text-red-500">delete</span>
-                                            </button>
-                                        </div>
+                        </thead>
+                        <tbody>
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={8} className="px-4 py-8 text-center text-[#896165]">
+                                        <span className="material-symbols-outlined animate-spin text-2xl mb-2 block">progress_activity</span>
+                                        Memuat data...
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            ) : error ? (
+                                <tr>
+                                    <td colSpan={8} className="px-4 py-8 text-center text-red-500">
+                                        <span className="material-symbols-outlined text-2xl mb-2 block">error</span>
+                                        Gagal memuat data
+                                    </td>
+                                </tr>
+                            ) : marriages.length === 0 ? (
+                                <tr>
+                                    <td colSpan={8} className="px-4 py-8 text-center text-[#896165]">
+                                        <span className="material-symbols-outlined text-2xl mb-2 block">search_off</span>
+                                        Data tidak ditemukan
+                                    </td>
+                                </tr>
+                            ) : (
+                                marriages.map((marriage) => (
+                                    <tr key={marriage.id} className={`border-b border-[#e6dbdc] bg-white hover:bg-[#f8f6f6]/50 transition-colors ${selectedIds.has(marriage.id) ? 'bg-[#ec1325]/5' : ''}`}>
+                                        <td className="px-4 py-3">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.has(marriage.id)}
+                                                onChange={() => toggleSelect(marriage.id)}
+                                                className="rounded border-[#e6dbdc] text-[#ec1325] focus:ring-[#ec1325]"
+                                            />
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="size-8 rounded-full flex items-center justify-center text-xs font-bold bg-blue-50 text-blue-600">
+                                                    {marriage.husband?.full_name?.charAt(0) || '?'}
+                                                </div>
+                                                <span className="font-medium text-[#181112] whitespace-nowrap">
+                                                    {marriage.husband?.full_name || 'Tidak diketahui'}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="size-8 rounded-full flex items-center justify-center text-xs font-bold bg-pink-50 text-pink-600">
+                                                    {marriage.wife?.full_name?.charAt(0) || '?'}
+                                                </div>
+                                                <span className="font-medium text-[#181112] whitespace-nowrap">
+                                                    {marriage.wife?.full_name || 'Tidak diketahui'}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-[#181112] whitespace-nowrap">
+                                            {marriage.husband?.qobilah_name || '-'}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-[#181112]">
+                                            {marriage.marriage_date ? new Date(marriage.marriage_date).getFullYear() : '-'}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-[#181112]">
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#f8f6f6] rounded text-xs">
+                                                <span className="material-symbols-outlined text-[14px]">child_care</span>
+                                                {marriage.children_count || 0}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="flex flex-col gap-1 w-fit">
+                                                <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium w-fit ${marriage.is_active
+                                                    ? 'bg-green-50 text-green-700'
+                                                    : 'bg-gray-100 text-gray-600'
+                                                    }`}>
+                                                    {marriage.is_active ? 'Aktif' : 'Tidak Aktif'}
+                                                </span>
+                                                {marriage.is_internal && (
+                                                    <span className="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-purple-50 text-purple-700 w-fit">
+                                                        Internal
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3 text-right sticky right-0 bg-inherit border-l border-[#e6dbdc] md:border-l-0 z-10">
+                                            <ActionMenu>
+                                                <Link
+                                                    to={`/marriages/${marriage.id}/edit`}
+                                                    className="p-1.5 hover:bg-[#f8f6f6] rounded transition-colors flex items-center gap-2 md:justify-center w-full"
+                                                    title="Edit"
+                                                >
+                                                    <span className="material-symbols-outlined text-[18px] text-[#896165]">edit</span>
+                                                    <span className="md:hidden text-sm font-medium text-[#896165]">Edit</span>
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDelete(
+                                                        marriage.id,
+                                                        marriage.husband?.full_name || '',
+                                                        marriage.wife?.full_name || ''
+                                                    )}
+                                                    className="p-1.5 hover:bg-red-50 rounded transition-colors flex items-center gap-2 md:justify-center w-full"
+                                                    title="Hapus"
+                                                    disabled={deleteMarriage.isPending}
+                                                >
+                                                    <span className="material-symbols-outlined text-[18px] text-red-500">delete</span>
+                                                    <span className="md:hidden text-sm font-medium text-red-500">Hapus</span>
+                                                </button>
+                                            </ActionMenu>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Pagination */}

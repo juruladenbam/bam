@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ActionMenu } from '../../components/ActionMenu'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { contentApi } from '../../features/content/api/contentApi'
 
@@ -57,70 +58,74 @@ export function NewsListPage() {
             </div>
 
             <div className="bg-white border border-[#e6dbdc] rounded-xl overflow-hidden shadow-sm">
-                <table className="w-full text-left text-sm">
-                    <thead className="bg-[#fcf8f8] text-[#181112] font-semibold border-b border-[#e6dbdc]">
-                        <tr>
-                            <th className="px-6 py-4">Judul</th>
-                            <th className="px-6 py-4">Kategori</th>
-                            <th className="px-6 py-4">Penulis</th>
-                            <th className="px-6 py-4">Tanggal Publikasi</th>
-                            <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4 text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#e6dbdc]">
-                        {newsList.length === 0 ? (
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-[#fcf8f8] text-[#181112] font-semibold border-b border-[#e6dbdc]">
                             <tr>
-                                <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                                    Belum ada berita yang ditambahkan.
-                                </td>
+                                <th className="px-6 py-4">Judul</th>
+                                <th className="px-6 py-4">Kategori</th>
+                                <th className="px-6 py-4">Penulis</th>
+                                <th className="px-6 py-4">Tanggal Publikasi</th>
+                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4 sticky right-0 bg-[#fcf8f8] md:static md:bg-transparent border-l border-[#e6dbdc] md:border-l-0 z-10 text-right">Aksi</th>
                             </tr>
-                        ) : (
-                            newsList.map((item: any) => (
-                                <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 font-medium text-[#181112] max-w-xs truncate">
-                                        {item.title}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-600 capitalize">
-                                        {item.category}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-600">
-                                        {item.author?.name || '-'}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-600">
-                                        {formatDate(item.published_at)}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${item.is_public
-                                                ? 'bg-green-50 text-green-700'
-                                                : 'bg-yellow-50 text-yellow-700'
-                                            }`}>
-                                            {item.is_public ? 'Publik' : 'Draft'}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <Link
-                                                to={`/news/${item.id}/edit`}
-                                                className="p-1 text-blue-600 hover:bg-blue-50 rounded"
-                                                title="Edit"
-                                            >
-                                                <span className="material-symbols-outlined text-[18px]">edit</span>
-                                            </Link>
-                                            <button
-                                                onClick={() => handleDelete(item.id)}
-                                                className="p-1 text-red-600 hover:bg-red-50 rounded"
-                                                title="Hapus"
-                                            >
-                                                <span className="material-symbols-outlined text-[18px]">delete</span>
-                                            </button>
-                                        </div>
+                        </thead>
+                        <tbody className="divide-y divide-[#e6dbdc]">
+                            {newsList.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                                        Belum ada berita yang ditambahkan.
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            ) : (
+                                newsList.map((item: any) => (
+                                    <tr key={item.id} className="bg-white hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4 font-medium text-[#181112] max-w-xs truncate">
+                                            {item.title}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-600 capitalize">
+                                            {item.category}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-600">
+                                            {item.author?.name || '-'}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-600">
+                                            {formatDate(item.published_at)}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2 py-1 rounded text-xs font-medium ${item.is_public
+                                                    ? 'bg-green-50 text-green-700'
+                                                    : 'bg-yellow-50 text-yellow-700'
+                                                }`}>
+                                                {item.is_public ? 'Publik' : 'Draft'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 sticky right-0 bg-inherit md:static md:bg-transparent border-l border-[#e6dbdc] md:border-l-0 z-10 text-right">
+                                            <ActionMenu>
+                                                <Link
+                                                    to={`/news/${item.id}/edit`}
+                                                    className="p-1 text-blue-600 hover:bg-blue-50 rounded flex items-center gap-2 md:justify-center w-full"
+                                                    title="Edit"
+                                                >
+                                                    <span className="material-symbols-outlined text-[18px]">edit</span>
+                                                    <span className="md:hidden text-sm font-medium">Edit</span>
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDelete(item.id)}
+                                                    className="p-1 text-red-600 hover:bg-red-50 rounded flex items-center gap-2 md:justify-center w-full"
+                                                    title="Hapus"
+                                                >
+                                                    <span className="material-symbols-outlined text-[18px]">delete</span>
+                                                    <span className="md:hidden text-sm font-medium">Hapus</span>
+                                                </button>
+                                            </ActionMenu>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Simple Pagination */}

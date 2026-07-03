@@ -30,6 +30,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     const { data: userResponse, isLoading, error } = useUser()
     const logout = useLogout()
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
     const isActive = (path: string) => {
         if (path === '/') return location.pathname === '/'
@@ -81,11 +82,23 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
     return (
         <div className="min-h-screen bg-[#f8f6f6] flex">
+            {/* Mobile Sidebar Overlay */}
+            {isSidebarOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
-            <aside className="w-64 bg-[#181112] text-white flex flex-col shrink-0">
+            <aside className={`
+                fixed inset-y-0 left-0 z-50 w-64 bg-[#181112] text-white flex flex-col shrink-0 
+                transition-transform duration-300 ease-in-out md:relative md:translate-x-0
+                ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            `}>
                 {/* Logo */}
-                <div className="p-6 border-b border-white/10">
-                    <Link to="/" className="flex items-center gap-3">
+                <div className="p-6 border-b border-white/10 flex items-center justify-between">
+                    <Link to="/" className="flex items-center gap-3" onClick={() => setIsSidebarOpen(false)}>
                         <div className="size-10 rounded-lg flex items-center justify-center overflow-hidden">
                             <img src="/icon_admin.png" alt="BAM Admin Logo" className="w-full h-full object-contain drop-shadow" />
                         </div>
@@ -94,14 +107,21 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                             <p className="text-xs text-white/50">Panel Pengelola</p>
                         </div>
                     </Link>
+                    <button 
+                        className="md:hidden p-2 text-white/70 hover:text-white"
+                        onClick={() => setIsSidebarOpen(false)}
+                    >
+                        <span className="material-symbols-outlined">close</span>
+                    </button>
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 p-4 space-y-1">
+                <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                     {navItems.map((item) => (
                         <Link
                             key={item.path}
                             to={item.path}
+                            onClick={() => setIsSidebarOpen(false)}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive(item.path)
                                 ? 'bg-[#ec1325] text-white'
                                 : 'text-white/70 hover:bg-white/10 hover:text-white'
@@ -128,11 +148,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col min-h-screen overflow-hidden relative">
+            <main className="flex-1 flex flex-col min-h-screen min-w-0 overflow-hidden relative">
                 {/* Header */}
-                <header className="bg-white border-b border-[#e6dbdc] px-6 py-4 flex items-center justify-between">
-                    <div>
-                        <h2 className="text-lg font-bold text-[#181112]">
+                <header className="bg-white border-b border-[#e6dbdc] px-4 md:px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+                    <div className="flex items-center gap-3">
+                        <button 
+                            className="md:hidden p-2 -ml-2 text-[#896165] hover:bg-[#f8f6f6] rounded-lg transition-colors flex items-center justify-center"
+                            onClick={() => setIsSidebarOpen(true)}
+                        >
+                            <span className="material-symbols-outlined">menu</span>
+                        </button>
+                        <h2 className="text-lg font-bold text-[#181112] truncate">
                             {navItems.find((item) => isActive(item.path))?.label || 'Admin'}
                         </h2>
                     </div>
