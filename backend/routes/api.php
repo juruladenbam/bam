@@ -23,3 +23,7 @@ Route::prefix('portal')->group(base_path('routes/api/portal.php'));
 Route::prefix('admin')
     ->middleware(['auth:sanctum', 'admin'])
     ->group(base_path('routes/api/admin.php'));
+
+// Juruladen routes - for juruladen app
+Route::prefix('juruladen')
+    ->group(base_path('routes/api/juruladen.php'));

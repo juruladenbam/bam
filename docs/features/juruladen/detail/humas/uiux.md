@@ -1,0 +1,151 @@
+# 🎨 UI/UX — Humas
+
+> **Modul**: [Fitur Humas](fitur.md) | **UI/UX Utama**: [← Kembali ke UI/UX Spec](../../uiux-spec.md)
+
+---
+
+## 1. Peserta & RSVP
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Peserta ─── [Filter: Semua Pool ▼] [RSVP: Semua ▼]     │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ │
+│                                                         │
+│  Pool: Peserta Merajut Cinta 2026 | 25/30 confirmed     │
+│                                                         │
+│  ┌──────────────────────────────┬──────────┬────────────┐│
+│  │ Nama                         │ RSVP     │ Presensi   ││
+│  ├──────────────────────────────┼──────────┼────────────┤│
+│  │ Ahmad Fulan 👤               │ ✅ Hadir │ ✅ 08:15   ││
+│  │ Siti Rahayu 👤               │ ✅ Hadir │ ⏳ -       ││
+│  │ Budi Santoso 👤              │ ❌ Tdk  │ -          ││
+│  │ Dewi Anggraini 👤            │ ⏳ Blm  │ -          ││
+│  └──────────────────────────────┴──────────┴────────────┘│
+│                                                         │
+│  [+ Tambah Peserta] [📋 Bulk Update RSVP]                │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. Tambah Peserta (Modal)
+
+```
+┌────────────────────────────────────┐
+│  Tambah Peserta                [✕] │
+│  ──────────────────────────────     │
+│                                     │
+│  Pool: [Peserta Merajut Cinta ▼]   │
+│        atau [Buat Pool Baru...]     │
+│                                     │
+│  Cari Person:                       │
+│  ┌────────────────────────────┐    │
+│  │ Ahmad...                   │    │
+│  └────────────────────────────┘    │
+│  ☑ Ahmad Fulan (NIB: 0803...)     │
+│  ☑ Siti Rahayu (NIB: 0804...)     │
+│  ☐ Budi Santoso (NIB: 0802...)    │
+│                                     │
+│  [Batal]          [💾 Tambah 2]    │
+└────────────────────────────────────┘
+```
+
+---
+
+## 3. WA Blast Modal
+
+```
+┌────────────────────────────────────────────┐
+│  Kirim Blast WhatsApp                  [✕] │
+│  ────────────────────────────────────       │
+│                                             │
+│  Template: [Pengingat Acara ▼]  [Kelola]   │
+│                                             │
+│  ┌─ Preview ────────────────────────────┐  │
+│  │ Assalamualaikum wr. wb.              │  │
+│  │                                      │  │
+│  │ Kepada Yth. Bapak/Ibu {{nama}},     │  │
+│  │ Kami mengingatkan acara...           │  │
+│  └──────────────────────────────────────┘  │
+│                                             │
+│  Penerima:                                 │
+│  ☑ Panitia Inti (15 nomor)                 │
+│  ☑ Anggota Ngaglik (45 nomor)              │
+│  ☐ Anggota Cabang Lain (120 nomor)         │
+│  ─────────────────────────────             │
+│  Total: 60 nomor                           │
+│                                             │
+│  Delay antar pesan: [2 detik ▼]            │
+│                                             │
+│  [Batal]              [🚀 Kirim Blast]     │
+└────────────────────────────────────────────┘
+```
+
+---
+
+## 4. Broadcast Log
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Log Publikasi ─── [Filter: Semua Platform ▼]            │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ │
+│                                                         │
+│  ┌──────────┬──────────────────┬──────────┬────────────┐│
+│  │ Platform │ Judul            │ Tanggal  │ Status     ││
+│  ├──────────┼──────────────────┼──────────┼────────────┤│
+│  │ 📱 WA    │ Pengingat H-3    │ 12 Jun   │ ✅ 60/60   ││
+│  │ 📸 IG    │ Poster HB 2026   │ 10 Jun   │ ✅ Posted  ││
+│  │ 👥 FB    │ Foto Kegiatan    │ 15 Jun   │ ⏳ Draft   ││
+│  └──────────┴──────────────────┴──────────┴────────────┘│
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 5. Design Needs Board
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Kebutuhan Desain ─── [+ Tambah]                         │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ │
+│                                                         │
+│  ┌─ TODO ───────────┐ ┌─ IN PROGRESS ──┐ ┌─ DONE ─────┐│
+│  │┌────────────────┐│ │┌──────────────┐│ │┌──────────┐││
+│  ││ Poster IG      ││ ││ Banner WA    ││ ││Flyer     │││
+│  ││ 1:1, Tema RM   ││ ││ Grup         ││ ││digital   │││
+│  ││ Deadline: 1 Jun││ ││ Deadline:5Jun││ ││✅        │││
+│  ││ 👤 Desainer A  ││ ││ 👤 Desainer B││ ││          │││
+│  │└────────────────┘│ │└──────────────┘│ │└──────────┘││
+│  └──────────────────┘ └────────────────┘ └────────────┘│
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 6. Komponen Spesifik
+
+| Komponen | Fungsi |
+|----------|--------|
+| `ParticipantTable` | Tabel peserta + RSVP + presensi |
+| `ParticipantBulkAddModal` | Modal tambah peserta (bulk) |
+| `BlastWAModal` | Modal blast WhatsApp |
+| `BroadcastLogTable` | Tabel log broadcast |
+| `DesignNeedsBoard` | Kanban/board kebutuhan desain |
+| `DocumentationGrid` | Grid foto/video dokumentasi |
+
+---
+
+## 7. Halaman
+
+| Halaman | Route |
+|---------|-------|
+| Peserta & RSVP | `/events/{slug}/humas/peserta` |
+| Publikasi & Blast WA | `/events/{slug}/humas/publikasi` |
+| Dokumentasi | `/events/{slug}/humas/dokumentasi` |
+
+---
+
+## 8. Related Docs
+
+- [← Fitur Humas](fitur.md)
+- [🎨 UI/UX Spec (Overview)](../../uiux-spec.md)
