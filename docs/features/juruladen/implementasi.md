@@ -31,6 +31,8 @@ backend/
 │   │   └── JuruladenDailySummary.php
 │   ├── Http/
 │   │   ├── Controllers/Api/Juruladen/
+│   │   │   ├── AuthController.php
+│   │   │   ├── UserController.php
 │   │   │   ├── EventController.php
 │   │   │   ├── DivisionController.php
 │   │   │   ├── TaskController.php
@@ -75,6 +77,7 @@ backend/
 │   │   ├── InventoryItem.php
 │   │   ├── McAssignment.php
 │   │   ├── CateringSchedule.php
+│   │   ├── CateringMenuItem.php
 │   │   ├── ParticipantPool.php
 │   │   ├── ParticipantPoolMember.php
 │   │   ├── ParticipantPresence.php
@@ -279,12 +282,29 @@ juruladen/
 | 2.1 | Model + migrasi: `rundowns`, `rundown_items`, `event_guidelines` | 1h | 3 migrasi + model |
 | 2.2 | CRUD API + drag-reorder endpoint untuk rundown & items | 2h | Full CRUD endpoint |
 | 2.3 | Model + migrasi: `inventory_categories`, `inventory_items` | 1h | 2 migrasi + model |
-| 2.4 | CRUD API inventory + status update endpoint | 2h | Endpoint dengan filter |
+| 2.4 | CRUD API inventory + status update endpoint | 2h | Endpoint dengan filter + return tracking |
 | 2.5 | Model + migrasi: `mc_assignments`, `catering_schedules` | 1h | 2 migrasi + model |
-| 2.6 | CRUD API MC + catering | 2h | Endpoint sederhana |
+| 2.6 | CRUD API MC + catering | 2h | Endpoint CRUD |
 | 2.7 | Halaman: Rundown Builder (drag-reorder), Guidelines, Inventory, MC, Catering | 8h | 5 halaman interaktif |
+| 2.8 | **Improvement:** Restruktur catering: multi-menu per jadwal (`catering_menu_items`) | 3h | 2 migrasi + relasi baru |
+| 2.9 | **Improvement:** Catering link ke rundown section (`rundown_item_id`) | 30m | FK + dropdown <optgroup> |
+| 2.10 | **Improvement:** Subsidi source (qobilah/person/other) di menu item | 1h | 3 kolom + search person + dropdown qobilah |
+| 2.11 | **Improvement:** PIC per jadwal konsumsi (search person + text bebas) | 30m | Kolom `pic_type`, `pic_name` |
+| 2.12 | **Improvement:** Equipment needs → auto-sync ke inventory (tambah/edit delta) | 2h | `syncEquipmentToInventory` + `syncEquipmentDelta` |
+| 2.13 | **Improvement:** Usage type perlengkapan (sekali pakai / pakai ulang) | 30m | Akumulasi vs max() di sync |
+| 2.14 | **Improvement:** Kategori inventory dari nama modul ("Konsumsi") | 15m | Simplifikasi mapping |
+| 2.15 | **Improvement:** UX — autocomplete menu name + auto-fill, responsive modal, samarkan nominal, expand all/collapse all | 2h | QoL features |
 
-**Total Fase 2**: ~17 jam
+**Total Fase 2**: ~26 jam (17 jam + 9 jam improvement)
+
+**Tambahan dari Fase 1:**
+| # | Task | Est. |
+|---|------|------|
+| T1 | Frappe-gantt timeline (ganti custom bar) | 2h |
+| T2 | Semua ikon keyboard → Lucide React | 1h |
+| T3 | Default event redirect (auto-select event aktif) | 1h |
+| T4 | Realtime invalidation fix + member management UI | 1.5h |
+| T5 | Search person: auto-strip checksum + qobilah display | 30m |
 
 ---
 
@@ -373,12 +393,12 @@ juruladen/
 | Fase | Nama | Jam |
 |------|------|-----|
 | 1 | Fondasi (Core) | 27.5 |
-| 2 | Operasional Acara | 17 |
+| 2 | Operasional Acara | 26 |
 | 3 | Humas & Peserta | 21.5 |
 | 4 | Pendanaan | 22 |
 | 5 | Merchandise | 28 |
 | 6 | Dashboard, Laporan, Notifikasi & Integrasi | 31 |
-| **Total** | | **~147 jam** |
+| **Total** | | **~156 jam** |
 
 > **Catatan**: Estimasi untuk 1 developer full-stack. Bisa paralel jika ada 2+ developer (backend & frontend terpisah).
 
@@ -411,11 +431,17 @@ juruladen/
 - [x] **Timeline View**: kalender tugas semua divisi, color-coded, filterable per divisi/status
 
 ### Fase 2 ✅
-- [ ] Rundown bisa di-drag-reorder
-- [ ] Inventory checklist bisa difilter per kategori
-- [ ] Item pinjaman punya return tracking
-- [ ] MC assignment tersimpan per segmen
-- [ ] Jadwal konsumsi dengan kalkulasi biaya
+- [x] Rundown bisa di-drag-reorder
+- [x] Inventory checklist bisa difilter per kategori
+- [x] Item pinjaman punya return tracking (strikethrough + badge)
+- [x] MC assignment tersimpan per segmen (grouped by role)
+- [x] Jadwal konsumsi dengan kalkulasi biaya (multi-menu per jadwal)
+- [x] Menu konsumsi bisa subsidi (qobilah/person/other)
+- [x] PIC penanggung jawab per jadwal konsumsi
+- [x] Equipment needs auto-sync ke inventory (delta on edit)
+- [x] Autocomplete menu name + auto-fill field
+- [x] Toggle samarkan nominal + expand/collapse all
+- [x] Frappe-gantt timeline + Lucide icons
 
 ### Fase 3 ✅
 - [ ] Peserta bisa ditambah ke event via `event_registrations` (bulk add person_ids)

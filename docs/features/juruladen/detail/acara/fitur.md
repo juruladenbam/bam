@@ -73,19 +73,38 @@ Penugasan pembawa acara per segmen.
 
 ### 2.5 Catering Schedule
 
-Jadwal saji konsumsi.
+Jadwal saji konsumsi. Satu jadwal bisa memiliki banyak menu (makanan + minuman).
 
-**Field:**
+**`catering_schedules`:**
 | Field | Deskripsi |
 |-------|-----------|
 | `time_serve` | Waktu penyajian |
-| `meal_type` | ringan / berat / snack / minuman |
+| `rundown_item_id` | Link ke item rundown (nullable) |
+| `pic_type` | person / other — tipe penanggung jawab |
+| `pic_name` | Nama penanggung jawab stand |
+
+**`catering_menu_items`:**
+| Field | Deskripsi |
+|-------|-----------|
+| `menu_category` | makanan_berat / makanan_ringan / minuman_es / minuman_hangat / snack |
 | `menu_name` | Nama menu |
-| `portion_count` | Jumlah porsi |
-| `source` | masak_sendiri / catering / nasi_kotak |
-| `vendor_name` | Nama vendor (jika catering) |
-| `cost_per_portion` | Biaya per porsi |
-| `dietary_notes` | Catatan diet khusus |
+| `portion_count` | Jumlah |
+| `unit` | Satuan (default: porsi) |
+| `cost_per_portion` | Biaya per porsi (null jika subsidi) |
+| `is_subsidi` | Ditanggung pihak lain? |
+| `subsidi_source_type` | person / qobilah / other |
+| `subsidi_source_name` | Nama penyubsidi |
+| `serving_style` | sendiri2 / bareng2 |
+| `equipment_needs` | JSON: [{name, quantity, unit, usage}] — auto-sync ke inventory |
+
+**Fitur:**
+- Multi-menu per jadwal (makanan + minuman + snack)
+- Subsidi tracking (qobilah/person/other)
+- PIC per jadwal (search person atau text bebas)
+- Equipment needs → auto-create di inventory "Konsumsi"
+- Usage type: sekali pakai (akumulasi qty) / pakai ulang (max qty)
+- Autocomplete menu name + auto-fill dari data existing
+- Tampilan: expand/collapse, samarkan nominal
 
 ---
 
@@ -126,10 +145,13 @@ Jadwal saji konsumsi.
 ### Catering
 | Method | Path | Deskripsi |
 |--------|------|-----------|
-| `GET` | `/events/{event}/catering` | List catering |
-| `POST` | `/events/{event}/catering` | Create schedule |
-| `PUT` | `/catering/{id}` | Update |
-| `DELETE` | `/catering/{id}` | Delete |
+| `GET` | `/events/{event}/catering` | List jadwal + menu items |
+| `POST` | `/events/{event}/catering` | Create jadwal (+ menu_items array) |
+| `PUT` | `/catering/{id}` | Update jadwal |
+| `DELETE` | `/catering/{id}` | Delete jadwal |
+| `POST` | `/catering/{id}/menu-items` | Tambah menu item |
+| `PUT` | `/catering-menu-items/{id}` | Update menu item |
+| `DELETE` | `/catering-menu-items/{id}` | Delete menu item |
 
 ---
 

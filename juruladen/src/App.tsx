@@ -10,6 +10,11 @@ import DivisionsPage from "./pages/divisions/DivisionsPage";
 import DivisionDetailPage from "./pages/divisions/DivisionDetailPage";
 import TimelinePage from "./pages/TimelinePage";
 import UserManagementPage from "./pages/UserManagementPage";
+import RundownPage from "./pages/acara/RundownPage";
+import GuidelinesPage from "./pages/acara/GuidelinesPage";
+import InventoryPage from "./pages/acara/InventoryPage";
+import McPage from "./pages/acara/McPage";
+import CateringPage from "./pages/acara/CateringPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -90,6 +95,41 @@ export default function App() {
             <Route path="timeline/:eventSlug" element={<TimelinePage />} />
 
             <Route path="users" element={<UserManagementPage />} />
+
+            <Route
+              path="acara/rundown"
+              element={<DefaultEventRedirect basePath="/acara/rundown" />}
+            />
+            <Route path="acara/rundown/:eventSlug" element={<RundownPage />} />
+            <Route
+              path="acara/juknis"
+              element={<DefaultEventRedirect basePath="/acara/juknis" />}
+            />
+            <Route
+              path="acara/juknis/:eventSlug"
+              element={<GuidelinesPage />}
+            />
+            <Route
+              path="acara/perlengkapan"
+              element={<DefaultEventRedirect basePath="/acara/perlengkapan" />}
+            />
+            <Route
+              path="acara/perlengkapan/:eventSlug"
+              element={<InventoryPage />}
+            />
+            <Route
+              path="acara/mc"
+              element={<DefaultEventRedirect basePath="/acara/mc" />}
+            />
+            <Route path="acara/mc/:eventSlug" element={<McPage />} />
+            <Route
+              path="acara/konsumsi"
+              element={<DefaultEventRedirect basePath="/acara/konsumsi" />}
+            />
+            <Route
+              path="acara/konsumsi/:eventSlug"
+              element={<CateringPage />}
+            />
           </Route>
 
           {/* Catch-all */}
