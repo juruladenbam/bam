@@ -11,44 +11,50 @@ class Event extends Model
     use HasFactory;
 
     protected $fillable = [
-        'slug',
-        'name',
-        'thumbnail',
-        'type',
-        'year',
-        'start_date',
-        'end_date',
-        'description',
-        'location_name',
-        'location_maps_url',
-        'is_active',
-        'is_juruladen_active',
-        'budget_total',
-        'budget_status',
-        'meta_data',
+        "slug",
+        "name",
+        "thumbnail",
+        "type",
+        "year",
+        "start_date",
+        "end_date",
+        "description",
+        "location_name",
+        "location_maps_url",
+        "is_active",
+        "is_juruladen_active",
+        "budget_total",
+        "budget_status",
+        "meta_data",
     ];
 
     protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
-        'is_active' => 'boolean',
-        'is_juruladen_active' => 'boolean',
-        'budget_total' => 'decimal:2',
-        'meta_data' => 'array',
+        "start_date" => "datetime",
+        "end_date" => "datetime",
+        "is_active" => "boolean",
+        "is_juruladen_active" => "boolean",
+        "budget_total" => "decimal:2",
+        "meta_data" => "array",
     ];
 
-    protected $appends = ['thumbnail_url'];
+    protected $appends = ["thumbnail_url"];
 
     public function getThumbnailUrlAttribute(): ?string
     {
-        if (!$this->thumbnail) return null;
-        if (str_starts_with($this->thumbnail, 'http')) return $this->thumbnail;
-        return asset('storage/' . $this->thumbnail);
+        if (!$this->thumbnail) {
+            return null;
+        }
+        if (str_starts_with($this->thumbnail, "http")) {
+            return $this->thumbnail;
+        }
+        return asset("storage/" . $this->thumbnail);
     }
 
     public function schedules(): HasMany
     {
-        return $this->hasMany(EventSchedule::class)->orderBy('day_sequence')->orderBy('time_start');
+        return $this->hasMany(EventSchedule::class)
+            ->orderBy("day_sequence")
+            ->orderBy("time_start");
     }
 
     public function registrations(): HasMany
@@ -68,7 +74,32 @@ class Event extends Model
 
     public function committeeDivisions(): HasMany
     {
-        return $this->hasMany(CommitteeDivision::class)->orderBy('sort_order');
+        return $this->hasMany(CommitteeDivision::class)->orderBy("sort_order");
+    }
+
+    public function rundowns(): HasMany
+    {
+        return $this->hasMany(Rundown::class)->orderBy("sort_order");
+    }
+
+    public function guidelines(): HasMany
+    {
+        return $this->hasMany(EventGuideline::class);
+    }
+
+    public function inventoryCategories(): HasMany
+    {
+        return $this->hasMany(InventoryCategory::class)->orderBy("sort_order");
+    }
+
+    public function mcAssignments(): HasMany
+    {
+        return $this->hasMany(McAssignment::class)->orderBy("sort_order");
+    }
+
+    public function cateringSchedules(): HasMany
+    {
+        return $this->hasMany(CateringSchedule::class)->orderBy("sort_order");
     }
 
     /**
@@ -79,6 +110,6 @@ class Event extends Model
      */
     protected function serializeDate(\DateTimeInterface $date)
     {
-        return $date->format('Y-m-d\TH:i:s');
+        return $date->format("Y-m-d\TH:i:s");
     }
 }

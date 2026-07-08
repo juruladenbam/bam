@@ -134,6 +134,7 @@ class JuruladenUserService
         }
 
         return $q
+            ->with("branch:id,name")
             ->limit($limit)
             ->get(["id", "full_name", "nib", "branch_id"])
             ->map(
@@ -141,6 +142,7 @@ class JuruladenUserService
                     "id" => $p->id,
                     "full_name" => $p->full_name,
                     "nib" => $p->nib,
+                    "qobilah" => $p->branch?->name,
                     "has_user" => User::where("person_id", $p->id)->exists(),
                 ],
             )
