@@ -22,6 +22,9 @@ class Event extends Model
         'location_name',
         'location_maps_url',
         'is_active',
+        'is_juruladen_active',
+        'budget_total',
+        'budget_status',
         'meta_data',
     ];
 
@@ -29,7 +32,8 @@ class Event extends Model
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'is_active' => 'boolean',
-        'is_active' => 'boolean',
+        'is_juruladen_active' => 'boolean',
+        'budget_total' => 'decimal:2',
         'meta_data' => 'array',
     ];
 
@@ -60,6 +64,11 @@ class Event extends Model
     public function media(): HasMany
     {
         return $this->hasMany(MediaGallery::class);
+    }
+
+    public function committeeDivisions(): HasMany
+    {
+        return $this->hasMany(CommitteeDivision::class)->orderBy('sort_order');
     }
 
     /**
